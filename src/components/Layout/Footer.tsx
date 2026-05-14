@@ -6,15 +6,15 @@ export default function Footer() {
     <footer className="bg-teal-600 text-cream-50 mt-20">
       <div className="max-w-6xl mx-auto px-6 py-14 grid md:grid-cols-2 gap-12">
         <div>
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-2 mb-6">
             <Image
               src="/logo.png"
               alt="Lakespring Investments"
               width={44}
               height={44}
-              className="rounded-md"
+              className="rounded-md -mt-1"
             />
-            <span className="font-sans text-lg font-semibold tracking-tight text-white">
+            <span className="font-sans text-lg font-semibold tracking-tight text-white leading-none mt-0.5">
               Lakespring Investments
             </span>
           </div>
