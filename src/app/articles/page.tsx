@@ -10,7 +10,7 @@ export default function ArticlesPage() {
   const articles = getAllArticles();
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16">
+    <div className="max-w-5xl mx-auto px-6 py-16">
       <header className="mb-12">
         <p className="text-xs uppercase tracking-[0.2em] text-sage-500 mb-3">
           The journal
@@ -38,7 +38,7 @@ export default function ArticlesPage() {
                 <h2 className="text-2xl md:text-3xl text-teal-600 group-hover:text-sage-500 tracking-tight mb-3 transition-colors font-semibold">
                   {article.title}
                 </h2>
-                <p className="text-ink-500 leading-relaxed">
+                <p className="text-ink-500 leading-relaxed max-w-3xl">
                   {article.excerpt}
                 </p>
               </Link>

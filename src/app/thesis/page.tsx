@@ -22,7 +22,7 @@ const moats: Moat[] = [
     logo: "/logos/bitcoin.png",
     color: "#F7931A",
     title: "Digital Scarcity",
-    body: "The only credibly neutral monetary asset emerging in a world where every fiat currency is being diluted by political pressure.",
+    body: "The only credibly neutral monetary asset emerging in a world where every fiat currency is being diluted by political pressure. We believe Bitcoin is the defining asset of the digital era — digital gold that will eventually sit in every serious portfolio as a structural hedge against fiat debasement and equity-correlated risk.",
     moat: "Network, energy, and a decade of survival",
   },
   {
@@ -39,7 +39,7 @@ const moats: Moat[] = [
     logo: "/logos/nvidia.png",
     color: "#76B900",
     title: "AI Infrastructure",
-    body: "Picks-and-shovels infrastructure of the AI buildout. Execution cadence and a software ecosystem competitors have been failing to close for a decade.",
+    body: "Picks-and-shovels infrastructure of the AI buildout. Execution cadence and a software ecosystem competitors have been failing to close for a decade. Their multi-billion-dollar investments across the ecosystem — model labs, robotics, sovereign AI, cloud providers — further entrench Nvidia as the gravitational center of the entire transformation.",
     moat: "Velocity, scale, and CUDA lock-in",
   },
   {
@@ -53,83 +53,61 @@ const moats: Moat[] = [
 ];
 
 function PremiumWheel() {
-  // SVG dimensions
-  const cx = 220;
-  const cy = 220;
+  const cx = 240;
+  const cy = 240;
   const r = 130;
   const strokeWidth = 36;
-
-  // The wheel has 4 segments — Sell Put (top), Called Away (right),
-  // Sell Call (bottom), Acquire Shares (left)
-  // Each segment is 90deg = quarter circle
-  // We use stroke-dasharray to draw each segment
-
-  // Circumference of the path
   const circumference = 2 * Math.PI * r;
   const segmentLength = circumference / 4;
 
   return (
     <svg
-      viewBox="0 0 440 440"
-      className="w-full h-auto max-w-md mx-auto"
+      viewBox="0 0 480 480"
+      className="w-full h-auto"
       role="img"
-      aria-label="Premium Collection Wheel showing the four states: Sell Put, Called Away, Sell Call, Acquire Shares"
+      aria-label="Premium Collection Wheel showing four states: Sell Put, Called Away, Sell Call, Acquire Shares"
     >
-      <defs>
-        {/* Subtle gradients for premium feel */}
-      </defs>
+      {/* Wheel segments — start from top, go clockwise:
+          Top-right quarter: Sell Put (gold) ends at Called Away
+          Bottom-right quarter: Called Away (dark gold)
+          Bottom-left quarter: Sell Call (sage)
+          Top-left quarter: Acquire Shares (sage lighter)
+      */}
 
-      {/* Outer label arrows */}
-      {/* Segment 1: Sell Put (top, 0deg to 90deg from top) — Gold/Primary */}
+      {/* Sell Put: top quarter, gold */}
       <circle
-        cx={cx}
-        cy={cy}
-        r={r}
-        fill="none"
-        stroke="#EF9F27"
-        strokeWidth={strokeWidth}
+        cx={cx} cy={cy} r={r}
+        fill="none" stroke="#EF9F27" strokeWidth={strokeWidth}
         strokeDasharray={`${segmentLength - 6} ${circumference - segmentLength + 6}`}
         strokeDashoffset={-circumference / 8 + 3}
         transform={`rotate(-90 ${cx} ${cy})`}
       />
-      {/* Segment 2: Called Away (right) — Gold darker */}
+      {/* Called Away: right quarter, dark gold */}
       <circle
-        cx={cx}
-        cy={cy}
-        r={r}
-        fill="none"
-        stroke="#C97F1F"
-        strokeWidth={strokeWidth}
+        cx={cx} cy={cy} r={r}
+        fill="none" stroke="#C97F1F" strokeWidth={strokeWidth}
         strokeDasharray={`${segmentLength - 6} ${circumference - segmentLength + 6}`}
         strokeDashoffset={-circumference / 8 + 3 - segmentLength}
         transform={`rotate(-90 ${cx} ${cy})`}
       />
-      {/* Segment 3: Sell Call (bottom) — Sage */}
+      {/* Sell Call: bottom quarter, sage */}
       <circle
-        cx={cx}
-        cy={cy}
-        r={r}
-        fill="none"
-        stroke="#1D9E75"
-        strokeWidth={strokeWidth}
+        cx={cx} cy={cy} r={r}
+        fill="none" stroke="#1D9E75" strokeWidth={strokeWidth}
         strokeDasharray={`${segmentLength - 6} ${circumference - segmentLength + 6}`}
         strokeDashoffset={-circumference / 8 + 3 - 2 * segmentLength}
         transform={`rotate(-90 ${cx} ${cy})`}
       />
-      {/* Segment 4: Acquire Shares (left) — Sage lighter */}
+      {/* Acquire Shares: left quarter, sage lighter */}
       <circle
-        cx={cx}
-        cy={cy}
-        r={r}
-        fill="none"
-        stroke="#5DCAA5"
-        strokeWidth={strokeWidth}
+        cx={cx} cy={cy} r={r}
+        fill="none" stroke="#5DCAA5" strokeWidth={strokeWidth}
         strokeDasharray={`${segmentLength - 6} ${circumference - segmentLength + 6}`}
         strokeDashoffset={-circumference / 8 + 3 - 3 * segmentLength}
         transform={`rotate(-90 ${cx} ${cy})`}
       />
 
-      {/* Center content */}
+      {/* Center disc */}
       <circle cx={cx} cy={cy} r={r - strokeWidth / 2 - 6} fill="#FAF8F3" stroke="#E8E1CF" strokeWidth="1"/>
 
       <text x={cx} y={cy - 24} textAnchor="middle" fontSize="10" fill="#EF9F27" letterSpacing="2" fontWeight="600">
@@ -146,35 +124,35 @@ function PremiumWheel() {
         the cycle takes
       </text>
 
-      {/* Top label — Sell Put */}
-      <text x={cx} y={28} textAnchor="middle" fontSize="9" fill="#EF9F27" letterSpacing="2" fontWeight="600">
+      {/* Top — Sell Put */}
+      <text x={cx} y={36} textAnchor="middle" fontSize="9" fill="#EF9F27" letterSpacing="2" fontWeight="600">
         PRIMARY
       </text>
-      <text x={cx} y={48} textAnchor="middle" fontSize="14" fill="#034147" fontWeight="600">
+      <text x={cx} y={56} textAnchor="middle" fontSize="14" fill="#034147" fontWeight="600">
         Sell Put
       </text>
 
-      {/* Right label — Called Away */}
-      <text x={cx + r + strokeWidth} y={cy - 6} textAnchor="middle" fontSize="9" fill="#C97F1F" letterSpacing="2" fontWeight="600">
+      {/* Right — Called Away — RIGHT-ALIGNED, pushed further right */}
+      <text x={475} y={234} textAnchor="end" fontSize="9" fill="#C97F1F" letterSpacing="2" fontWeight="600">
         EXIT
       </text>
-      <text x={cx + r + strokeWidth} y={cy + 12} textAnchor="middle" fontSize="14" fill="#034147" fontWeight="600">
+      <text x={475} y={252} textAnchor="end" fontSize="14" fill="#034147" fontWeight="600">
         Called Away
       </text>
 
-      {/* Bottom label — Sell Call */}
-      <text x={cx} y={cy + r + strokeWidth + 4} textAnchor="middle" fontSize="9" fill="#1D9E75" letterSpacing="2" fontWeight="600">
+      {/* Bottom — Sell Call */}
+      <text x={cx} y={cy + r + strokeWidth + 12} textAnchor="middle" fontSize="9" fill="#1D9E75" letterSpacing="2" fontWeight="600">
         ASSIGNED
       </text>
-      <text x={cx} y={cy + r + strokeWidth + 24} textAnchor="middle" fontSize="14" fill="#034147" fontWeight="600">
+      <text x={cx} y={cy + r + strokeWidth + 32} textAnchor="middle" fontSize="14" fill="#034147" fontWeight="600">
         Sell Call
       </text>
 
-      {/* Left label — Acquire Shares */}
-      <text x={cx - r - strokeWidth + 4} y={cy - 6} textAnchor="middle" fontSize="9" fill="#1D9E75" letterSpacing="2" fontWeight="600">
+      {/* Left — Acquire Shares — RIGHT-ALIGNED to its anchor, pushed further left */}
+      <text x={5} y={234} textAnchor="start" fontSize="9" fill="#1D9E75" letterSpacing="2" fontWeight="600">
         ASSIGNED
       </text>
-      <text x={cx - r - strokeWidth + 4} y={cy + 12} textAnchor="middle" fontSize="14" fill="#034147" fontWeight="600">
+      <text x={5} y={252} textAnchor="start" fontSize="14" fill="#034147" fontWeight="600">
         Acquire Shares
       </text>
     </svg>
@@ -194,7 +172,7 @@ export default function ThesisPage() {
             <h1 className="text-4xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1.05] mb-8 font-semibold">
               Concentrated conviction. <span className="text-sage-300">Continuous income.</span>
             </h1>
-            <p className="text-cream-100 text-lg leading-relaxed max-w-2xl">
+            <p className="text-cream-100 text-lg leading-relaxed max-w-3xl">
               Lakespring Investments holds a small basket of high-conviction
               positions in the businesses defining the next decade — and runs
               a disciplined options income overlay on top to generate cash
@@ -204,9 +182,9 @@ export default function ThesisPage() {
         </div>
       </section>
 
-      {/* Section 01 */}
+      {/* Section 01 — prose */}
       <section className="bg-cream-50">
-        <div className="max-w-3xl mx-auto px-6 py-20 md:py-24">
+        <div className="max-w-5xl mx-auto px-6 py-20 md:py-24">
           <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
             01 — The first principles approach
           </p>
@@ -226,7 +204,7 @@ export default function ThesisPage() {
               isn&apos;t which stocks will beat the S&amp;P 500 over the next year.
               It&apos;s:
             </p>
-            <blockquote className="border-l-4 border-sage-500 pl-6 my-8 text-xl text-teal-600 font-medium leading-relaxed">
+            <blockquote className="border-l-4 border-sage-500 pl-6 my-8 text-xl md:text-2xl text-teal-600 font-medium leading-snug">
               What structural transformations are actually underway in the
               global economy, and which businesses own the moats that will
               define the outcome?
@@ -253,8 +231,8 @@ export default function ThesisPage() {
           </div>
         </div>
 
-        {/* First Principles Portfolio — moat cards as the section hero visual */}
-        <div className="max-w-6xl mx-auto px-6 pb-20 md:pb-24">
+        {/* Moat cards */}
+        <div className="max-w-5xl mx-auto px-6 pb-20 md:pb-24">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {moats.map((m) => (
               <article
@@ -267,19 +245,19 @@ export default function ThesisPage() {
                     <Image
                       src={m.logo}
                       alt={`${m.ticker} logo`}
-                      width={44}
-                      height={44}
+                      width={88}
+                      height={88}
                       className="w-full h-full object-cover"
                     />
                   </div>
                   {m.secondaryLogo && (
-                    <div className="h-7 flex items-center">
+                    <div className="bg-white rounded-md px-2 py-1 flex items-center">
                       <Image
                         src={m.secondaryLogo}
                         alt="SpaceX logo"
-                        width={88}
-                        height={28}
-                        className="h-7 w-auto"
+                        width={120}
+                        height={38}
+                        className="h-6 w-auto"
                       />
                     </div>
                   )}
@@ -309,23 +287,23 @@ export default function ThesisPage() {
             ))}
           </div>
 
-          <p className="mt-12 max-w-3xl text-ink-700 text-lg leading-relaxed">
+          <p className="mt-12 text-ink-700 text-lg leading-relaxed">
             <strong className="text-teal-600 font-semibold">
               Concentration is the point, not the risk.
             </strong>{" "}
             Diversification across thirty positions is protection against not
             knowing the thesis. When you know the thesis, you size into it.
           </p>
-          <p className="mt-4 max-w-3xl text-ink-500 leading-relaxed italic">
+          <p className="mt-4 text-ink-500 leading-relaxed italic">
             But concentration creates its own operational challenge — one the
             rest of this page is built to address.
           </p>
         </div>
       </section>
 
-      {/* Section 02 */}
+      {/* Section 02 — prose + wheel */}
       <section className="bg-cream-100 border-t border-cream-200">
-        <div className="max-w-3xl mx-auto px-6 py-20 md:py-24">
+        <div className="max-w-5xl mx-auto px-6 py-20 md:py-24">
           <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
             02 — The wheel, and what it runs on
           </p>
@@ -366,6 +344,18 @@ export default function ThesisPage() {
               advance.
             </p>
             <p>
+              <strong className="text-teal-600 font-semibold">
+                This strategy is unusually well-suited to our basket.
+              </strong>{" "}
+              The transformative tech names we hold carry structurally higher
+              volatility than the broader market — exactly because the alpha
+              they generate is asymmetric. Higher implied volatility means
+              fatter premiums on every option we sell, and our willingness
+              to commit to specific entry and exit prices on businesses we
+              already understand at depth turns that volatility into a
+              persistent income stream rather than a risk to be hedged.
+            </p>
+            <p>
               The candidate pool extends beyond the core four. When premiums
               on the First Principles holdings are compressed — typically
               during low-volatility stretches when the thesis is uncontested
@@ -385,10 +375,10 @@ export default function ThesisPage() {
           </div>
         </div>
 
-        {/* Premium Collection Wheel visual */}
-        <div className="max-w-6xl mx-auto px-6 pb-20 md:pb-24">
+        {/* Wheel visual */}
+        <div className="max-w-5xl mx-auto px-6 pb-20 md:pb-24">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-10 lg:gap-14 items-center">
-            <div>
+            <div className="max-w-md mx-auto w-full">
               <PremiumWheel />
             </div>
             <div className="space-y-6">
@@ -433,9 +423,9 @@ export default function ThesisPage() {
         </div>
       </section>
 
-      {/* Section 03 */}
+      {/* Section 03 — prose + Lakespring playbook closer */}
       <section className="bg-cream-50 border-t border-cream-200">
-        <div className="max-w-3xl mx-auto px-6 py-20 md:py-24">
+        <div className="max-w-5xl mx-auto px-6 py-20 md:py-24">
           <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
             03 — Income while you wait
           </p>
@@ -468,6 +458,10 @@ export default function ThesisPage() {
             The goal is to be paid to wait for the thesis to be obvious to
             everyone else.
           </blockquote>
+
+          <p className="mt-8 text-base text-ink-500 italic">
+            This is the Lakespring playbook.
+          </p>
         </div>
       </section>
     </>

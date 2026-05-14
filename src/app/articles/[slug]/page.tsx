@@ -27,8 +27,8 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
   if (!article) return notFound();
 
   return (
-    <article className="max-w-2xl mx-auto px-6 py-16">
-      <header className="mb-10">
+    <article className="max-w-5xl mx-auto px-6 py-16">
+      <header className="mb-10 max-w-3xl">
         <Link
           href="/articles"
           className="text-xs uppercase tracking-wide text-ink-400 hover:text-teal-600 mb-6 inline-block"
@@ -48,13 +48,13 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
         </h1>
       </header>
 
-      <div className="prose-lakespring">
+      <div className="prose-lakespring max-w-3xl">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {article.content}
         </ReactMarkdown>
       </div>
 
-      <div className="mt-16 pt-10 border-t border-cream-200">
+      <div className="mt-16 pt-10 border-t border-cream-200 max-w-3xl">
         <p className="text-2xl text-teal-600 mb-4 tracking-tight font-semibold">
           Enjoyed this?
         </p>
