@@ -53,35 +53,16 @@ const moats: Moat[] = [
 ];
 
 function PremiumWheel() {
-  // Wheel geometry — calculated to position labels relative to the actual circle edge
   const cx = 300;
   const cy = 240;
   const r = 130;
   const strokeWidth = 36;
   const circumference = 2 * Math.PI * r;
   const segmentLength = circumference / 4;
-
-  // Wheel's outer edge (where the stroke ends): r + strokeWidth/2
-  const outerR = r + strokeWidth / 2; // = 148
-  // Left edge of wheel: cx - outerR = 152
-  // Right edge of wheel: cx + outerR = 448
-  // Buffer between text and circle edge:
+  const outerR = r + strokeWidth / 2;
   const buffer = 18;
-
-  // ACQUIRE SHARES — sits to the LEFT of the wheel
-  // Text is right-aligned, so its right edge sits at: cx - outerR - buffer = 134
-  // User said: closer to the wheel (move more to the right)
-  // Move from previous x=100 → x=134 (34px closer)
-  const acquireX = cx - outerR - buffer; // 134
-
-  // CALLED AWAY — sits to the RIGHT of the wheel
-  // Text is right-aligned at its anchor, but the actual text extends LEFT from the anchor.
-  // We need the LEFT edge of the text to clear the wheel's right edge.
-  // "Called Away" at 15px font is roughly 100px wide.
-  // To clear the wheel: anchor x = cx + outerR + buffer + textWidth = 448 + 18 + 100 = 566
-  // User said: touching the circle, move more to the right
-  // Previous attempt at x=500 was too close. Push to x=566.
-  const calledAwayX = cx + outerR + buffer + 100; // 566
+  const acquireX = cx - outerR - buffer;
+  const calledAwayX = cx + outerR + buffer + 100;
 
   return (
     <svg
@@ -90,84 +71,38 @@ function PremiumWheel() {
       role="img"
       aria-label="Premium Collection Wheel showing four states: Sell Put, Called Away, Sell Call, Acquire Shares"
     >
-      {/* Segments */}
-      <circle
-        cx={cx} cy={cy} r={r}
-        fill="none" stroke="#EF9F27" strokeWidth={strokeWidth}
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="#EF9F27" strokeWidth={strokeWidth}
         strokeDasharray={`${segmentLength - 6} ${circumference - segmentLength + 6}`}
-        strokeDashoffset={-circumference / 8 + 3}
-        transform={`rotate(-90 ${cx} ${cy})`}
-      />
-      <circle
-        cx={cx} cy={cy} r={r}
-        fill="none" stroke="#C97F1F" strokeWidth={strokeWidth}
+        strokeDashoffset={-circumference / 8 + 3} transform={`rotate(-90 ${cx} ${cy})`}/>
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="#C97F1F" strokeWidth={strokeWidth}
         strokeDasharray={`${segmentLength - 6} ${circumference - segmentLength + 6}`}
-        strokeDashoffset={-circumference / 8 + 3 - segmentLength}
-        transform={`rotate(-90 ${cx} ${cy})`}
-      />
-      <circle
-        cx={cx} cy={cy} r={r}
-        fill="none" stroke="#1D9E75" strokeWidth={strokeWidth}
+        strokeDashoffset={-circumference / 8 + 3 - segmentLength} transform={`rotate(-90 ${cx} ${cy})`}/>
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="#1D9E75" strokeWidth={strokeWidth}
         strokeDasharray={`${segmentLength - 6} ${circumference - segmentLength + 6}`}
-        strokeDashoffset={-circumference / 8 + 3 - 2 * segmentLength}
-        transform={`rotate(-90 ${cx} ${cy})`}
-      />
-      <circle
-        cx={cx} cy={cy} r={r}
-        fill="none" stroke="#5DCAA5" strokeWidth={strokeWidth}
+        strokeDashoffset={-circumference / 8 + 3 - 2 * segmentLength} transform={`rotate(-90 ${cx} ${cy})`}/>
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="#5DCAA5" strokeWidth={strokeWidth}
         strokeDasharray={`${segmentLength - 6} ${circumference - segmentLength + 6}`}
-        strokeDashoffset={-circumference / 8 + 3 - 3 * segmentLength}
-        transform={`rotate(-90 ${cx} ${cy})`}
-      />
+        strokeDashoffset={-circumference / 8 + 3 - 3 * segmentLength} transform={`rotate(-90 ${cx} ${cy})`}/>
 
-      {/* Center disc */}
       <circle cx={cx} cy={cy} r={r - strokeWidth / 2 - 6} fill="#FAF8F3" stroke="#E8E1CF" strokeWidth="1"/>
 
-      <text x={cx} y={cy - 24} textAnchor="middle" fontSize="11" fill="#EF9F27" letterSpacing="2" fontWeight="600">
-        PREMIUM COLLECTED
-      </text>
+      <text x={cx} y={cy - 24} textAnchor="middle" fontSize="11" fill="#EF9F27" letterSpacing="2" fontWeight="600">PREMIUM COLLECTED</text>
       <line x1={cx - 56} y1={cy - 14} x2={cx + 56} y2={cy - 14} stroke="#EF9F27" strokeWidth="0.5" opacity="0.5"/>
-      <text x={cx} y={cy + 8} textAnchor="middle" fontSize="20" fill="#034147" fontWeight="600">
-        on every leg
-      </text>
-      <text x={cx} y={cy + 28} textAnchor="middle" fontSize="12" fill="#5A6670">
-        whichever path
-      </text>
-      <text x={cx} y={cy + 44} textAnchor="middle" fontSize="12" fill="#5A6670">
-        the cycle takes
-      </text>
+      <text x={cx} y={cy + 8} textAnchor="middle" fontSize="20" fill="#034147" fontWeight="600">on every leg</text>
+      <text x={cx} y={cy + 28} textAnchor="middle" fontSize="12" fill="#5A6670">whichever path</text>
+      <text x={cx} y={cy + 44} textAnchor="middle" fontSize="12" fill="#5A6670">the cycle takes</text>
 
-      {/* Top — Sell Put — middle-aligned above wheel */}
-      <text x={cx} y={50} textAnchor="middle" fontSize="10" fill="#EF9F27" letterSpacing="2" fontWeight="600">
-        PRIMARY
-      </text>
-      <text x={cx} y={72} textAnchor="middle" fontSize="15" fill="#034147" fontWeight="600">
-        Sell Put
-      </text>
+      <text x={cx} y={50} textAnchor="middle" fontSize="10" fill="#EF9F27" letterSpacing="2" fontWeight="600">PRIMARY</text>
+      <text x={cx} y={72} textAnchor="middle" fontSize="15" fill="#034147" fontWeight="600">Sell Put</text>
 
-      {/* Right — Called Away — right-aligned, well clear of wheel right edge */}
-      <text x={calledAwayX} y={234} textAnchor="end" fontSize="10" fill="#C97F1F" letterSpacing="2" fontWeight="600">
-        EXIT
-      </text>
-      <text x={calledAwayX} y={256} textAnchor="end" fontSize="15" fill="#034147" fontWeight="600">
-        Called Away
-      </text>
+      <text x={calledAwayX} y={234} textAnchor="end" fontSize="10" fill="#C97F1F" letterSpacing="2" fontWeight="600">EXIT</text>
+      <text x={calledAwayX} y={256} textAnchor="end" fontSize="15" fill="#034147" fontWeight="600">Called Away</text>
 
-      {/* Bottom — Sell Call — middle-aligned below wheel */}
-      <text x={cx} y={cy + r + strokeWidth + 18} textAnchor="middle" fontSize="10" fill="#1D9E75" letterSpacing="2" fontWeight="600">
-        ASSIGNED
-      </text>
-      <text x={cx} y={cy + r + strokeWidth + 40} textAnchor="middle" fontSize="15" fill="#034147" fontWeight="600">
-        Sell Call
-      </text>
+      <text x={cx} y={cy + r + strokeWidth + 18} textAnchor="middle" fontSize="10" fill="#1D9E75" letterSpacing="2" fontWeight="600">ASSIGNED</text>
+      <text x={cx} y={cy + r + strokeWidth + 40} textAnchor="middle" fontSize="15" fill="#034147" fontWeight="600">Sell Call</text>
 
-      {/* Left — Acquire Shares — right-aligned, close to wheel left edge */}
-      <text x={acquireX} y={234} textAnchor="end" fontSize="10" fill="#1D9E75" letterSpacing="2" fontWeight="600">
-        ASSIGNED
-      </text>
-      <text x={acquireX} y={256} textAnchor="end" fontSize="15" fill="#034147" fontWeight="600">
-        Acquire Shares
-      </text>
+      <text x={acquireX} y={234} textAnchor="end" fontSize="10" fill="#1D9E75" letterSpacing="2" fontWeight="600">ASSIGNED</text>
+      <text x={acquireX} y={256} textAnchor="end" fontSize="15" fill="#034147" fontWeight="600">Acquire Shares</text>
     </svg>
   );
 }
@@ -175,16 +110,16 @@ function PremiumWheel() {
 export default function ThesisPage() {
   return (
     <>
-      {/* Dark hero */}
-      <section className="bg-teal-800 -mt-px">
-        <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
-          <p className="text-xs uppercase tracking-[0.25em] text-sage-300 mb-5">
+      {/* Cream hero — matches dashboard styling */}
+      <section className="bg-cream-50">
+        <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
+          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-5">
             Thesis &amp; Strategy
           </p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1.05] mb-8 font-semibold max-w-4xl">
-            Concentrated conviction. <span className="text-sage-300">Continuous income.</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl text-teal-600 tracking-tight leading-[1.05] mb-6 font-semibold max-w-4xl">
+            Concentrated conviction. <span className="text-sage-500">Continuous income.</span>
           </h1>
-          <p className="text-cream-100 text-lg leading-relaxed">
+          <p className="text-ink-500 text-lg leading-relaxed max-w-3xl">
             Lakespring Investments holds a small basket of high-conviction
             positions in the businesses defining the next decade — and runs
             a disciplined options income overlay on top to generate cash
@@ -194,7 +129,7 @@ export default function ThesisPage() {
       </section>
 
       {/* Section 01 */}
-      <section className="bg-cream-50">
+      <section className="bg-cream-50 border-t border-cream-200">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
           <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
             01 — The first principles approach
@@ -483,18 +418,14 @@ export default function ThesisPage() {
               income stream, while the underlying thesis compounds in the
               background.
             </p>
-          </div>
-
-          {/* Closing pull quote with Lakespring playbook merged in */}
-          <blockquote className="mt-12 pl-6 border-l-4 border-sage-500">
-            <p className="text-2xl md:text-3xl text-teal-600 leading-snug font-medium">
+            <p>
               The goal is to be paid to wait for the thesis to be obvious to
-              everyone else.
+              everyone else.{" "}
+              <strong className="text-teal-600 font-semibold">
+                This is the Lakespring Investments playbook.
+              </strong>
             </p>
-            <p className="mt-4 text-base text-ink-500 italic">
-              This is the Lakespring playbook.
-            </p>
-          </blockquote>
+          </div>
         </div>
       </section>
     </>
