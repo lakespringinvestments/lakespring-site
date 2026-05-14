@@ -3,12 +3,13 @@ import Image from "next/image";
 export const metadata = {
   title: "Thesis & Strategy — Lakespring Investments",
   description:
-    "Concentrated ownership in the moats redefining the next decade. The First Principles Portfolio.",
+    "Concentrated conviction. Continuous income. The framework behind every position.",
 };
 
 type Moat = {
   ticker: string;
   logo: string;
+  secondaryLogo?: string;
   color: string;
   title: string;
   body: string;
@@ -18,19 +19,20 @@ type Moat = {
 const moats: Moat[] = [
   {
     ticker: "BITCOIN",
-    logo: "/logos/bitcoin.svg",
+    logo: "/logos/bitcoin.png",
     color: "#F7931A",
     title: "Digital Scarcity",
     body: "The only credibly neutral monetary asset emerging in a world where every fiat currency is being diluted by political pressure.",
     moat: "Network, energy, and a decade of survival",
   },
   {
-    ticker: "TESLA",
+    ticker: "TESLA · SPACEX",
     logo: "/logos/tesla.png",
+    secondaryLogo: "/logos/spacex.png",
     color: "#CC0000",
-    title: "Energy & Autonomy",
-    body: "Not a car company. Vertical integration across compute, manufacturing, energy storage, and the real-world AI training data no competitor can replicate from scratch.",
-    moat: "Vertical integration nobody can rebuild",
+    title: "The Musk Industrial Complex",
+    body: "Tesla and SpaceX represent the public-market and private-market sides of one unified thesis — vertical integration across compute, manufacturing, energy storage, autonomy, and orbital infrastructure. The real-world data and engineering velocity no competitor can replicate from scratch.",
+    moat: "Vertical integration across earth and orbit",
   },
   {
     ticker: "NVIDIA",
@@ -50,6 +52,135 @@ const moats: Moat[] = [
   },
 ];
 
+function PremiumWheel() {
+  // SVG dimensions
+  const cx = 220;
+  const cy = 220;
+  const r = 130;
+  const strokeWidth = 36;
+
+  // The wheel has 4 segments — Sell Put (top), Called Away (right),
+  // Sell Call (bottom), Acquire Shares (left)
+  // Each segment is 90deg = quarter circle
+  // We use stroke-dasharray to draw each segment
+
+  // Circumference of the path
+  const circumference = 2 * Math.PI * r;
+  const segmentLength = circumference / 4;
+
+  return (
+    <svg
+      viewBox="0 0 440 440"
+      className="w-full h-auto max-w-md mx-auto"
+      role="img"
+      aria-label="Premium Collection Wheel showing the four states: Sell Put, Called Away, Sell Call, Acquire Shares"
+    >
+      <defs>
+        {/* Subtle gradients for premium feel */}
+      </defs>
+
+      {/* Outer label arrows */}
+      {/* Segment 1: Sell Put (top, 0deg to 90deg from top) — Gold/Primary */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        stroke="#EF9F27"
+        strokeWidth={strokeWidth}
+        strokeDasharray={`${segmentLength - 6} ${circumference - segmentLength + 6}`}
+        strokeDashoffset={-circumference / 8 + 3}
+        transform={`rotate(-90 ${cx} ${cy})`}
+      />
+      {/* Segment 2: Called Away (right) — Gold darker */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        stroke="#C97F1F"
+        strokeWidth={strokeWidth}
+        strokeDasharray={`${segmentLength - 6} ${circumference - segmentLength + 6}`}
+        strokeDashoffset={-circumference / 8 + 3 - segmentLength}
+        transform={`rotate(-90 ${cx} ${cy})`}
+      />
+      {/* Segment 3: Sell Call (bottom) — Sage */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        stroke="#1D9E75"
+        strokeWidth={strokeWidth}
+        strokeDasharray={`${segmentLength - 6} ${circumference - segmentLength + 6}`}
+        strokeDashoffset={-circumference / 8 + 3 - 2 * segmentLength}
+        transform={`rotate(-90 ${cx} ${cy})`}
+      />
+      {/* Segment 4: Acquire Shares (left) — Sage lighter */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        stroke="#5DCAA5"
+        strokeWidth={strokeWidth}
+        strokeDasharray={`${segmentLength - 6} ${circumference - segmentLength + 6}`}
+        strokeDashoffset={-circumference / 8 + 3 - 3 * segmentLength}
+        transform={`rotate(-90 ${cx} ${cy})`}
+      />
+
+      {/* Center content */}
+      <circle cx={cx} cy={cy} r={r - strokeWidth / 2 - 6} fill="#FAF8F3" stroke="#E8E1CF" strokeWidth="1"/>
+
+      <text x={cx} y={cy - 24} textAnchor="middle" fontSize="10" fill="#EF9F27" letterSpacing="2" fontWeight="600">
+        PREMIUM COLLECTED
+      </text>
+      <line x1={cx - 50} y1={cy - 14} x2={cx + 50} y2={cy - 14} stroke="#EF9F27" strokeWidth="0.5" opacity="0.5"/>
+      <text x={cx} y={cy + 8} textAnchor="middle" fontSize="20" fill="#034147" fontWeight="600">
+        on every leg
+      </text>
+      <text x={cx} y={cy + 28} textAnchor="middle" fontSize="11" fill="#5A6670">
+        whichever path
+      </text>
+      <text x={cx} y={cy + 42} textAnchor="middle" fontSize="11" fill="#5A6670">
+        the cycle takes
+      </text>
+
+      {/* Top label — Sell Put */}
+      <text x={cx} y={28} textAnchor="middle" fontSize="9" fill="#EF9F27" letterSpacing="2" fontWeight="600">
+        PRIMARY
+      </text>
+      <text x={cx} y={48} textAnchor="middle" fontSize="14" fill="#034147" fontWeight="600">
+        Sell Put
+      </text>
+
+      {/* Right label — Called Away */}
+      <text x={cx + r + strokeWidth} y={cy - 6} textAnchor="middle" fontSize="9" fill="#C97F1F" letterSpacing="2" fontWeight="600">
+        EXIT
+      </text>
+      <text x={cx + r + strokeWidth} y={cy + 12} textAnchor="middle" fontSize="14" fill="#034147" fontWeight="600">
+        Called Away
+      </text>
+
+      {/* Bottom label — Sell Call */}
+      <text x={cx} y={cy + r + strokeWidth + 4} textAnchor="middle" fontSize="9" fill="#1D9E75" letterSpacing="2" fontWeight="600">
+        ASSIGNED
+      </text>
+      <text x={cx} y={cy + r + strokeWidth + 24} textAnchor="middle" fontSize="14" fill="#034147" fontWeight="600">
+        Sell Call
+      </text>
+
+      {/* Left label — Acquire Shares */}
+      <text x={cx - r - strokeWidth + 4} y={cy - 6} textAnchor="middle" fontSize="9" fill="#1D9E75" letterSpacing="2" fontWeight="600">
+        ASSIGNED
+      </text>
+      <text x={cx - r - strokeWidth + 4} y={cy + 12} textAnchor="middle" fontSize="14" fill="#034147" fontWeight="600">
+        Acquire Shares
+      </text>
+    </svg>
+  );
+}
+
 export default function ThesisPage() {
   return (
     <>
@@ -58,23 +189,72 @@ export default function ThesisPage() {
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
           <div className="max-w-4xl">
             <p className="text-xs uppercase tracking-[0.25em] text-sage-300 mb-5">
-              The First Principles Portfolio
+              Thesis &amp; Strategy
             </p>
             <h1 className="text-4xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1.05] mb-8 font-semibold">
-              Concentrated ownership in the moats <span className="text-sage-300">redefining</span> the next decade.
+              Concentrated conviction. <span className="text-sage-300">Continuous income.</span>
             </h1>
             <p className="text-cream-100 text-lg leading-relaxed max-w-2xl">
-              Lakespring Investments holds positions in the businesses and
-              assets that aren&apos;t competing within an industry — they&apos;re
-              rewriting what the industry is.
+              Lakespring Investments holds a small basket of high-conviction
+              positions in the businesses defining the next decade — and runs
+              a disciplined options income overlay on top to generate cash
+              flow while those theses compound.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Cream body with moat cards */}
+      {/* Section 01 */}
       <section className="bg-cream-50">
-        <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
+        <div className="max-w-3xl mx-auto px-6 py-20 md:py-24">
+          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
+            01 — The first principles approach
+          </p>
+          <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
+            Start with the transformation. Then ask who owns the moat.
+          </h2>
+
+          <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
+            <p>
+              Most portfolio construction starts with the market and works
+              inward — pick a benchmark, choose a tracking error budget, slot
+              positions into sectors. The result is a portfolio shaped by the
+              index it&apos;s trying to outperform.
+            </p>
+            <p>
+              Lakespring Investments starts somewhere else. The question
+              isn&apos;t which stocks will beat the S&amp;P 500 over the next year.
+              It&apos;s:
+            </p>
+            <blockquote className="border-l-4 border-sage-500 pl-6 my-8 text-xl text-teal-600 font-medium leading-relaxed">
+              What structural transformations are actually underway in the
+              global economy, and which businesses own the moats that will
+              define the outcome?
+            </blockquote>
+            <p>
+              That reframing changes what gets held. The First Principles
+              Portfolio is a concentrated basket built around businesses and
+              assets that aren&apos;t competing within an industry, but redefining
+              what the industry is.
+            </p>
+            <p>
+              These are not value plays. They&apos;re not yield plays. They&apos;re
+              ownership stakes in the transformations themselves.
+            </p>
+            <p>
+              Among the current convictions: digital scarcity, the physical
+              and orbital AI economy, the compute engine the AI era runs on,
+              and the operating layer for enterprise AI adoption. Four
+              positions, each with structural moats — network effects,
+              vertical integration, execution velocity, organizational
+              lock-in — that reinforce as the underlying transformations
+              accelerate.
+            </p>
+          </div>
+        </div>
+
+        {/* First Principles Portfolio — moat cards as the section hero visual */}
+        <div className="max-w-6xl mx-auto px-6 pb-20 md:pb-24">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {moats.map((m) => (
               <article
@@ -82,7 +262,7 @@ export default function ThesisPage() {
                 className="bg-white rounded-2xl p-7 md:p-8 border border-cream-200 border-l-4 flex flex-col shadow-sm hover:shadow-md transition-shadow"
                 style={{ borderLeftColor: m.color }}
               >
-                <header className="flex items-center gap-3 mb-6">
+                <header className="flex items-center gap-3 mb-6 flex-wrap">
                   <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0">
                     <Image
                       src={m.logo}
@@ -92,17 +272,28 @@ export default function ThesisPage() {
                       className="w-full h-full object-cover"
                     />
                   </div>
+                  {m.secondaryLogo && (
+                    <div className="h-7 flex items-center">
+                      <Image
+                        src={m.secondaryLogo}
+                        alt="SpaceX logo"
+                        width={88}
+                        height={28}
+                        className="h-7 w-auto"
+                      />
+                    </div>
+                  )}
                   <p
-                    className="text-xs font-semibold tracking-[0.2em]"
+                    className="text-xs font-semibold tracking-[0.2em] ml-auto"
                     style={{ color: m.color }}
                   >
                     {m.ticker}
                   </p>
                 </header>
 
-                <h2 className="text-2xl md:text-3xl text-teal-600 tracking-tight mb-4 font-semibold">
+                <h3 className="text-2xl md:text-3xl text-teal-600 tracking-tight mb-4 font-semibold">
                   {m.title}
-                </h2>
+                </h3>
 
                 <p className="text-ink-700 leading-relaxed text-base flex-1">
                   {m.body}
@@ -118,15 +309,165 @@ export default function ThesisPage() {
             ))}
           </div>
 
-          <p className="mt-14 text-ink-700 max-w-3xl leading-relaxed">
+          <p className="mt-12 max-w-3xl text-ink-700 text-lg leading-relaxed">
             <strong className="text-teal-600 font-semibold">
               Concentration is the point, not the risk.
             </strong>{" "}
-            <em className="text-ink-500">
-              An options income overlay sits on top — the thesis compounds in
-              the background, the premium pays me to wait.
-            </em>
+            Diversification across thirty positions is protection against not
+            knowing the thesis. When you know the thesis, you size into it.
           </p>
+          <p className="mt-4 max-w-3xl text-ink-500 leading-relaxed italic">
+            But concentration creates its own operational challenge — one the
+            rest of this page is built to address.
+          </p>
+        </div>
+      </section>
+
+      {/* Section 02 */}
+      <section className="bg-cream-100 border-t border-cream-200">
+        <div className="max-w-3xl mx-auto px-6 py-20 md:py-24">
+          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
+            02 — The wheel, and what it runs on
+          </p>
+          <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
+            Premium lands on every leg of the cycle.
+          </h2>
+
+          <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
+            <p>
+              A concentrated long-term portfolio has one operational
+              weakness: the thesis takes time, and capital sits idle while it
+              plays out. The premium wheel solves for that.
+            </p>
+            <p>
+              On positions we already want to own, we sell puts at strike
+              prices we&apos;re willing to buy at — collecting premium for the
+              obligation. Most of the time, those puts expire worthless and
+              we simply collect the premium and write another one.{" "}
+              <strong className="text-teal-600 font-semibold">
+                That&apos;s the default behavior
+              </strong>{" "}
+              — premium collection without ever touching the underlying.
+            </p>
+            <p>
+              The full wheel is the safety net beneath that loop. If a put
+              gets assigned, we acquire shares at the price we&apos;d already
+              targeted — and from there we sell covered calls at strike
+              prices we&apos;d be comfortable exiting at, collecting more premium
+              until called away. Cash returns to step one. The cycle
+              restarts.
+            </p>
+            <p>
+              The reason this structure works on these specific names is that
+              every leg of the cycle aligns with a decision we&apos;d already
+              make on conviction alone. We&apos;re willing to buy more at lower
+              prices. We&apos;re willing to trim into strength. The options
+              market simply pays us to formalize those commitments in
+              advance.
+            </p>
+            <p>
+              The candidate pool extends beyond the core four. When premiums
+              on the First Principles holdings are compressed — typically
+              during low-volatility stretches when the thesis is uncontested
+              — we widen the wheel to a select group of secondary names that
+              directly benefit from the same transformations. These are
+              companies we&apos;re independently comfortable holding and swing
+              trading, kept on a deliberately short list. They&apos;re not
+              satellite positions or trade ideas; they&apos;re thesis-aligned
+              vehicles for premium collection when the core names aren&apos;t
+              paying enough to commit capital.
+            </p>
+            <p className="italic text-ink-500">
+              The premium isn&apos;t speculative income. It&apos;s compensation for
+              committing to price levels we&apos;d act on anyway — on a small
+              basket of businesses we already understand at depth.
+            </p>
+          </div>
+        </div>
+
+        {/* Premium Collection Wheel visual */}
+        <div className="max-w-6xl mx-auto px-6 pb-20 md:pb-24">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-10 lg:gap-14 items-center">
+            <div>
+              <PremiumWheel />
+            </div>
+            <div className="space-y-6">
+              <div className="border-l-4 border-[#EF9F27] pl-5 py-2">
+                <p className="text-[10px] uppercase tracking-[0.25em] text-[#EF9F27] mb-2 font-semibold">
+                  Primary Path
+                </p>
+                <h4 className="text-xl text-teal-600 mb-2 font-semibold">
+                  Premium collection without assignment
+                </h4>
+                <p className="text-ink-700 leading-relaxed">
+                  Most of the time, puts expire worthless. We collect the
+                  premium and write another. The wheel never needs to
+                  complete.
+                </p>
+              </div>
+              <div className="border-l-4 border-sage-500 pl-5 py-2">
+                <p className="text-[10px] uppercase tracking-[0.25em] text-sage-700 mb-2 font-semibold">
+                  Safety Net
+                </p>
+                <h4 className="text-xl text-teal-600 mb-2 font-semibold">
+                  Full wheel activates if assigned
+                </h4>
+                <p className="text-ink-700 leading-relaxed">
+                  If a put is assigned, we acquire shares at our target price
+                  and sell covered calls against them — collecting premium
+                  until called away.
+                </p>
+              </div>
+              <div className="bg-white rounded-xl p-5 border border-cream-200">
+                <p className="text-[10px] uppercase tracking-[0.25em] text-[#EF9F27] mb-2 font-semibold">
+                  The Point
+                </p>
+                <p className="text-ink-700 leading-relaxed">
+                  Premium lands on{" "}
+                  <strong className="text-teal-600 font-semibold">every leg</strong>.
+                  Whichever direction the cycle flows, we&apos;re paid to wait.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 03 */}
+      <section className="bg-cream-50 border-t border-cream-200">
+        <div className="max-w-3xl mx-auto px-6 py-20 md:py-24">
+          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
+            03 — Income while you wait
+          </p>
+          <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
+            The thesis compounds in the foreground. The premium lands in the background.
+          </h2>
+
+          <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
+            <p>
+              Concentrated thesis investing carries a cost most investors
+              underestimate:{" "}
+              <strong className="text-teal-600 font-semibold">time</strong>. A
+              position can take years to fully reprice as the underlying
+              transformation moves from contrarian thesis to consensus. That
+              waiting period is where most investors lose conviction — not
+              because the thesis broke, but because nothing visible was
+              happening.
+            </p>
+            <p>
+              The premium wheel changes the experience of waiting. Income
+              lands consistently in the background while the structural
+              thesis compounds in the foreground. The thesis doesn&apos;t need
+              to be right next quarter for the strategy to be working — and
+              that detachment from short-term outcomes is what makes the
+              long hold possible.
+            </p>
+          </div>
+
+          <blockquote className="mt-12 pl-6 border-l-4 border-sage-500 text-2xl md:text-3xl text-teal-600 leading-snug font-medium">
+            The goal is to be paid to wait for the thesis to be obvious to
+            everyone else.
+          </blockquote>
         </div>
       </section>
     </>
