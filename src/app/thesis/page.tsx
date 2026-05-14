@@ -53,7 +53,6 @@ const moats: Moat[] = [
 ];
 
 function PremiumWheel() {
-  // Larger viewBox to give the side labels generous space outside the circle
   const cx = 300;
   const cy = 240;
   const r = 130;
@@ -68,7 +67,6 @@ function PremiumWheel() {
       role="img"
       aria-label="Premium Collection Wheel showing four states: Sell Put, Called Away, Sell Call, Acquire Shares"
     >
-      {/* Sell Put: top, gold */}
       <circle
         cx={cx} cy={cy} r={r}
         fill="none" stroke="#EF9F27" strokeWidth={strokeWidth}
@@ -76,7 +74,6 @@ function PremiumWheel() {
         strokeDashoffset={-circumference / 8 + 3}
         transform={`rotate(-90 ${cx} ${cy})`}
       />
-      {/* Called Away: right, dark gold */}
       <circle
         cx={cx} cy={cy} r={r}
         fill="none" stroke="#C97F1F" strokeWidth={strokeWidth}
@@ -84,7 +81,6 @@ function PremiumWheel() {
         strokeDashoffset={-circumference / 8 + 3 - segmentLength}
         transform={`rotate(-90 ${cx} ${cy})`}
       />
-      {/* Sell Call: bottom, sage */}
       <circle
         cx={cx} cy={cy} r={r}
         fill="none" stroke="#1D9E75" strokeWidth={strokeWidth}
@@ -92,7 +88,6 @@ function PremiumWheel() {
         strokeDashoffset={-circumference / 8 + 3 - 2 * segmentLength}
         transform={`rotate(-90 ${cx} ${cy})`}
       />
-      {/* Acquire Shares: left, sage light */}
       <circle
         cx={cx} cy={cy} r={r}
         fill="none" stroke="#5DCAA5" strokeWidth={strokeWidth}
@@ -101,7 +96,6 @@ function PremiumWheel() {
         transform={`rotate(-90 ${cx} ${cy})`}
       />
 
-      {/* Center disc */}
       <circle cx={cx} cy={cy} r={r - strokeWidth / 2 - 6} fill="#FAF8F3" stroke="#E8E1CF" strokeWidth="1"/>
 
       <text x={cx} y={cy - 24} textAnchor="middle" fontSize="11" fill="#EF9F27" letterSpacing="2" fontWeight="600">
@@ -118,7 +112,7 @@ function PremiumWheel() {
         the cycle takes
       </text>
 
-      {/* Top — Sell Put — middle-aligned, comfortably above */}
+      {/* Top */}
       <text x={cx} y={50} textAnchor="middle" fontSize="10" fill="#EF9F27" letterSpacing="2" fontWeight="600">
         PRIMARY
       </text>
@@ -126,17 +120,17 @@ function PremiumWheel() {
         Sell Put
       </text>
 
-      {/* Right — Called Away — RIGHT-ALIGNED, well clear of the wheel.
-          Wheel right edge is cx + r + strokeWidth/2 = 300 + 130 + 18 = 448
-          Place text right-aligned at x=590 — 142px clearance from the wheel edge */}
-      <text x={590} y={234} textAnchor="end" fontSize="10" fill="#C97F1F" letterSpacing="2" fontWeight="600">
+      {/* Right — Called Away — moved leftward, closer to wheel.
+          Wheel right edge is at x = 300 + 130 + 18 = 448
+          Place text right-aligned at x=500 — that's 52px clearance, closer than before */}
+      <text x={500} y={234} textAnchor="end" fontSize="10" fill="#C97F1F" letterSpacing="2" fontWeight="600">
         EXIT
       </text>
-      <text x={590} y={256} textAnchor="end" fontSize="15" fill="#034147" fontWeight="600">
+      <text x={500} y={256} textAnchor="end" fontSize="15" fill="#034147" fontWeight="600">
         Called Away
       </text>
 
-      {/* Bottom — Sell Call — middle-aligned, comfortably below */}
+      {/* Bottom */}
       <text x={cx} y={cy + r + strokeWidth + 18} textAnchor="middle" fontSize="10" fill="#1D9E75" letterSpacing="2" fontWeight="600">
         ASSIGNED
       </text>
@@ -144,15 +138,11 @@ function PremiumWheel() {
         Sell Call
       </text>
 
-      {/* Left — Acquire Shares — RIGHT-ALIGNED at far left, well clear of wheel.
-          Wheel left edge is cx - r - strokeWidth/2 = 300 - 130 - 18 = 152
-          Place text right-aligned at x=140 — 12px from wheel edge.
-          User said "comfortably away" — push further. Use x=130 (22px clearance)
-          and ensure both label lines fit with a wide enough viewBox left margin */}
-      <text x={140} y={234} textAnchor="end" fontSize="10" fill="#1D9E75" letterSpacing="2" fontWeight="600">
+      {/* Left — Acquire Shares — kept at far-left clearance */}
+      <text x={100} y={234} textAnchor="end" fontSize="10" fill="#1D9E75" letterSpacing="2" fontWeight="600">
         ASSIGNED
       </text>
-      <text x={140} y={256} textAnchor="end" fontSize="15" fill="#034147" fontWeight="600">
+      <text x={100} y={256} textAnchor="end" fontSize="15" fill="#034147" fontWeight="600">
         Acquire Shares
       </text>
     </svg>
@@ -165,20 +155,18 @@ export default function ThesisPage() {
       {/* Dark hero */}
       <section className="bg-teal-800 -mt-px">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
-          <div className="max-w-4xl">
-            <p className="text-xs uppercase tracking-[0.25em] text-sage-300 mb-5">
-              Thesis &amp; Strategy
-            </p>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1.05] mb-8 font-semibold">
-              Concentrated conviction. <span className="text-sage-300">Continuous income.</span>
-            </h1>
-            <p className="text-cream-100 text-lg leading-relaxed max-w-3xl">
-              Lakespring Investments holds a small basket of high-conviction
-              positions in the businesses defining the next decade — and runs
-              a disciplined options income overlay on top to generate cash
-              flow while those theses compound.
-            </p>
-          </div>
+          <p className="text-xs uppercase tracking-[0.25em] text-sage-300 mb-5">
+            Thesis &amp; Strategy
+          </p>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1.05] mb-8 font-semibold max-w-4xl">
+            Concentrated conviction. <span className="text-sage-300">Continuous income.</span>
+          </h1>
+          <p className="text-cream-100 text-lg leading-relaxed">
+            Lakespring Investments holds a small basket of high-conviction
+            positions in the businesses defining the next decade — and runs
+            a disciplined options income overlay on top to generate cash
+            flow while those theses compound.
+          </p>
         </div>
       </section>
 
@@ -188,11 +176,11 @@ export default function ThesisPage() {
           <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
             01 — The first principles approach
           </p>
-          <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold max-w-4xl">
+          <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
             Start with the transformation. Then ask who owns the moat.
           </h2>
 
-          <div className="space-y-6 text-ink-700 text-lg leading-relaxed max-w-3xl">
+          <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
             <p>
               Most portfolio construction starts with the market and works
               inward — pick a benchmark, choose a tracking error budget, slot
@@ -230,7 +218,7 @@ export default function ThesisPage() {
             </p>
           </div>
 
-          {/* Moat cards — full width within max-w-6xl container */}
+          {/* Moat cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-14">
             {moats.map((m) => (
               <article
@@ -249,15 +237,13 @@ export default function ThesisPage() {
                     />
                   </div>
                   {m.secondaryLogo && (
-                    <div className="bg-white rounded-md px-2 py-1 flex items-center border border-cream-200">
-                      <Image
-                        src={m.secondaryLogo}
-                        alt="SpaceX logo"
-                        width={120}
-                        height={50}
-                        className="h-7 w-auto"
-                      />
-                    </div>
+                    <Image
+                      src={m.secondaryLogo}
+                      alt="SpaceX logo"
+                      width={120}
+                      height={50}
+                      className="h-7 w-auto"
+                    />
                   )}
                   <p
                     className="text-xs font-semibold tracking-[0.2em] ml-auto"
@@ -285,7 +271,7 @@ export default function ThesisPage() {
             ))}
           </div>
 
-          <div className="max-w-3xl mt-12">
+          <div className="mt-12">
             <p className="text-ink-700 text-lg leading-relaxed">
               <strong className="text-teal-600 font-semibold">
                 Concentration is the point, not the risk.
@@ -307,11 +293,11 @@ export default function ThesisPage() {
           <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
             02 — The wheel, and what it runs on
           </p>
-          <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold max-w-4xl">
+          <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
             Premium lands on every leg of the cycle.
           </h2>
 
-          <div className="space-y-6 text-ink-700 text-lg leading-relaxed max-w-3xl">
+          <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
             <p>
               A concentrated long-term portfolio has one operational
               weakness: the thesis takes time, and capital sits idle while it
@@ -421,17 +407,17 @@ export default function ThesisPage() {
         </div>
       </section>
 
-      {/* Section 03 — financial freedom closing arc */}
+      {/* Section 03 — rewritten ending */}
       <section className="bg-cream-50 border-t border-cream-200">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
           <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
             03 — Income while you wait
           </p>
-          <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold max-w-4xl">
+          <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
             The thesis compounds in the foreground. The premium lands in the background.
           </h2>
 
-          <div className="space-y-6 text-ink-700 text-lg leading-relaxed max-w-3xl">
+          <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
             <p>
               Concentrated thesis investing carries a cost most investors
               underestimate:{" "}
@@ -451,41 +437,37 @@ export default function ThesisPage() {
               long hold possible.
             </p>
             <p>
-              That consistent income is more than a tactical edge. It&apos;s the
-              connective tissue between the strategy and the reason any of
-              this exists. Premium that lands every week, every month,
-              regardless of where the broader market closes, is what turns
-              an investment portfolio into a livelihood — a recurring stream
-              of cash flow that funds the present while the thesis
-              compounds for the future.
+              That consistent income also creates optionality. Premium that
+              lands every week — independent of where the broader market
+              closes — is dry powder we can deploy on our own terms. When a
+              core name dips on news that doesn&apos;t change the thesis, we
+              add. When a secondary opportunity opens up inside the same
+              structural transformation, we have the cash to take it.
+              Premium collection turns market volatility from something to
+              endure into something to capitalize on.
             </p>
             <p>
-              The deeper philosophy underneath all of this is simple:{" "}
+              More fundamentally,{" "}
               <strong className="text-teal-600 font-semibold">
-                financial freedom comes from asset ownership, not from a
-                salary
+                premium collection puts your assets and your cash to work
+                for you — not the other way around
               </strong>
-              . The wage economy trades hours for money; the ownership
-              economy compounds while you sleep. Lakespring exists to move
-              one family from the first economy to the second — and to
-              document the process honestly in case it&apos;s useful to anyone
-              else trying to do the same.
-            </p>
-            <p>
-              The premium pays the bills. The ownership writes the future.
+              . The default mode of money is to sit. The default mode of a
+              portfolio is to wait. Selling premium against positions you
+              already want to own turns idle capital into a recurring
+              income stream, while the underlying thesis compounds in the
+              background.
             </p>
           </div>
 
-          <div className="max-w-4xl">
-            <blockquote className="mt-12 pl-6 border-l-4 border-sage-500 text-2xl md:text-3xl text-teal-600 leading-snug font-medium">
-              The goal is to be paid to wait for the thesis to be obvious to
-              everyone else.
-            </blockquote>
+          <blockquote className="mt-12 pl-6 border-l-4 border-sage-500 text-2xl md:text-3xl text-teal-600 leading-snug font-medium">
+            The goal is to be paid to wait for the thesis to be obvious to
+            everyone else.
+          </blockquote>
 
-            <p className="mt-8 text-base text-ink-500 italic">
-              This is the Lakespring playbook.
-            </p>
-          </div>
+          <p className="mt-8 text-base text-ink-500 italic">
+            This is the Lakespring playbook.
+          </p>
         </div>
       </section>
     </>
