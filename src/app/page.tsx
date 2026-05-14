@@ -4,7 +4,7 @@ import MetricCards from "@/components/Dashboard/MetricCards";
 import AllocationDonut from "@/components/Dashboard/AllocationDonut";
 import HoldingsList from "@/components/Dashboard/HoldingsList";
 
-export const revalidate = 300; // refresh every 5 min
+export const revalidate = 300;
 
 export default async function HomePage() {
   const portfolio = await getPortfolio();
@@ -13,9 +13,9 @@ export default async function HomePage() {
     <div className="max-w-6xl mx-auto px-6 py-12">
       <section className="mb-12 max-w-2xl">
         <p className="text-xs uppercase tracking-[0.2em] text-sage-500 mb-3">
-          A personal investing journal
+          First Principles Portfolio
         </p>
-        <h1 className="font-serif text-4xl md:text-5xl text-teal-600 tracking-tight leading-tight mb-4">
+        <h1 className="text-4xl md:text-5xl text-teal-600 tracking-tight leading-tight mb-4 font-semibold">
           Concentrated bets. Patient compounding.
         </h1>
         <p className="text-ink-500 text-lg leading-relaxed">

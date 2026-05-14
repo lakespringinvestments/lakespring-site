@@ -33,7 +33,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
           href="/articles"
           className="text-xs uppercase tracking-wide text-ink-400 hover:text-teal-600 mb-6 inline-block"
         >
-          ← Articles
+          ← Insights
         </Link>
         <p className="text-xs uppercase tracking-wide text-ink-400 mb-3">
           {article.date &&
@@ -43,7 +43,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
               day: "numeric",
             })}
         </p>
-        <h1 className="font-serif text-4xl md:text-5xl text-teal-600 tracking-tight leading-tight">
+        <h1 className="text-4xl md:text-5xl text-teal-600 tracking-tight leading-tight font-semibold">
           {article.title}
         </h1>
       </header>
@@ -55,7 +55,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
       </div>
 
       <div className="mt-16 pt-10 border-t border-cream-200">
-        <p className="font-serif text-2xl text-teal-600 mb-4 tracking-tight">
+        <p className="text-2xl text-teal-600 mb-4 tracking-tight font-semibold">
           Enjoyed this?
         </p>
         <p className="text-ink-500 mb-6 text-sm">

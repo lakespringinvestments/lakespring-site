@@ -66,7 +66,7 @@ const sections = [
           </p>
         </div>
         <div className="border-l-2 border-sage-300 pl-5 py-2">
-          <p className="text-white font-medium mb-1">Articles around the framework</p>
+          <p className="text-white font-medium mb-1">Insights around the framework</p>
           <p className="text-sage-200 text-base">
             Deep dives on the First Principles holdings, plus Canadian personal
             finance and wealth-preservation work.
@@ -81,12 +81,11 @@ export default function AboutPage() {
   return (
     <div className="bg-teal-800 -mt-px">
       <div className="max-w-4xl mx-auto px-6 py-20 md:py-28">
-        {/* Hero */}
         <header className="mb-16 md:mb-24">
           <p className="text-xs uppercase tracking-[0.25em] text-sage-300 mb-5">
             About
           </p>
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1.1] mb-10 max-w-3xl">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1.1] mb-10 max-w-3xl font-semibold">
             Built on conviction in the transformations rewriting the global economy.
           </h1>
           <p className="text-cream-100 text-lg leading-relaxed max-w-2xl">
@@ -100,7 +99,6 @@ export default function AboutPage() {
           </p>
         </header>
 
-        {/* Sections */}
         <div className="space-y-16 md:space-y-20">
           {sections.map((section) => (
             <section
@@ -117,13 +115,6 @@ export default function AboutPage() {
             </section>
           ))}
         </div>
-
-        {/* Disclaimer */}
-        <p className="mt-24 pt-10 border-t border-teal-600 text-xs text-sage-300 leading-relaxed max-w-3xl">
-          Lakespring Investments is an independent investment research
-          platform. Content reflects personal views on managing my family&apos;s
-          portfolio. Not financial advice. Do your own research.
-        </p>
       </div>
     </div>
   );

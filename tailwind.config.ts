@@ -5,14 +5,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Lakespring brand palette
         teal: {
           50: "#E8F1F2",
           100: "#C5DCDE",
           200: "#9FC4C8",
           400: "#347278",
           500: "#1B5A60",
-          600: "#034147", // primary brand
+          600: "#034147",
           700: "#023438",
           800: "#01262A",
           900: "#01191C",
@@ -38,8 +37,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        serif: ["var(--font-fraunces)", "Georgia", "serif"],
+        // Poppins everywhere — including former "serif" slots
         sans: ["var(--font-poppins)", "system-ui", "sans-serif"],
+        serif: ["var(--font-poppins)", "system-ui", "sans-serif"],
         mono: ["ui-monospace", "SFMono-Regular", "monospace"],
       },
     },
