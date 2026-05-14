@@ -1,0 +1,11 @@
+{
+  "name": "Lakespring Investments",
+  "short_name": "Lakespring",
+  "icons": [
+    { "src": "/logo-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/logo-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#034147",
+  "background_color": "#FAF8F3",
+  "display": "standalone"
+}
