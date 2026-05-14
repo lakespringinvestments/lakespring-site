@@ -1,48 +1,128 @@
 export const metadata = {
   title: "About — Lakespring Investments",
+  description:
+    "Lakespring Investments is an independent investment research platform built on a first principles approach to portfolio construction.",
 };
+
+const sections = [
+  {
+    number: "01",
+    label: "Why this exists",
+    body: (
+      <>
+        <p>
+          My family came to Canada with nothing. They worked hard for decades
+          and still stayed on the wrong side of the wealth divide — not
+          because they lacked intelligence or discipline, but because no one
+          ever taught them how modern wealth is actually built.
+        </p>
+        <p className="italic text-sage-200 my-6">
+          They knew how to save. They didn&apos;t know how to own.
+        </p>
+        <p>
+          The economy has split into two tracks — the K-shaped economy — and
+          the gap between them is no longer about effort. It&apos;s about asset
+          ownership. I&apos;m building Lakespring Investments as the public record
+          of how I&apos;m getting my family on the right side of that divide.
+        </p>
+      </>
+    ),
+  },
+  {
+    number: "02",
+    label: "The First Principles Portfolio",
+    body: (
+      <>
+        <p>
+          A concentrated set of positions built around businesses and assets
+          that aren&apos;t competing within an industry, but redefining what the
+          industry is. The thesis pages walk through each conviction in
+          detail; the dashboard shows how those convictions are performing in
+          real numbers.
+        </p>
+        <p className="italic text-sage-200 mt-6">
+          Concentration is the point, not the risk. On top of the core
+          holdings, I run a disciplined options income overlay — the thesis
+          compounds in the background, the premium pays me to wait.
+        </p>
+      </>
+    ),
+  },
+  {
+    number: "03",
+    label: "What you'll find here",
+    body: (
+      <div className="space-y-4">
+        <div className="border-l-2 border-sage-300 pl-5 py-2">
+          <p className="text-white font-medium mb-1">A live view of the portfolio</p>
+          <p className="text-sage-200 text-base">
+            Current holdings, sizing, and how the allocation is shifting over time.
+          </p>
+        </div>
+        <div className="border-l-2 border-sage-300 pl-5 py-2">
+          <p className="text-white font-medium mb-1">Outlook and opinion on each holding</p>
+          <p className="text-sage-200 text-base">
+            Written for someone who wants the structural argument, not the price target.
+          </p>
+        </div>
+        <div className="border-l-2 border-sage-300 pl-5 py-2">
+          <p className="text-white font-medium mb-1">Articles around the framework</p>
+          <p className="text-sage-200 text-base">
+            Deep dives on the First Principles holdings, plus Canadian personal
+            finance and wealth-preservation work.
+          </p>
+        </div>
+      </div>
+    ),
+  },
+];
 
 export default function AboutPage() {
   return (
-    <div className="max-w-2xl mx-auto px-6 py-16">
-      <p className="text-xs uppercase tracking-[0.2em] text-sage-500 mb-3">
-        About
-      </p>
-      <h1 className="font-serif text-4xl md:text-5xl text-teal-600 tracking-tight mb-10">
-        First-principles investing, one position at a time.
-      </h1>
+    <div className="bg-teal-800 -mt-px">
+      <div className="max-w-4xl mx-auto px-6 py-20 md:py-28">
+        {/* Hero */}
+        <header className="mb-16 md:mb-24">
+          <p className="text-xs uppercase tracking-[0.25em] text-sage-300 mb-5">
+            About
+          </p>
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1.1] mb-10 max-w-3xl">
+            Built on conviction in the transformations rewriting the global economy.
+          </h1>
+          <p className="text-cream-100 text-lg leading-relaxed max-w-2xl">
+            Lakespring Investments is an independent investment research
+            platform built on a first principles approach to portfolio
+            construction. We hold concentrated positions in the transformative
+            technologies reshaping the global economy — artificial intelligence,
+            energy, and digital assets — and systematically write options
+            premium against those holdings. The portfolio reflects how I
+            actively manage my own family&apos;s capital, published in the open.
+          </p>
+        </header>
 
-      <div className="prose-lakespring">
-        <p>
-          Lakespring is a personal investment journal. It exists because I
-          wanted a single place to think clearly about a small number of
-          conviction bets — to see them, write about them, and watch the thesis
-          play out in public.
-        </p>
+        {/* Sections */}
+        <div className="space-y-16 md:space-y-20">
+          {sections.map((section) => (
+            <section
+              key={section.number}
+              className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 md:gap-12 pt-12 border-t border-teal-600"
+            >
+              <div>
+                <p className="text-xs text-sage-300 mb-2">{section.number}</p>
+                <p className="text-sm text-cream-100">{section.label}</p>
+              </div>
+              <div className="text-cream-100 text-base md:text-lg leading-relaxed">
+                {section.body}
+              </div>
+            </section>
+          ))}
+        </div>
 
-        <p>
-          The approach is simple. Concentrate in companies and assets that are
-          building something genuinely transformative — AI, energy, digital
-          assets. Hold them long enough for the thesis to mature. Collect
-          premium along the way to compound patience.
-        </p>
-
-        <p>
-          This site is not financial advice. It&apos;s a record of how one investor
-          is putting capital to work, and the reasoning behind each decision.
-          If you find it useful, sign up for the journal below.
-        </p>
-
-        <h2>What you&apos;ll find here</h2>
-        <ul>
-          <li>A live dashboard of the portfolio</li>
-          <li>Articles on positioning, thesis, and reasoning</li>
-          <li>An honest record of mistakes and lessons</li>
-        </ul>
-
-        <p className="italic text-ink-500 mt-12">
-          &ldquo;We&apos;re not diversifying for the sake of it. We&apos;re betting on the
-          future.&rdquo;
+        {/* Disclaimer */}
+        <p className="mt-24 pt-10 border-t border-teal-600 text-xs text-sage-300 leading-relaxed max-w-3xl">
+          Lakespring Investments is an independent investment research
+          platform. Content reflects personal views on managing my family&apos;s
+          portfolio. Not financial advice. Do your own research.
         </p>
       </div>
     </div>

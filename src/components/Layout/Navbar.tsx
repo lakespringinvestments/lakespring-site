@@ -16,24 +16,27 @@ export default function Navbar() {
             />
           </svg>
           <span className="font-serif text-xl tracking-tight text-teal-600 group-hover:text-sage-700 transition-colors">
-            Lakespring
+            Lakespring Investments
           </span>
         </Link>
-        <nav className="flex items-center gap-8 text-sm">
+        <nav className="flex items-center gap-7 text-sm">
           <Link href="/" className="text-ink-700 hover:text-teal-600 transition-colors">
-            Portfolio
+            Portfolio Dashboard
           </Link>
           <Link href="/articles" className="text-ink-700 hover:text-teal-600 transition-colors">
-            Articles
+            Articles &amp; Reports
           </Link>
-          <Link href="/about" className="text-ink-700 hover:text-teal-600 transition-colors">
-            About
+          <Link href="/thesis" className="text-ink-700 hover:text-teal-600 transition-colors">
+            Thesis
           </Link>
           <Link
             href="/trades"
             className="text-ink-700 hover:text-teal-600 transition-colors"
           >
-            Trades
+            Trade Records
+          </Link>
+          <Link href="/about" className="text-ink-700 hover:text-teal-600 transition-colors">
+            About
           </Link>
         </nav>
       </div>
