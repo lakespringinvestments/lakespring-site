@@ -53,12 +53,35 @@ const moats: Moat[] = [
 ];
 
 function PremiumWheel() {
+  // Wheel geometry — calculated to position labels relative to the actual circle edge
   const cx = 300;
   const cy = 240;
   const r = 130;
   const strokeWidth = 36;
   const circumference = 2 * Math.PI * r;
   const segmentLength = circumference / 4;
+
+  // Wheel's outer edge (where the stroke ends): r + strokeWidth/2
+  const outerR = r + strokeWidth / 2; // = 148
+  // Left edge of wheel: cx - outerR = 152
+  // Right edge of wheel: cx + outerR = 448
+  // Buffer between text and circle edge:
+  const buffer = 18;
+
+  // ACQUIRE SHARES — sits to the LEFT of the wheel
+  // Text is right-aligned, so its right edge sits at: cx - outerR - buffer = 134
+  // User said: closer to the wheel (move more to the right)
+  // Move from previous x=100 → x=134 (34px closer)
+  const acquireX = cx - outerR - buffer; // 134
+
+  // CALLED AWAY — sits to the RIGHT of the wheel
+  // Text is right-aligned at its anchor, but the actual text extends LEFT from the anchor.
+  // We need the LEFT edge of the text to clear the wheel's right edge.
+  // "Called Away" at 15px font is roughly 100px wide.
+  // To clear the wheel: anchor x = cx + outerR + buffer + textWidth = 448 + 18 + 100 = 566
+  // User said: touching the circle, move more to the right
+  // Previous attempt at x=500 was too close. Push to x=566.
+  const calledAwayX = cx + outerR + buffer + 100; // 566
 
   return (
     <svg
@@ -67,6 +90,7 @@ function PremiumWheel() {
       role="img"
       aria-label="Premium Collection Wheel showing four states: Sell Put, Called Away, Sell Call, Acquire Shares"
     >
+      {/* Segments */}
       <circle
         cx={cx} cy={cy} r={r}
         fill="none" stroke="#EF9F27" strokeWidth={strokeWidth}
@@ -96,6 +120,7 @@ function PremiumWheel() {
         transform={`rotate(-90 ${cx} ${cy})`}
       />
 
+      {/* Center disc */}
       <circle cx={cx} cy={cy} r={r - strokeWidth / 2 - 6} fill="#FAF8F3" stroke="#E8E1CF" strokeWidth="1"/>
 
       <text x={cx} y={cy - 24} textAnchor="middle" fontSize="11" fill="#EF9F27" letterSpacing="2" fontWeight="600">
@@ -112,7 +137,7 @@ function PremiumWheel() {
         the cycle takes
       </text>
 
-      {/* Top */}
+      {/* Top — Sell Put — middle-aligned above wheel */}
       <text x={cx} y={50} textAnchor="middle" fontSize="10" fill="#EF9F27" letterSpacing="2" fontWeight="600">
         PRIMARY
       </text>
@@ -120,17 +145,15 @@ function PremiumWheel() {
         Sell Put
       </text>
 
-      {/* Right — Called Away — moved leftward, closer to wheel.
-          Wheel right edge is at x = 300 + 130 + 18 = 448
-          Place text right-aligned at x=500 — that's 52px clearance, closer than before */}
-      <text x={500} y={234} textAnchor="end" fontSize="10" fill="#C97F1F" letterSpacing="2" fontWeight="600">
+      {/* Right — Called Away — right-aligned, well clear of wheel right edge */}
+      <text x={calledAwayX} y={234} textAnchor="end" fontSize="10" fill="#C97F1F" letterSpacing="2" fontWeight="600">
         EXIT
       </text>
-      <text x={500} y={256} textAnchor="end" fontSize="15" fill="#034147" fontWeight="600">
+      <text x={calledAwayX} y={256} textAnchor="end" fontSize="15" fill="#034147" fontWeight="600">
         Called Away
       </text>
 
-      {/* Bottom */}
+      {/* Bottom — Sell Call — middle-aligned below wheel */}
       <text x={cx} y={cy + r + strokeWidth + 18} textAnchor="middle" fontSize="10" fill="#1D9E75" letterSpacing="2" fontWeight="600">
         ASSIGNED
       </text>
@@ -138,11 +161,11 @@ function PremiumWheel() {
         Sell Call
       </text>
 
-      {/* Left — Acquire Shares — kept at far-left clearance */}
-      <text x={100} y={234} textAnchor="end" fontSize="10" fill="#1D9E75" letterSpacing="2" fontWeight="600">
+      {/* Left — Acquire Shares — right-aligned, close to wheel left edge */}
+      <text x={acquireX} y={234} textAnchor="end" fontSize="10" fill="#1D9E75" letterSpacing="2" fontWeight="600">
         ASSIGNED
       </text>
-      <text x={100} y={256} textAnchor="end" fontSize="15" fill="#034147" fontWeight="600">
+      <text x={acquireX} y={256} textAnchor="end" fontSize="15" fill="#034147" fontWeight="600">
         Acquire Shares
       </text>
     </svg>
@@ -407,14 +430,16 @@ export default function ThesisPage() {
         </div>
       </section>
 
-      {/* Section 03 — rewritten ending */}
+      {/* Section 03 */}
       <section className="bg-cream-50 border-t border-cream-200">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
           <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
             03 — Income while you wait
           </p>
           <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
-            The thesis compounds in the foreground. The premium lands in the background.
+            The thesis compounds in the foreground.
+            <br />
+            The premium lands in the background.
           </h2>
 
           <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
@@ -460,14 +485,16 @@ export default function ThesisPage() {
             </p>
           </div>
 
-          <blockquote className="mt-12 pl-6 border-l-4 border-sage-500 text-2xl md:text-3xl text-teal-600 leading-snug font-medium">
-            The goal is to be paid to wait for the thesis to be obvious to
-            everyone else.
+          {/* Closing pull quote with Lakespring playbook merged in */}
+          <blockquote className="mt-12 pl-6 border-l-4 border-sage-500">
+            <p className="text-2xl md:text-3xl text-teal-600 leading-snug font-medium">
+              The goal is to be paid to wait for the thesis to be obvious to
+              everyone else.
+            </p>
+            <p className="mt-4 text-base text-ink-500 italic">
+              This is the Lakespring playbook.
+            </p>
           </blockquote>
-
-          <p className="mt-8 text-base text-ink-500 italic">
-            This is the Lakespring playbook.
-          </p>
         </div>
       </section>
     </>
