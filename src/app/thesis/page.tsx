@@ -110,9 +110,9 @@ function PremiumWheel() {
 export default function ThesisPage() {
   return (
     <>
-      {/* Hero — Option B: solid teal-100 at top, soft fade to cream-50 below the rule */}
-      <section className="bg-gradient-to-b from-teal-100 from-55% to-cream-50 to-100%">
-        <div className="max-w-6xl mx-auto px-6 pt-16 md:pt-24 pb-28 md:pb-36">
+      {/* Hero — bg-hero-fade utility from globals.css: teal-100 holds top 50%, blends through #DDE6E0, lands on cream-50 */}
+      <section className="bg-hero-fade">
+        <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
           <span className="inline-block bg-teal-600 text-white text-[11px] tracking-[0.2em] uppercase font-semibold px-4 py-1.5 rounded-full mb-6">
             Thesis &amp; Strategy
           </span>
@@ -132,7 +132,7 @@ export default function ThesisPage() {
       {/* Section 01 */}
       <section className="bg-cream-50">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
-          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
+          <p className="text-sm uppercase tracking-[0.25em] text-ink-500 mb-3">
             01 — The first principles approach
           </p>
           <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
@@ -249,7 +249,7 @@ export default function ThesisPage() {
       {/* Section 02 */}
       <section className="bg-cream-100 border-t border-cream-200">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
-          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
+          <p className="text-sm uppercase tracking-[0.25em] text-ink-500 mb-3">
             02 — The wheel, and what it runs on
           </p>
           <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
@@ -369,7 +369,7 @@ export default function ThesisPage() {
       {/* Section 03 */}
       <section className="bg-cream-50 border-t border-cream-200">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
-          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
+          <p className="text-sm uppercase tracking-[0.25em] text-ink-500 mb-3">
             03 — Income while you wait
           </p>
           <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">

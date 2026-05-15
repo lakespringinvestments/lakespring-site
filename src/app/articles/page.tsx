@@ -11,9 +11,9 @@ export default function ArticlesPage() {
 
   return (
     <>
-      {/* Hero — Option B: solid teal-100 at top, soft fade to cream-50 below the rule */}
-      <section className="bg-gradient-to-b from-teal-100 from-55% to-cream-50 to-100%">
-        <div className="max-w-6xl mx-auto px-6 pt-16 md:pt-24 pb-28 md:pb-36">
+      {/* Hero — bg-hero-fade utility from globals.css: teal-100 holds top 50%, blends through #DDE6E0, lands on cream-50 */}
+      <section className="bg-hero-fade">
+        <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
           <span className="inline-block bg-teal-600 text-white text-[11px] tracking-[0.2em] uppercase font-semibold px-4 py-1.5 rounded-full mb-6">
             The Journal
           </span>

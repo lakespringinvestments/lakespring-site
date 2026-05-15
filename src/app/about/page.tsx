@@ -80,9 +80,9 @@ const sections = [
 export default function AboutPage() {
   return (
     <>
-      {/* Hero — Option B: solid teal-100 at top, soft fade to cream-50 below the rule */}
-      <section className="bg-gradient-to-b from-teal-100 from-55% to-cream-50 to-100%">
-        <div className="max-w-6xl mx-auto px-6 pt-16 md:pt-24 pb-28 md:pb-36">
+      {/* Hero — bg-hero-fade utility from globals.css: teal-100 holds top 50%, blends through #DDE6E0, lands on cream-50 */}
+      <section className="bg-hero-fade">
+        <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
           <span className="inline-block bg-teal-600 text-white text-[11px] tracking-[0.2em] uppercase font-semibold px-4 py-1.5 rounded-full mb-6">
             About
           </span>
@@ -112,7 +112,7 @@ export default function AboutPage() {
                 className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 md:gap-12 pt-12 border-t border-cream-200 first:border-t-0 first:pt-0"
               >
                 <div>
-                  <p className="text-xs text-sage-500 mb-2 tracking-[0.2em] uppercase">{section.number}</p>
+                  <p className="text-sm text-ink-500 mb-2 tracking-[0.2em] uppercase">{section.number}</p>
                   <p className="text-sm text-teal-600 font-medium">{section.label}</p>
                 </div>
                 <div className="text-ink-700 text-base md:text-lg leading-relaxed">

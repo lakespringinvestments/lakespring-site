@@ -41,9 +41,9 @@ const totalPnl = trades.reduce((sum, t) => sum + t.pnl, 0);
 export default function TradesPage() {
   return (
     <>
-      {/* Hero — Option B: solid teal-100 at top, soft fade to cream-50 below the rule */}
-      <section className="bg-gradient-to-b from-teal-100 from-55% to-cream-50 to-100%">
-        <div className="max-w-6xl mx-auto px-6 pt-16 md:pt-24 pb-28 md:pb-36">
+      {/* Hero — bg-hero-fade utility from globals.css: teal-100 holds top 50%, blends through #DDE6E0, lands on cream-50 */}
+      <section className="bg-hero-fade">
+        <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
           <span className="inline-block bg-teal-600 text-white text-[11px] tracking-[0.2em] uppercase font-semibold px-4 py-1.5 rounded-full mb-6">
             The Ledger
           </span>
@@ -64,7 +64,7 @@ export default function TradesPage() {
       </section>
 
       {/* White ledger on cream body */}
-      <section className="bg-cream-50 pb-20 md:pb-24">
+      <section className="bg-cream-50 pb-20 md:pb-24 pt-16 md:pt-20">
         <div className="max-w-6xl mx-auto px-6">
           {/* Summary metric cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
@@ -158,7 +158,7 @@ export default function TradesPage() {
           {/* Members tier teaser */}
           <div className="mt-16 pt-12 border-t border-cream-200">
             <div className="max-w-2xl">
-              <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
+              <p className="text-sm uppercase tracking-[0.25em] text-ink-500 mb-3">
                 Coming soon — Members tier
               </p>
               <h2 className="text-2xl md:text-3xl text-teal-600 tracking-tight mb-4 font-semibold">
