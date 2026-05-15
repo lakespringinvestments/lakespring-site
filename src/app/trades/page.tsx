@@ -41,12 +41,12 @@ const totalPnl = trades.reduce((sum, t) => sum + t.pnl, 0);
 export default function TradesPage() {
   return (
     <>
-      {/* Cream hero — matches the rest of the site */}
-      <section className="bg-cream-50">
-        <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-5">
+      {/* Hero — sage gradient + pill + rule */}
+      <section className="bg-gradient-to-b from-sage-100 to-cream-50">
+        <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
+          <span className="inline-block bg-sage-500 text-white text-[11px] tracking-[0.2em] uppercase font-semibold px-4 py-1.5 rounded-full mb-6">
             The Ledger
-          </p>
+          </span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl text-teal-600 tracking-tight leading-[1.05] mb-6 font-semibold max-w-4xl">
             Every trade, on the record.
           </h1>
@@ -55,10 +55,11 @@ export default function TradesPage() {
             portfolio. All entries are personal trades I&apos;ve placed against
             my family&apos;s holdings.
           </p>
-          <p className="text-sage-700 text-sm">
+          <p className="text-sage-700 text-sm mb-8">
             Publicly delayed by 30 days. Open positions and live reasoning
             will be available in a future members-only tier.
           </p>
+          <div className="h-0.5 w-16 bg-sage-500" />
         </div>
       </section>
 

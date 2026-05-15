@@ -110,26 +110,27 @@ function PremiumWheel() {
 export default function ThesisPage() {
   return (
     <>
-      {/* Cream hero — matches dashboard styling */}
-      <section className="bg-cream-50">
-        <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-5">
+      {/* Hero — sage gradient + pill eyebrow + sage rule */}
+      <section className="bg-gradient-to-b from-sage-100 to-cream-50">
+        <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
+          <span className="inline-block bg-sage-500 text-white text-[11px] tracking-[0.2em] uppercase font-semibold px-4 py-1.5 rounded-full mb-6">
             Thesis &amp; Strategy
-          </p>
+          </span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl text-teal-600 tracking-tight leading-[1.05] mb-6 font-semibold max-w-4xl">
             Concentrated conviction. <span className="text-sage-500">Continuous income.</span>
           </h1>
-          <p className="text-ink-500 text-lg leading-relaxed max-w-3xl">
+          <p className="text-ink-500 text-lg leading-relaxed max-w-3xl mb-8">
             Lakespring Investments holds a small basket of high-conviction
             positions in the businesses defining the next decade — and runs
             a disciplined options income overlay on top to generate cash
             flow while those theses compound.
           </p>
+          <div className="h-0.5 w-16 bg-sage-500" />
         </div>
       </section>
 
       {/* Section 01 */}
-      <section className="bg-cream-50 border-t border-cream-200">
+      <section className="bg-cream-50">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
           <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
             01 — The first principles approach
