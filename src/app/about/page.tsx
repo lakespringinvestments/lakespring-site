@@ -80,16 +80,16 @@ const sections = [
 export default function AboutPage() {
   return (
     <>
-      {/* Hero — sage gradient + pill + rule */}
-      <section className="bg-gradient-to-b from-sage-100 to-cream-50">
+      {/* Hero — D2: teal-100 bg + dark teal pill + dark teal rule */}
+      <section className="bg-teal-100">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
-          <span className="inline-block bg-sage-500 text-white text-[11px] tracking-[0.2em] uppercase font-semibold px-4 py-1.5 rounded-full mb-6">
+          <span className="inline-block bg-teal-600 text-white text-[11px] tracking-[0.2em] uppercase font-semibold px-4 py-1.5 rounded-full mb-6">
             About
           </span>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl text-teal-600 tracking-tight leading-[1.1] mb-6 font-semibold max-w-4xl">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl text-teal-800 tracking-tight leading-[1.1] mb-6 font-semibold max-w-4xl">
             Built on conviction in the transformations rewriting the global economy.
           </h1>
-          <p className="text-ink-500 text-lg leading-relaxed max-w-3xl mb-8">
+          <p className="text-teal-700 text-lg leading-relaxed max-w-3xl mb-8">
             Lakespring Investments is an independent investment research
             platform built on a first principles approach to portfolio
             construction. We hold concentrated positions in the transformative
@@ -98,7 +98,7 @@ export default function AboutPage() {
             premium against those holdings. The portfolio reflects how I
             actively manage my own family&apos;s capital, published in the open.
           </p>
-          <div className="h-0.5 w-16 bg-sage-500" />
+          <div className="h-0.5 w-16 bg-teal-600" />
         </div>
       </section>
 

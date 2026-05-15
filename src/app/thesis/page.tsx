@@ -110,22 +110,22 @@ function PremiumWheel() {
 export default function ThesisPage() {
   return (
     <>
-      {/* Hero — sage gradient + pill eyebrow + sage rule */}
-      <section className="bg-gradient-to-b from-sage-100 to-cream-50">
+      {/* Hero — D2: teal-100 bg + dark teal pill + dark teal rule */}
+      <section className="bg-teal-100">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
-          <span className="inline-block bg-sage-500 text-white text-[11px] tracking-[0.2em] uppercase font-semibold px-4 py-1.5 rounded-full mb-6">
+          <span className="inline-block bg-teal-600 text-white text-[11px] tracking-[0.2em] uppercase font-semibold px-4 py-1.5 rounded-full mb-6">
             Thesis &amp; Strategy
           </span>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl text-teal-600 tracking-tight leading-[1.05] mb-6 font-semibold max-w-4xl">
-            Concentrated conviction. <span className="text-sage-500">Continuous income.</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl text-teal-800 tracking-tight leading-[1.05] mb-6 font-semibold max-w-4xl">
+            Concentrated conviction. <span className="text-teal-600">Continuous income.</span>
           </h1>
-          <p className="text-ink-500 text-lg leading-relaxed max-w-3xl mb-8">
+          <p className="text-teal-700 text-lg leading-relaxed max-w-3xl mb-8">
             Lakespring Investments holds a small basket of high-conviction
             positions in the businesses defining the next decade — and runs
             a disciplined options income overlay on top to generate cash
             flow while those theses compound.
           </p>
-          <div className="h-0.5 w-16 bg-sage-500" />
+          <div className="h-0.5 w-16 bg-teal-600" />
         </div>
       </section>
 
