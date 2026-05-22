@@ -71,14 +71,3 @@ body {
   font-size: 0.9em;
 }
 
-/* Hero gradient — solid teal-100 at top, blends through #DDE6E0, dissolves into cream-50.
-   Applied to About, Thesis, Insights, Trade Ledger heroes via `bg-hero-fade`. */
-.bg-hero-fade {
-  background-image: linear-gradient(
-    to bottom,
-    #C5DCDE 0%,
-    #C5DCDE 50%,
-    #DDE6E0 80%,
-    #FAF8F3 100%
-  );
-}

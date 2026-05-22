@@ -41,136 +41,122 @@ const totalPnl = trades.reduce((sum, t) => sum + t.pnl, 0);
 export default function TradesPage() {
   return (
     <>
-      {/* Hero — bg-hero-fade utility from globals.css: teal-100 holds top 50%, blends through #DDE6E0, lands on cream-50 */}
-      <section className="bg-hero-fade">
-        <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
-          <span className="inline-block bg-teal-600 text-white text-[11px] tracking-[0.2em] uppercase font-semibold px-4 py-1.5 rounded-full mb-6">
+      {/* Cream hero — matches the rest of the site */}
+      <section className="bg-transparent">
+        <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
+          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-5">
             The Ledger
-          </span>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl text-teal-800 tracking-tight leading-[1.05] mb-6 font-semibold max-w-4xl">
+          </p>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl text-teal-600 tracking-tight leading-[1.05] mb-6 font-semibold max-w-4xl">
             Every trade, on the record.
           </h1>
-          <p className="text-teal-700 text-lg leading-relaxed max-w-3xl mb-3">
+          <p className="text-ink-500 text-lg leading-relaxed max-w-3xl mb-3">
             A complete log of closed options positions across the Lakespring
             portfolio. All entries are personal trades I&apos;ve placed against
             my family&apos;s holdings.
           </p>
-          <p className="text-teal-700 text-sm mb-8 opacity-80">
+          <p className="text-sage-700 text-sm">
             Publicly delayed by 30 days. Open positions and live reasoning
             will be available in a future members-only tier.
           </p>
-          <div className="h-0.5 w-16 bg-teal-600" />
         </div>
       </section>
 
-      {/* White ledger on cream body */}
-      <section className="bg-cream-50 pb-20 md:pb-24 pt-16 md:pt-20">
+      {/* Dark ledger table */}
+      <section className="bg-[#0A0A0A] pb-20 md:pb-24 pt-16 md:pt-20">
         <div className="max-w-6xl mx-auto px-6">
-          {/* Summary metric cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-            <div className="bg-white rounded-2xl p-5 border border-cream-200 shadow-sm">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-ink-400 mb-1.5">Total closed</p>
-              <p className="text-2xl text-teal-600 font-semibold tabular-nums">{trades.length}</p>
+          {/* Summary strip */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 pb-8 border-b border-white/15">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-1">Total closed</p>
+              <p className="text-2xl text-white font-semibold">{trades.length}</p>
             </div>
-            <div className="bg-white rounded-2xl p-5 border border-cream-200 shadow-sm">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-ink-400 mb-1.5">Premium collected</p>
-              <p className="text-2xl text-teal-600 font-semibold tabular-nums">{formatCurrency(totalPremium)}</p>
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-1">Premium collected</p>
+              <p className="text-2xl text-white font-semibold">{formatCurrency(totalPremium)}</p>
             </div>
-            <div className="bg-white rounded-2xl p-5 border border-cream-200 shadow-sm">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-ink-400 mb-1.5">Realized P&amp;L</p>
-              <p className={`text-2xl font-semibold tabular-nums ${totalPnl >= 0 ? "text-sage-500" : "text-red-600"}`}>
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-1">Realized P&amp;L</p>
+              <p className={`text-2xl font-semibold ${totalPnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
                 {totalPnl >= 0 ? "+" : ""}{formatCurrency(totalPnl)}
               </p>
             </div>
-            <div className="bg-white rounded-2xl p-5 border border-cream-200 shadow-sm">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-ink-400 mb-1.5">Win rate</p>
-              <p className="text-2xl text-teal-600 font-semibold tabular-nums">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-1">Win rate</p>
+              <p className="text-2xl text-white font-semibold">
                 {Math.round((trades.filter(t => t.pnl > 0).length / trades.length) * 100)}%
               </p>
             </div>
           </div>
 
-          {/* White ledger table */}
-          <div className="bg-white rounded-2xl border border-cream-200 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[820px]">
-                <thead className="bg-cream-100/60">
-                  <tr className="text-[10px] uppercase tracking-[0.18em] text-ink-500">
-                    <th className="py-4 px-5 font-semibold text-left">Ticker</th>
-                    <th className="py-4 px-5 font-semibold text-left">Type</th>
-                    <th className="py-4 px-5 font-semibold text-right">Strike</th>
-                    <th className="py-4 px-5 font-semibold text-left">Opened</th>
-                    <th className="py-4 px-5 font-semibold text-left">Expiration</th>
-                    <th className="py-4 px-5 font-semibold text-right">Premium</th>
-                    <th className="py-4 px-5 font-semibold text-right">P&amp;L</th>
-                    <th className="py-4 px-5 font-semibold text-left">Status</th>
+          {/* Ledger table */}
+          <div className="overflow-x-auto -mx-6 px-6">
+            <table className="w-full min-w-[760px]">
+              <thead>
+                <tr className="text-[10px] uppercase tracking-[0.2em] text-sage-300 text-left">
+                  <th className="pb-4 pr-4 font-medium">Ticker</th>
+                  <th className="pb-4 pr-4 font-medium">Type</th>
+                  <th className="pb-4 pr-4 font-medium text-right">Strike</th>
+                  <th className="pb-4 pr-4 font-medium">Opened</th>
+                  <th className="pb-4 pr-4 font-medium">Expiration</th>
+                  <th className="pb-4 pr-4 font-medium text-right">Premium</th>
+                  <th className="pb-4 pr-4 font-medium text-right">P&amp;L</th>
+                  <th className="pb-4 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody className="font-sans text-sm">
+                {trades.map((t, i) => (
+                  <tr key={i} className="border-t border-white/10 hover:bg-white/[0.03] transition-colors">
+                    <td className="py-4 pr-4 text-white font-semibold tracking-wide">{t.ticker}</td>
+                    <td className="py-4 pr-4 text-cream-100">{t.type}</td>
+                    <td className="py-4 pr-4 text-cream-100 text-right tabular-nums">
+                      {t.strike ? formatCurrency(t.strike) : "—"}
+                    </td>
+                    <td className="py-4 pr-4 text-cream-100/80 tabular-nums whitespace-nowrap">
+                      {formatDate(t.dateOpened)}
+                    </td>
+                    <td className="py-4 pr-4 text-cream-100/80 tabular-nums whitespace-nowrap">
+                      {formatDate(t.expiration)}
+                    </td>
+                    <td className="py-4 pr-4 text-white text-right tabular-nums font-medium">
+                      {formatCurrency(t.premium)}
+                    </td>
+                    <td className={`py-4 pr-4 text-right tabular-nums font-medium ${t.pnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
+                      {t.pnl >= 0 ? "+" : ""}{formatCurrency(t.pnl)}
+                    </td>
+                    <td className="py-4">
+                      <span className={`text-xs px-2.5 py-1 rounded-full ${
+                        t.status === "Expired"
+                          ? "bg-sage-500/20 text-sage-300"
+                          : t.status === "Assigned"
+                          ? "bg-amber-500/15 text-amber-300"
+                          : "bg-cream-100/10 text-cream-100"
+                      }`}>
+                        {t.status}
+                      </span>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="text-sm">
-                  {trades.map((t, i) => (
-                    <tr
-                      key={i}
-                      className="border-t border-cream-200 hover:bg-cream-50 transition-colors"
-                    >
-                      <td className="py-4 px-5 text-teal-600 font-semibold tracking-wide text-left">
-                        {t.ticker}
-                      </td>
-                      <td className="py-4 px-5 text-ink-700 text-left">{t.type}</td>
-                      <td className="py-4 px-5 text-ink-700 text-right tabular-nums">
-                        {t.strike ? formatCurrency(t.strike) : "—"}
-                      </td>
-                      <td className="py-4 px-5 text-ink-500 tabular-nums whitespace-nowrap text-left">
-                        {formatDate(t.dateOpened)}
-                      </td>
-                      <td className="py-4 px-5 text-ink-500 tabular-nums whitespace-nowrap text-left">
-                        {formatDate(t.expiration)}
-                      </td>
-                      <td className="py-4 px-5 text-teal-600 text-right tabular-nums font-medium">
-                        {formatCurrency(t.premium)}
-                      </td>
-                      <td
-                        className={`py-4 px-5 text-right tabular-nums font-medium ${
-                          t.pnl >= 0 ? "text-sage-500" : "text-red-600"
-                        }`}
-                      >
-                        {t.pnl >= 0 ? "+" : ""}{formatCurrency(t.pnl)}
-                      </td>
-                      <td className="py-4 px-5 text-left">
-                        <span
-                          className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-                            t.status === "Expired"
-                              ? "bg-sage-100 text-sage-700"
-                              : t.status === "Assigned"
-                              ? "bg-amber-100 text-amber-700"
-                              : "bg-cream-200 text-ink-700"
-                          }`}
-                        >
-                          {t.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
 
           {/* Members tier teaser */}
-          <div className="mt-16 pt-12 border-t border-cream-200">
+          <div className="mt-16 pt-12 border-t border-white/15">
             <div className="max-w-2xl">
-              <p className="text-sm uppercase tracking-[0.25em] text-ink-500 mb-3">
+              <p className="text-xs uppercase tracking-[0.25em] text-sage-300 mb-3">
                 Coming soon — Members tier
               </p>
-              <h2 className="text-2xl md:text-3xl text-teal-600 tracking-tight mb-4 font-semibold">
+              <h2 className="text-2xl md:text-3xl text-white tracking-tight mb-4 font-semibold">
                 See the live ledger.
               </h2>
-              <p className="text-ink-700 leading-relaxed mb-8">
+              <p className="text-cream-100 leading-relaxed mb-8">
                 Members will see open positions in real time, the reasoning
                 behind every fill, and detailed write-ups of how each trade
                 fits the underlying thesis.
               </p>
-              <div className="bg-white rounded-2xl p-6 border border-cream-200 max-w-md shadow-sm">
-                <p className="text-sm text-ink-700 mb-4">
+              <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/10 max-w-md">
+                <p className="text-sm text-cream-100 mb-4">
                   Join the journal — be first to know when members tier opens.
                 </p>
                 <EmailSignup />

@@ -11,27 +11,26 @@ export default function ArticlesPage() {
 
   return (
     <>
-      {/* Hero — bg-hero-fade utility from globals.css: teal-100 holds top 50%, blends through #DDE6E0, lands on cream-50 */}
-      <section className="bg-hero-fade">
-        <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
-          <span className="inline-block bg-teal-600 text-white text-[11px] tracking-[0.2em] uppercase font-semibold px-4 py-1.5 rounded-full mb-6">
+      {/* Hero — transparent, ambient wash shows through */}
+      <section className="bg-transparent">
+        <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
+          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-5">
             The Journal
-          </span>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl text-teal-800 tracking-tight leading-[1.05] mb-6 font-semibold max-w-4xl">
+          </p>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl text-teal-600 tracking-tight leading-[1.05] mb-6 font-semibold max-w-4xl">
             Insights
           </h1>
-          <p className="text-teal-700 text-lg leading-relaxed max-w-3xl mb-8">
+          <p className="text-ink-500 text-lg leading-relaxed max-w-3xl">
             Notes on portfolio thinking, conviction, and the long game.
             Deep dives on the First Principles holdings, plus the
             occasional Canadian personal-finance and wealth-preservation
             piece.
           </p>
-          <div className="h-0.5 w-16 bg-teal-600" />
         </div>
       </section>
 
       {/* Articles list */}
-      <section className="bg-cream-50">
+      <section className="bg-transparent border-t border-cream-200/60">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
           {articles.length === 0 ? (
             <p className="text-ink-500">No articles yet. Check back soon.</p>
@@ -40,7 +39,7 @@ export default function ArticlesPage() {
               {articles.map((article) => (
                 <li
                   key={article.slug}
-                  className="border-b border-cream-200 pb-10 last:border-0"
+                  className="border-b border-cream-200/60 pb-10 last:border-0"
                 >
                   <Link href={`/articles/${article.slug}`} className="group block">
                     <p className="text-xs uppercase tracking-wide text-ink-400 mb-2">
