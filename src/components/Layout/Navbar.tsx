@@ -6,8 +6,8 @@ import { useState, useEffect } from "react";
 
 const NAV_LINKS = [
   { href: "/", label: "Portfolio Dashboard" },
-  { href: "/articles", label: "News & Perspectives" },
   { href: "/thesis", label: "Strategy & Philosophy" },
+  { href: "/articles", label: "News & Perspectives" },
   { href: "/trades", label: "Trade Ledger" },
 ];
 
@@ -143,10 +143,17 @@ export default function Navbar() {
             ))}
           </ul>
 
-          <div className="mt-14 flex items-center gap-6 text-cream-100/70 text-sm max-w-3xl">
-            <span className="font-sans whitespace-nowrap">Lakespring Investments</span>
-            <span className="h-px flex-1 bg-cream-100/20" />
-            <span className="font-sans whitespace-nowrap">A personal investment journal</span>
+          <div className="mt-14 flex items-center gap-2">
+            <Image
+              src="/logo.png"
+              alt="Lakespring Investments"
+              width={32}
+              height={32}
+              className="rounded-md"
+            />
+            <span className="font-sans text-base font-semibold tracking-tight text-cream-50">
+              Lakespring Investments
+            </span>
           </div>
         </nav>
       </div>
