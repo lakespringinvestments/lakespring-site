@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getAllArticles } from "@/lib/articles";
 
 export const metadata = {
-  title: "Insights — Lakespring Investments",
+  title: "News & Perspectives — Lakespring Investments",
   description: "Notes on portfolio thinking, conviction, and the long game.",
 };
 
@@ -18,7 +18,7 @@ export default function ArticlesPage() {
             The Journal
           </p>
           <h1 className="text-4xl md:text-5xl lg:text-6xl text-teal-600 tracking-tight leading-[1.05] mb-6 font-semibold max-w-4xl">
-            Insights
+            News &amp; Perspectives
           </h1>
           <p className="text-ink-500 text-lg leading-relaxed max-w-3xl">
             Notes on portfolio thinking, conviction, and the long game.

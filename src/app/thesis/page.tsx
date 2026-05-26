@@ -1,9 +1,9 @@
 import Image from "next/image";
 
 export const metadata = {
-  title: "Thesis & Strategy — Lakespring Investments",
+  title: "Strategy & Philosophy — Lakespring Investments",
   description:
-    "Concentrated conviction. Continuous income. The framework behind every position.",
+    "The personal story and the first-principles framework behind every position — concentrated conviction, continuous income.",
 };
 
 type Moat = {
@@ -110,20 +110,65 @@ function PremiumWheel() {
 export default function ThesisPage() {
   return (
     <>
-      {/* Cream hero — matches dashboard styling */}
+      {/* Hero — the personal story opens the page (serif, editorial) */}
       <section className="bg-transparent">
-        <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-5">
-            Thesis &amp; Strategy
+        <div className="max-w-4xl mx-auto px-6 py-16 md:py-24">
+          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-6">
+            Strategy &amp; Philosophy
           </p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl text-teal-600 tracking-tight leading-[1.05] mb-6 font-semibold max-w-4xl">
-            Concentrated conviction. <span className="text-sage-500">Continuous income.</span>
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.4rem] text-teal-600 leading-[1.08] tracking-tight font-medium">
+            I&apos;m building my family&apos;s way onto the right side of the
+            wealth divide — in the open.
           </h1>
-          <p className="text-ink-500 text-lg leading-relaxed max-w-3xl">
-            Lakespring Investments holds a small basket of high-conviction
-            positions in the businesses defining the next decade — and runs
-            a disciplined options income overlay on top to generate cash
-            flow while those theses compound.
+        </div>
+
+        {/* Opening story */}
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed max-w-2xl">
+            <p>
+              My family came to Canada with nothing. They worked hard for
+              decades and still stayed on the wrong side of the wealth divide
+              — not because they lacked intelligence or discipline, but
+              because no one ever taught them how modern wealth is actually
+              built.
+            </p>
+          </div>
+
+          {/* Pull quote — the emotional core */}
+          <blockquote className="my-14 md:my-20 max-w-3xl">
+            <p className="font-serif text-3xl md:text-4xl lg:text-[2.75rem] text-teal-600 leading-[1.15] italic font-medium">
+              They knew how to save.
+              <br />
+              They never learned to own.
+            </p>
+          </blockquote>
+
+          {/* Continued story */}
+          <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed max-w-2xl">
+            <p>
+              The economy has split into two tracks — the K-shaped economy —
+              and the gap between them is no longer about effort. It&apos;s
+              about asset ownership. The people who own the assets that
+              compound are pulling away from the people who only earn wages,
+              and the distance grows every year.
+            </p>
+            <p>
+              Lakespring Investments is the public record of how I&apos;m
+              closing that gap for my own family: a concentrated portfolio in
+              the technologies redefining the next decade, paired with a
+              disciplined options-income overlay that pays us to wait while
+              the thesis compounds. I write it down in the open — partly to
+              hold myself accountable, partly in case the process is useful to
+              anyone trying to do the same.
+            </p>
+          </div>
+        </div>
+
+        {/* Transition into the framework */}
+        <div className="max-w-4xl mx-auto px-6 mt-20 md:mt-28">
+          <p className="font-serif text-2xl md:text-3xl text-teal-600 leading-snug italic max-w-2xl">
+            What follows is the framework that turns that conviction into a
+            portfolio — and the income engine that runs on top of it.
           </p>
         </div>
       </section>
@@ -131,9 +176,9 @@ export default function ThesisPage() {
       {/* Section 01 */}
       <section className="bg-transparent border-t border-cream-200/60">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
-          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
+          <span className="inline-block bg-teal-600 text-white text-[11px] uppercase tracking-[0.18em] font-semibold px-3 py-1.5 rounded-md mb-5">
             01 — The first principles approach
-          </p>
+          </span>
           <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
             Start with the transformation. Then ask who owns the moat.
           </h2>
@@ -246,11 +291,11 @@ export default function ThesisPage() {
       </section>
 
       {/* Section 02 */}
-      <section className="bg-cream-100/40 border-t border-cream-200/60">
+      <section className="bg-transparent border-t border-cream-200/60">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
-          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
+          <span className="inline-block bg-[#BA7517] text-white text-[11px] uppercase tracking-[0.18em] font-semibold px-3 py-1.5 rounded-md mb-5">
             02 — The wheel, and what it runs on
-          </p>
+          </span>
           <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
             Premium lands on every leg of the cycle.
           </h2>
@@ -368,9 +413,9 @@ export default function ThesisPage() {
       {/* Section 03 */}
       <section className="bg-transparent border-t border-cream-200/60">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
-          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-3">
+          <span className="inline-block bg-sage-500 text-white text-[11px] uppercase tracking-[0.18em] font-semibold px-3 py-1.5 rounded-md mb-5">
             03 — Income while you wait
-          </p>
+          </span>
           <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
             The thesis compounds in the foreground.
             <br />

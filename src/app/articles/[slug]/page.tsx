@@ -33,7 +33,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
           href="/articles"
           className="text-xs uppercase tracking-wide text-ink-400 hover:text-teal-600 mb-6 inline-block"
         >
-          ← Insights
+          ← News &amp; Perspectives
         </Link>
         <p className="text-xs uppercase tracking-wide text-ink-400 mb-3">
           {article.date &&

@@ -6,10 +6,9 @@ import { useState, useEffect } from "react";
 
 const NAV_LINKS = [
   { href: "/", label: "Portfolio Dashboard" },
-  { href: "/articles", label: "Insights" },
-  { href: "/thesis", label: "Thesis & Strategy" },
+  { href: "/articles", label: "News & Perspectives" },
+  { href: "/thesis", label: "Strategy & Philosophy" },
   { href: "/trades", label: "Trade Ledger" },
-  { href: "/about", label: "About" },
 ];
 
 export default function Navbar() {
@@ -86,7 +85,7 @@ export default function Navbar() {
         {/* Deep teal backdrop */}
         <div className="absolute inset-0 bg-teal-800" />
 
-        {/* Soft ambient glow inside the overlay, echoing the site wash */}
+        {/* Soft ambient glows echoing the site wash */}
         <div
           className="absolute pointer-events-none"
           style={{
@@ -112,34 +111,42 @@ export default function Navbar() {
           }}
         />
 
-        {/* Menu content */}
-        <nav className="relative h-full max-w-6xl mx-auto px-6 flex flex-col justify-center">
-          <p className="text-xs uppercase tracking-[0.3em] text-sage-300 mb-10">
+        {/* Explicit close (X) button, top-right — clear way out */}
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          aria-label="Close menu"
+          className="absolute top-4 right-6 z-[60] inline-flex items-center justify-center w-11 h-11 rounded-md text-cream-100 hover:text-sage-300 transition-colors"
+        >
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        {/* Menu content — sits in the upper portion of the screen */}
+        <nav className="relative h-full max-w-6xl mx-auto px-6 pt-28 md:pt-32">
+          <p className="text-xs uppercase tracking-[0.3em] text-sage-300 mb-8">
             Menu
           </p>
-          <ul className="flex flex-col gap-2 md:gap-3">
-            {NAV_LINKS.map((link, i) => (
+          <ul className="flex flex-col gap-1.5 md:gap-2.5">
+            {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="group flex items-baseline gap-5 text-cream-50 hover:text-sage-300 transition-colors"
+                  className="font-serif text-3xl md:text-5xl font-medium tracking-tight leading-[1.15] text-cream-50 hover:text-sage-300 transition-colors"
                 >
-                  <span className="font-sans text-sm text-sage-300/70 tabular-nums w-8 shrink-0">
-                    0{i + 1}
-                  </span>
-                  <span className="font-serif text-4xl md:text-6xl font-medium tracking-tight leading-[1.1]">
-                    {link.label}
-                  </span>
+                  {link.label}
                 </Link>
               </li>
             ))}
           </ul>
 
-          <div className="mt-16 flex items-center gap-6 text-cream-100/70 text-sm">
-            <span className="font-sans">Lakespring Investments</span>
+          <div className="mt-14 flex items-center gap-6 text-cream-100/70 text-sm max-w-3xl">
+            <span className="font-sans whitespace-nowrap">Lakespring Investments</span>
             <span className="h-px flex-1 bg-cream-100/20" />
-            <span className="font-sans">A personal investment journal</span>
+            <span className="font-sans whitespace-nowrap">A personal investment journal</span>
           </div>
         </nav>
       </div>
