@@ -63,10 +63,10 @@ export default function HomePage() {
     (a) => a.byline?.toLowerCase() === "holdings deep-dive"
   );
 
-  // Latest carousel — everything else (philosophy, Canadian wealth, etc.)
-  const latestArticles = allArticles.filter(
-    (a) => a.byline?.toLowerCase() !== "holdings deep-dive"
-  );
+  // Latest carousel — everything else, capped at 3 most recent
+  const latestArticles = allArticles
+    .filter((a) => a.byline?.toLowerCase() !== "holdings deep-dive")
+    .slice(0, 3);
 
   const featuredIndex = pinnedArticles.findIndex(
     (a) => a.slug === FEATURED_SLUG || a.featured
@@ -114,7 +114,10 @@ export default function HomePage() {
       {/* ── Pinned editorial masonry grid ── */}
       <section className="bg-transparent border-t border-cream-200/60">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-          {allArticles.length === 0 ? (
+          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-7">
+            Featured
+          </p>
+          {pinnedArticles.length === 0 ? (
             <p className="text-ink-500">No articles yet. Check back soon.</p>
           ) : (
             <div className="space-y-5 md:space-y-6">
