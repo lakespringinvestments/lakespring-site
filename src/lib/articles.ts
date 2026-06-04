@@ -9,6 +9,12 @@ export type ArticleMeta = {
   title: string;
   date: string;
   excerpt: string;
+  /** Optional path to a cover image (e.g. "/article-images/foo.jpg"). When
+   *  absent, the grid renders a color-blocked fallback tile. */
+  coverImage?: string;
+  /** Optional thematic byline shown above the title on the grid tile
+   *  (e.g. "Holdings deep-dive", "On Canadian wealth"). */
+  byline?: string;
 };
 
 export type Article = ArticleMeta & {
@@ -27,6 +33,8 @@ export function getAllArticles(): ArticleMeta[] {
       title: data.title ?? slug,
       date: data.date ?? "",
       excerpt: data.excerpt ?? "",
+      coverImage: data.coverImage ?? undefined,
+      byline: data.byline ?? undefined,
     };
   });
   return articles.sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -42,6 +50,8 @@ export function getArticleBySlug(slug: string): Article | null {
     title: data.title ?? slug,
     date: data.date ?? "",
     excerpt: data.excerpt ?? "",
+    coverImage: data.coverImage ?? undefined,
+    byline: data.byline ?? undefined,
     content,
   };
 }

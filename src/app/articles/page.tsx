@@ -1,10 +1,58 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getAllArticles } from "@/lib/articles";
 
 export const metadata = {
   title: "News & Perspectives — Lakespring Investments",
-  description: "Notes on portfolio thinking, conviction, and the long game.",
+  description:
+    "Field notes on the holdings, philosophy of generational wealth, and Canadian wealth-preservation pieces.",
 };
+
+// Color-blocked fallback palette, rotated through for articles without coverImage.
+// Each entry: background + text/eyebrow colors that read on it.
+const FALLBACK_TILES = [
+  {
+    bg: "bg-teal-600",
+    title: "text-cream-50",
+    byline: "text-sage-300",
+    excerpt: "text-cream-100/80",
+    date: "text-sage-300/80",
+    border: "",
+  },
+  {
+    bg: "bg-sage-500",
+    title: "text-cream-50",
+    byline: "text-teal-800",
+    excerpt: "text-sage-100",
+    date: "text-teal-800/80",
+    border: "",
+  },
+  {
+    bg: "bg-cream-100",
+    title: "text-teal-600",
+    byline: "text-sage-700",
+    excerpt: "text-ink-500",
+    date: "text-ink-400",
+    border: "border border-cream-200",
+  },
+  {
+    bg: "bg-[#0A0A0A]",
+    title: "text-cream-50",
+    byline: "text-sage-300",
+    excerpt: "text-cream-100/70",
+    date: "text-cream-100/50",
+    border: "",
+  },
+];
+
+function formatDate(iso: string) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
 
 export default function ArticlesPage() {
   const articles = getAllArticles();
@@ -17,48 +65,106 @@ export default function ArticlesPage() {
           <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-5">
             The Journal
           </p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl text-teal-600 tracking-tight leading-[1.05] mb-6 font-semibold max-w-4xl">
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-teal-600 leading-[1.05] tracking-tight font-medium max-w-4xl">
             News &amp; Perspectives
           </h1>
-          <p className="text-ink-500 text-lg leading-relaxed max-w-3xl">
-            Notes on portfolio thinking, conviction, and the long game.
-            Deep dives on the First Principles holdings, plus the
-            occasional Canadian personal-finance and wealth-preservation
-            piece.
+          <p className="mt-6 text-ink-500 text-lg leading-relaxed max-w-3xl">
+            Field notes on the holdings, the philosophy of generational
+            wealth, and Canadian personal-finance pieces. Written as I work
+            through them.
           </p>
         </div>
       </section>
 
-      {/* Articles list */}
+      {/* Uniform grid */}
       <section className="bg-transparent border-t border-cream-200/60">
-        <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
+        <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
           {articles.length === 0 ? (
             <p className="text-ink-500">No articles yet. Check back soon.</p>
           ) : (
-            <ul className="space-y-10">
-              {articles.map((article) => (
-                <li
-                  key={article.slug}
-                  className="border-b border-cream-200/60 pb-10 last:border-0"
-                >
-                  <Link href={`/articles/${article.slug}`} className="group block">
-                    <p className="text-xs uppercase tracking-wide text-ink-400 mb-2">
-                      {article.date &&
-                        new Date(article.date).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                    </p>
-                    <h2 className="text-2xl md:text-3xl text-teal-600 group-hover:text-sage-500 tracking-tight mb-3 transition-colors font-semibold">
-                      {article.title}
-                    </h2>
-                    <p className="text-ink-500 leading-relaxed max-w-3xl">
-                      {article.excerpt}
-                    </p>
-                  </Link>
-                </li>
-              ))}
+            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+              {articles.map((article, i) => {
+                const hasImage = Boolean(article.coverImage);
+                const fallback = FALLBACK_TILES[i % FALLBACK_TILES.length];
+
+                return (
+                  <li key={article.slug}>
+                    <Link
+                      href={`/articles/${article.slug}`}
+                      className="group relative block aspect-square overflow-hidden rounded-xl"
+                    >
+                      {hasImage ? (
+                        <>
+                          {/* Cover image */}
+                          <Image
+                            src={article.coverImage as string}
+                            alt={article.title}
+                            fill
+                            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                          />
+                          {/* Bottom scrim so overlay text stays legible */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-black/0" />
+                          {/* Overlay content */}
+                          <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-7">
+                            {article.byline && (
+                              <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2 font-semibold">
+                                {article.byline}
+                              </p>
+                            )}
+                            <h2 className="font-serif text-2xl md:text-[1.7rem] text-cream-50 leading-[1.1] tracking-tight font-medium">
+                              {article.title}
+                            </h2>
+                            {article.date && (
+                              <p className="mt-3 text-[11px] uppercase tracking-wide text-cream-100/70">
+                                {formatDate(article.date)}
+                              </p>
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        // Color-blocked fallback tile
+                        <div
+                          className={`absolute inset-0 ${fallback.bg} ${fallback.border} flex flex-col justify-end p-6 md:p-7 transition-opacity duration-300 group-hover:opacity-95`}
+                        >
+                          {article.byline ? (
+                            <p
+                              className={`text-[10px] uppercase tracking-[0.2em] ${fallback.byline} mb-2 font-semibold`}
+                            >
+                              {article.byline}
+                            </p>
+                          ) : (
+                            <p
+                              className={`text-[10px] uppercase tracking-[0.2em] ${fallback.byline} mb-2 font-semibold`}
+                            >
+                              Note
+                            </p>
+                          )}
+                          <h2
+                            className={`font-serif text-2xl md:text-[1.7rem] ${fallback.title} leading-[1.1] tracking-tight font-medium`}
+                          >
+                            {article.title}
+                          </h2>
+                          {article.excerpt && (
+                            <p
+                              className={`mt-3 text-sm ${fallback.excerpt} leading-relaxed line-clamp-2`}
+                            >
+                              {article.excerpt}
+                            </p>
+                          )}
+                          {article.date && (
+                            <p
+                              className={`mt-3 text-[11px] uppercase tracking-wide ${fallback.date}`}
+                            >
+                              {formatDate(article.date)}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
