@@ -2,6 +2,7 @@
 title: "The Musk Industrial Complex"
 date: "2026-05-08"
 byline: "Holdings deep-dive"
+featured: true
 excerpt: "Tesla is the public-market exposure to a thesis that extends across SpaceX, xAI, and Optimus. The question is how to size the public side of a thesis whose private side you can't own."
 coverImage: "/article-images/musk-industrial-complex.jpg"
 ---

@@ -44,6 +44,10 @@ const FALLBACK_TILES = [
   },
 ];
 
+// The slug pinned to the featured (wide) slot.
+// Change this string to promote a different article without touching layout code.
+const FEATURED_SLUG = "musk-industrial-complex";
+
 function formatDate(iso: string) {
   if (!iso) return "";
   return new Date(iso).toLocaleDateString("en-US", {
@@ -53,49 +57,13 @@ function formatDate(iso: string) {
   });
 }
 
-// Irregular hand-drawn ellipse path — asymmetric, slightly wobbly so it reads
-// as drawn rather than computed. The viewBox is sized to the text at ~60px
-// font-size; the SVG is positioned absolutely over the heading.
-function IrregularCircle() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 520 90"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="pointer-events-none absolute inset-0 w-full h-full overflow-visible"
-      preserveAspectRatio="none"
-    >
-      <path
-        d="
-          M 48 62
-          C 38 44, 30 22, 72 12
-          C 110 3, 180 -2, 258 4
-          C 338 10, 420 8, 466 20
-          C 496 28, 504 46, 492 62
-          C 480 78, 450 86, 390 88
-          C 318 92, 200 90, 120 84
-          C 72 80, 52 74, 48 62
-          Z
-        "
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="text-teal-600"
-        fill="none"
-        opacity="0.6"
-      />
-    </svg>
-  );
-}
-
 export default function HomePage() {
   const allArticles = getAllArticles();
 
-  // Separate featured from the rest — take the first featured, or fall back
-  // to the most recent article if none is explicitly marked.
-  const featuredIndex = allArticles.findIndex((a) => a.featured);
+  // Pin the featured slug; fall back to most-recent if it isn't found.
+  const featuredIndex = allArticles.findIndex(
+    (a) => a.slug === FEATURED_SLUG || a.featured
+  );
   const featured =
     featuredIndex !== -1 ? allArticles[featuredIndex] : allArticles[0];
   const rest = allArticles.filter((a) => a.slug !== featured?.slug);
@@ -108,10 +76,9 @@ export default function HomePage() {
           <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-5">
             The Journal
           </p>
-          {/* Title with irregular circle treatment */}
-          <div className="relative inline-block">
-            <IrregularCircle />
-            <h1 className="relative font-serif text-4xl md:text-5xl lg:text-6xl text-teal-600 leading-[1.05] tracking-tight font-medium px-4 py-2">
+          {/* Option B — thin rule above, clean editorial section header */}
+          <div className="border-t border-teal-600/40 pt-5">
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-teal-600 leading-[1.05] tracking-tight font-medium">
               News &amp; Perspectives
             </h1>
           </div>
@@ -129,10 +96,7 @@ export default function HomePage() {
               {/* ── Row 1: featured wide tile + tall side tile ── */}
               {featured && (
                 <div className="grid grid-cols-1 md:grid-cols-[1.65fr_1fr] gap-5 md:gap-6">
-                  {/* Featured tile — taller */}
                   <FeaturedTile article={featured} />
-
-                  {/* Second tile — matches featured height on desktop */}
                   {rest[0] && (
                     <ArticleTile
                       article={rest[0]}
@@ -181,7 +145,11 @@ export default function HomePage() {
 
 // ── Featured tile (wide, taller aspect ratio) ──────────────────────────────
 
-function FeaturedTile({ article }: { article: ReturnType<typeof getAllArticles>[number] }) {
+function FeaturedTile({
+  article,
+}: {
+  article: ReturnType<typeof getAllArticles>[number];
+}) {
   const hasImage = Boolean(article.coverImage);
 
   return (
@@ -297,24 +265,34 @@ function ArticleTile({
           className={`absolute inset-0 ${fallback.bg} ${fallback.border} flex flex-col justify-end p-6 md:p-7 transition-opacity duration-300 group-hover:opacity-95`}
         >
           {article.byline ? (
-            <p className={`text-[10px] uppercase tracking-[0.2em] ${fallback.byline} mb-2 font-semibold`}>
+            <p
+              className={`text-[10px] uppercase tracking-[0.2em] ${fallback.byline} mb-2 font-semibold`}
+            >
               {article.byline}
             </p>
           ) : (
-            <p className={`text-[10px] uppercase tracking-[0.2em] ${fallback.byline} mb-2 font-semibold`}>
+            <p
+              className={`text-[10px] uppercase tracking-[0.2em] ${fallback.byline} mb-2 font-semibold`}
+            >
               Note
             </p>
           )}
-          <h2 className={`font-serif text-xl md:text-2xl ${fallback.title} leading-[1.1] tracking-tight font-medium`}>
+          <h2
+            className={`font-serif text-xl md:text-2xl ${fallback.title} leading-[1.1] tracking-tight font-medium`}
+          >
             {article.title}
           </h2>
           {article.excerpt && (
-            <p className={`mt-3 text-sm ${fallback.excerpt} leading-relaxed line-clamp-2`}>
+            <p
+              className={`mt-3 text-sm ${fallback.excerpt} leading-relaxed line-clamp-2`}
+            >
               {article.excerpt}
             </p>
           )}
           {article.date && (
-            <p className={`mt-3 text-[11px] uppercase tracking-wide ${fallback.date}`}>
+            <p
+              className={`mt-3 text-[11px] uppercase tracking-wide ${fallback.date}`}
+            >
               {formatDate(article.date)}
             </p>
           )}
