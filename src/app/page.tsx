@@ -176,9 +176,10 @@ function FeaturedTile({
             priority
             sizes="(min-width: 768px) 62vw, 100vw"
             className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03]"
-            style={{ transform: "scale(0.88)", transformOrigin: "center center" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/0" />
+          {/* Red tint — unifies the blush illustration with the tile */}
+          <div className="absolute inset-0 bg-[#8B1A1A]/50 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/0" />
           <div className="absolute inset-0 flex flex-col justify-end p-7 md:p-9">
             {article.byline && (
               <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-3 font-semibold">

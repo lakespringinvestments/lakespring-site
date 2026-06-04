@@ -110,16 +110,30 @@ function PremiumWheel() {
 export default function ThesisPage() {
   return (
     <>
-      {/* Hero — the personal story opens the page (serif, editorial) */}
+      {/* Hero */}
       <section className="bg-transparent">
         <div className="max-w-4xl mx-auto px-6 py-16 md:py-24">
-          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-6">
-            Strategy &amp; Philosophy
-          </p>
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.4rem] text-teal-600 leading-[1.08] tracking-tight font-medium">
+          {/* Two-line title matching Stories & Perspectives treatment */}
+          <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-[#0a0a0a] leading-[1.05] tracking-tight font-medium mb-10 md:mb-14">
+            <span className="block">Strategy</span>
+            <span className="block mt-1">
+              <span
+                className="inline"
+                style={{
+                  background: "linear-gradient(to top, rgba(29, 158, 117, 0.22) 45%, transparent 45%)",
+                  padding: "0 10px 4px 2px",
+                  boxDecorationBreak: "clone",
+                  WebkitBoxDecorationBreak: "clone",
+                }}
+              >
+                &amp; Philosophy
+              </span>
+            </span>
+          </h1>
+          <h2 className="font-serif text-2xl md:text-3xl lg:text-[2rem] text-teal-600 leading-[1.15] tracking-tight font-medium">
             I&apos;m building my family&apos;s way onto the right side of the
             wealth divide — in the open.
-          </h1>
+          </h2>
         </div>
 
         {/* Opening story */}
