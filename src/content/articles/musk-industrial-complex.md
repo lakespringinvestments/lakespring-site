@@ -5,6 +5,7 @@ byline: "Holdings deep-dive"
 featured: true
 excerpt: "Tesla is the public-market exposure to a thesis that extends across SpaceX, xAI, and Optimus. The question is how to size the public side of a thesis whose private side you can't own."
 coverImage: "/article-images/musk-industrial-complex.jpg"
+coverPosition: "center center"
 ---
 
 Tesla and SpaceX are the public-market and private-market sides of one unified bet on vertical integration across compute, manufacturing, energy storage, autonomy, and orbital infrastructure. Strategy lays out why they belong together in the framework.

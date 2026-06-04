@@ -112,7 +112,7 @@ export default function ThesisPage() {
     <>
       {/* Hero */}
       <section className="bg-transparent">
-        <div className="max-w-4xl mx-auto px-6 py-16 md:py-24">
+        <div className="max-w-6xl mx-auto px-6 pt-16 md:pt-20 pb-12 md:pb-14">
           {/* Two-line title matching Stories & Perspectives treatment */}
           <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-[#0a0a0a] leading-[1.05] tracking-tight font-medium mb-10 md:mb-14">
             <span className="block">Strategy</span>
@@ -130,7 +130,7 @@ export default function ThesisPage() {
               </span>
             </span>
           </h1>
-          <h2 className="font-serif text-2xl md:text-3xl lg:text-[2rem] text-teal-600 leading-[1.15] tracking-tight font-medium">
+          <h2 className="font-serif text-2xl md:text-3xl lg:text-[2rem] text-teal-600 leading-[1.15] tracking-tight font-medium max-w-4xl">
             I&apos;m building my family&apos;s way onto the right side of the
             wealth divide — in the open.
           </h2>

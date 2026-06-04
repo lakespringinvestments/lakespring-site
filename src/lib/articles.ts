@@ -12,12 +12,13 @@ export type ArticleMeta = {
   /** Optional path to a cover image (e.g. "/article-images/foo.jpg"). When
    *  absent, the grid renders a color-blocked fallback tile. */
   coverImage?: string;
-  /** Optional thematic byline shown above the title on the grid tile
-   *  (e.g. "Holdings deep-dive", "On Canadian wealth"). */
+  /** Optional thematic byline shown above the title on the grid tile. */
   byline?: string;
-  /** When true, this article occupies the wide featured slot in the masonry grid.
-   *  Only one article should be featured at a time. */
+  /** When true, this article occupies the wide featured slot in the masonry grid. */
   featured?: boolean;
+  /** CSS object-position value for the cover image (e.g. "center 35%").
+   *  Defaults to "center center" when absent. */
+  coverPosition?: string;
 };
 
 export type Article = ArticleMeta & {
@@ -39,6 +40,7 @@ export function getAllArticles(): ArticleMeta[] {
       coverImage: data.coverImage ?? undefined,
       byline: data.byline ?? undefined,
       featured: data.featured ?? false,
+      coverPosition: data.coverPosition ?? undefined,
     };
   });
   return articles.sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -57,6 +59,7 @@ export function getArticleBySlug(slug: string): Article | null {
     coverImage: data.coverImage ?? undefined,
     byline: data.byline ?? undefined,
     featured: data.featured ?? false,
+    coverPosition: data.coverPosition ?? undefined,
     content,
   };
 }

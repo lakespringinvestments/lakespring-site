@@ -1,13 +1,10 @@
 ---
-title: "Palantir: The Operating Layer for Enterprise AI"
-date: "2026-05-15"
+title: "What Would Actually Unseat Palantir"
+date: "2026-05-24"
 byline: "Holdings deep-dive"
-excerpt: "The bull case is the moat. The harder case is the multiple — and whether the price has run ahead of the deployments to justify it."
+excerpt: "The switching costs are real. The question is whether they're permanent — or just expensive enough to last until the thesis plays out."
 coverImage: "/article-images/palantir-operating-layer.jpg"
+coverPosition: "center 35%"
 ---
-
-Strategy frames Palantir as the deployment fabric for how governments and large enterprises will actually run AI against their own data — workflows so deeply embedded that switching costs are measured in years.
-
-The bull case for the moat is straightforward. The harder case this piece works through is the **multiple** — whether the price has run ahead of the underlying enterprise deployments far enough to matter. A look at the AIP boot-camp pipeline, the federal contract trajectory, and where the next leg of revenue actually has to come from for the current valuation to make sense.
 
 *Full essay coming soon.*
