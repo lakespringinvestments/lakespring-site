@@ -15,6 +15,9 @@ export type ArticleMeta = {
   /** Optional thematic byline shown above the title on the grid tile
    *  (e.g. "Holdings deep-dive", "On Canadian wealth"). */
   byline?: string;
+  /** When true, this article occupies the wide featured slot in the masonry grid.
+   *  Only one article should be featured at a time. */
+  featured?: boolean;
 };
 
 export type Article = ArticleMeta & {
@@ -35,6 +38,7 @@ export function getAllArticles(): ArticleMeta[] {
       excerpt: data.excerpt ?? "",
       coverImage: data.coverImage ?? undefined,
       byline: data.byline ?? undefined,
+      featured: data.featured ?? false,
     };
   });
   return articles.sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -52,6 +56,7 @@ export function getArticleBySlug(slug: string): Article | null {
     excerpt: data.excerpt ?? "",
     coverImage: data.coverImage ?? undefined,
     byline: data.byline ?? undefined,
+    featured: data.featured ?? false,
     content,
   };
 }
