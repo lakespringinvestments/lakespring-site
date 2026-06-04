@@ -24,8 +24,8 @@ const FALLBACK_TILES = [
 export default function LatestCarousel({ articles }: { articles: ArticleMeta[] }) {
   const [index, setIndex] = useState(0);
 
-  // Total number of pages (2 tiles per page)
-  const pageCount = Math.ceil(articles.length / 2);
+  // Total number of pages (3 tiles per page)
+  const pageCount = Math.ceil(articles.length / 3);
   const canPrev = index > 0;
   const canNext = index < pageCount - 1;
 
@@ -33,7 +33,7 @@ export default function LatestCarousel({ articles }: { articles: ArticleMeta[] }
   const next = () => setIndex((i) => Math.min(pageCount - 1, i + 1));
 
   // Slice the two visible articles
-  const visible = articles.slice(index * 2, index * 2 + 2);
+  const visible = articles.slice(index * 3, index * 3 + 3);
 
   if (articles.length === 0) return null;
 
@@ -97,10 +97,10 @@ export default function LatestCarousel({ articles }: { articles: ArticleMeta[] }
         </div>
 
         {/* Tiles — always 2 columns on md+, stack on mobile */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
           {visible.map((article, i) => {
             const hasImage = Boolean(article.coverImage);
-            const fallback = FALLBACK_TILES[(index * 2 + i) % FALLBACK_TILES.length];
+            const fallback = FALLBACK_TILES[(index * 3 + i) % FALLBACK_TILES.length];
 
             return (
               <Link
@@ -114,7 +114,7 @@ export default function LatestCarousel({ articles }: { articles: ArticleMeta[] }
                       src={article.coverImage as string}
                       alt={article.title}
                       fill
-                      sizes="(min-width: 768px) 50vw, 100vw"
+                      sizes="(min-width: 768px) 33vw, 100vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       style={{
                         objectPosition: article.coverPosition ?? "center center",
