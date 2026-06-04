@@ -19,6 +19,9 @@ export type ArticleMeta = {
   /** CSS object-position value for the cover image (e.g. "center 35%").
    *  Defaults to "center center" when absent. */
   coverPosition?: string;
+  /** CSS scale transform for the cover image (e.g. "1.12").
+   *  Use to push illustration paper-edges outside the tile boundary. */
+  coverScale?: string;
 };
 
 export type Article = ArticleMeta & {
@@ -41,6 +44,7 @@ export function getAllArticles(): ArticleMeta[] {
       byline: data.byline ?? undefined,
       featured: data.featured ?? false,
       coverPosition: data.coverPosition ?? undefined,
+      coverScale: data.coverScale ?? undefined,
     };
   });
   return articles.sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -60,6 +64,7 @@ export function getArticleBySlug(slug: string): Article | null {
     byline: data.byline ?? undefined,
     featured: data.featured ?? false,
     coverPosition: data.coverPosition ?? undefined,
+    coverScale: data.coverScale ?? undefined,
     content,
   };
 }

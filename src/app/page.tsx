@@ -178,8 +178,7 @@ function FeaturedTile({
             className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             style={{
               objectPosition: article.coverPosition ?? "center center",
-              transform: "scale(0.92)",
-              transformOrigin: "center center",
+              ...(article.coverScale ? { transform: `scale(${article.coverScale})`, transformOrigin: "center center" } : {}),
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/0" />
@@ -257,7 +256,10 @@ function ArticleTile({
             fill
             sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
             className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            style={{ objectPosition: article.coverPosition ?? "center center" }}
+            style={{
+              objectPosition: article.coverPosition ?? "center center",
+              ...(article.coverScale ? { transform: `scale(${article.coverScale})`, transformOrigin: "center center" } : {}),
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-black/0" />
           <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-7">
