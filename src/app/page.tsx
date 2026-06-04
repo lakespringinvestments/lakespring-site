@@ -82,8 +82,8 @@ export default function HomePage() {
               <span
                 className="inline"
                 style={{
-                  background: "rgba(29, 158, 117, 0.18)",
-                  padding: "2px 10px 6px 4px",
+                  background: "linear-gradient(to top, rgba(29, 158, 117, 0.22) 45%, transparent 45%)",
+                  padding: "0 10px 4px 2px",
                   boxDecorationBreak: "clone",
                   WebkitBoxDecorationBreak: "clone",
                 }}
@@ -175,7 +175,8 @@ function FeaturedTile({
             fill
             priority
             sizes="(min-width: 768px) 62vw, 100vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03]"
+            style={{ transform: "scale(0.88)", transformOrigin: "center center" }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/0" />
           <div className="absolute inset-0 flex flex-col justify-end p-7 md:p-9">

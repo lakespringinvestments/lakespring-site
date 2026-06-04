@@ -58,100 +58,83 @@ export default function Navbar() {
             aria-expanded={open}
             className="inline-flex items-center justify-center w-10 h-10 rounded-md text-cream-100 hover:text-sage-200 transition-colors -mr-2 relative z-[60]"
           >
-            {open ? (
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            ) : (
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="3" y1="7" x2="21" y2="7"></line>
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="17" x2="21" y2="17"></line>
-              </svg>
-            )}
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="7" x2="21" y2="7" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="17" x2="21" y2="17" />
+            </svg>
           </button>
         </div>
       </header>
 
-      {/* Full-screen overlay menu */}
+      {/* Scrim */}
       <div
-        className={`fixed inset-0 z-50 transition-opacity duration-300 ${
+        onClick={() => setOpen(false)}
+        className={`fixed inset-0 z-50 bg-black/40 transition-opacity duration-300 ${
           open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         aria-hidden={!open}
+      />
+
+      {/* Sidebar panel — slides in from right */}
+      <aside
+        className={`fixed top-0 right-0 h-full w-[280px] z-[60] flex flex-col bg-[#022e31] transition-transform duration-300 ease-in-out ${
+          open ? "translate-x-0" : "translate-x-full"
+        }`}
+        aria-hidden={!open}
       >
-        <div className="absolute inset-0 bg-teal-800" />
+        {/* Sidebar top bar — matches navbar height */}
+        <div className="h-[69px] flex items-center justify-end px-5 border-b border-white/10 flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            aria-label="Close menu"
+            className="flex items-center gap-2 text-cream-100/60 hover:text-cream-100 transition-colors"
+          >
+            <span className="text-xs tracking-widest uppercase">close</span>
+            <span className="w-6 h-6 border border-white/25 rounded flex items-center justify-center">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </span>
+          </button>
+        </div>
 
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            top: "-160px",
-            right: "-120px",
-            width: "640px",
-            height: "640px",
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(29,158,117,0.22) 0%, rgba(29,158,117,0) 70%)",
-          }}
-        />
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            bottom: "-160px",
-            left: "-120px",
-            width: "560px",
-            height: "560px",
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(93,202,165,0.14) 0%, rgba(93,202,165,0) 70%)",
-          }}
-        />
-
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          aria-label="Close menu"
-          className="absolute top-4 right-6 z-[60] inline-flex items-center justify-center w-11 h-11 rounded-md text-cream-100 hover:text-sage-300 transition-colors"
-        >
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-
-        <nav className="relative h-full max-w-6xl mx-auto px-6 pt-28 md:pt-32">
-          <p className="text-xs uppercase tracking-[0.3em] text-sage-300 mb-8">
+        {/* Nav links */}
+        <nav className="flex-1 px-0 pt-8 overflow-y-auto">
+          <p className="text-[9px] uppercase tracking-[0.28em] text-white/30 px-7 mb-5">
             Menu
           </p>
-          <ul className="flex flex-col gap-1.5 md:gap-2.5">
+          <ul className="flex flex-col">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="font-serif text-3xl md:text-5xl font-medium tracking-tight leading-[1.15] text-cream-50 hover:text-sage-300 transition-colors"
+                  className="block font-serif text-xl font-normal tracking-tight leading-snug text-cream-50/90 hover:text-sage-300 hover:bg-white/[0.03] transition-colors px-7 py-3 border-l-2 border-transparent hover:border-sage-500/50"
                 >
                   {link.label}
                 </Link>
               </li>
             ))}
           </ul>
-
-          <div className="mt-14 flex items-center gap-2">
-            <Image
-              src="/logo.png"
-              alt="Lakespring Investments"
-              width={32}
-              height={32}
-              className="rounded-md"
-            />
-            <span className="font-sans text-base font-semibold tracking-tight text-cream-50">
-              Lakespring Investments
-            </span>
-          </div>
         </nav>
-      </div>
+
+        {/* Footer */}
+        <div className="px-7 py-5 border-t border-white/10 flex items-center gap-3 flex-shrink-0">
+          <Image
+            src="/logo.png"
+            alt="Lakespring Investments"
+            width={24}
+            height={24}
+            className="rounded"
+          />
+          <span className="text-xs font-medium text-white/50">
+            Lakespring Investments
+          </span>
+        </div>
+      </aside>
     </>
   );
 }
