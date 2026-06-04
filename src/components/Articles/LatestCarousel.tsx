@@ -126,9 +126,9 @@ export default function LatestCarousel({ articles }: { articles: ArticleMeta[] }
                     <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/0" />
                     <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-6">
                       {article.byline && (
-                        <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2 font-semibold">
+                        <span className="inline-block bg-black/80 text-white text-[9px] uppercase tracking-[0.2em] font-semibold px-2 py-1 rounded mb-2">
                           {article.byline}
-                        </p>
+                        </span>
                       )}
                       <h3 className="font-serif text-xl md:text-2xl text-cream-50 leading-[1.1] tracking-tight font-medium">
                         {article.title}
@@ -144,9 +144,9 @@ export default function LatestCarousel({ articles }: { articles: ArticleMeta[] }
                   <div
                     className={`absolute inset-0 ${fallback.bg} ${fallback.border} flex flex-col justify-end p-5 md:p-6 transition-opacity duration-300 group-hover:opacity-95`}
                   >
-                    <p className={`text-[10px] uppercase tracking-[0.2em] ${fallback.byline} mb-2 font-semibold`}>
+                    <span className="inline-block bg-black/80 text-white text-[9px] uppercase tracking-[0.2em] font-semibold px-2 py-1 rounded mb-2">
                       {article.byline ?? "Note"}
-                    </p>
+                    </span>
                     <h3 className={`font-serif text-xl md:text-2xl ${fallback.title} leading-[1.1] tracking-tight font-medium`}>
                       {article.title}
                     </h3>
