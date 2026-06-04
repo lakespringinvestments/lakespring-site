@@ -58,11 +58,16 @@ function formatDate(iso: string) {
 export default function HomePage() {
   const allArticles = getAllArticles();
 
-  // Latest carousel — articles tagged latest: true in frontmatter
-  const latestArticles = allArticles.filter((a) => a.latest);
+  // Pinned grid — Holdings deep-dives only
+  const pinnedArticles = allArticles.filter(
+    (a) => a.byline?.toLowerCase() === "holdings deep-dive"
+  );
 
-  // Pinned grid — everything not in the carousel
-  const pinnedArticles = allArticles.filter((a) => !a.latest);
+  // Latest carousel — everything else (philosophy, Canadian wealth, etc.)
+  const latestArticles = allArticles.filter(
+    (a) => a.byline?.toLowerCase() !== "holdings deep-dive"
+  );
+
   const featuredIndex = pinnedArticles.findIndex(
     (a) => a.slug === FEATURED_SLUG || a.featured
   );
