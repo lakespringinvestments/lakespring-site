@@ -8,7 +8,6 @@ export const metadata = {
     "Field notes on concentrated positions in transformative technology — AI, digital assets, energy.",
 };
 
-// Color-blocked fallback palette, rotated for articles without coverImage.
 const FALLBACK_TILES = [
   {
     bg: "bg-teal-600",
@@ -44,8 +43,6 @@ const FALLBACK_TILES = [
   },
 ];
 
-// The slug pinned to the featured (wide) slot.
-// Change this string to promote a different article without touching layout code.
 const FEATURED_SLUG = "musk-industrial-complex";
 
 function formatDate(iso: string) {
@@ -60,7 +57,6 @@ function formatDate(iso: string) {
 export default function HomePage() {
   const allArticles = getAllArticles();
 
-  // Pin the featured slug; fall back to most-recent if it isn't found.
   const featuredIndex = allArticles.findIndex(
     (a) => a.slug === FEATURED_SLUG || a.featured
   );
@@ -73,15 +69,29 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <section className="bg-transparent">
         <div className="max-w-6xl mx-auto px-6 pt-16 md:pt-20 pb-12 md:pb-14">
-          <p className="text-xs uppercase tracking-[0.25em] text-sage-500 mb-5">
-            The Journal
-          </p>
-          {/* Option B — thin rule above, clean editorial section header */}
-          <div className="border-t border-teal-600/40 pt-5">
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-teal-600 leading-[1.05] tracking-tight font-medium">
-              News &amp; Perspectives
-            </h1>
-          </div>
+          {/*
+            Two-line title:
+            Line 1 — "Stories" plain black serif
+            Line 2 — "& Perspectives" with sage/teal highlight behind it
+            The highlight uses a linear background that only spans the text
+            width, padded slightly, sitting like a marker stroke.
+          */}
+          <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-[#0a0a0a] leading-[1.05] tracking-tight font-medium">
+            <span className="block">Stories</span>
+            <span className="block mt-1">
+              <span
+                className="inline"
+                style={{
+                  background: "rgba(29, 158, 117, 0.18)",
+                  padding: "2px 10px 6px 4px",
+                  boxDecorationBreak: "clone",
+                  WebkitBoxDecorationBreak: "clone",
+                }}
+              >
+                &amp; Perspectives
+              </span>
+            </span>
+          </h1>
         </div>
       </section>
 
@@ -93,7 +103,7 @@ export default function HomePage() {
           ) : (
             <div className="space-y-5 md:space-y-6">
 
-              {/* ── Row 1: featured wide tile + tall side tile ── */}
+              {/* Row 1: featured wide + side tile */}
               {featured && (
                 <div className="grid grid-cols-1 md:grid-cols-[1.65fr_1fr] gap-5 md:gap-6">
                   <FeaturedTile article={featured} />
@@ -107,7 +117,7 @@ export default function HomePage() {
                 </div>
               )}
 
-              {/* ── Row 2: three equal tiles ── */}
+              {/* Row 2: three equal tiles */}
               {rest.length > 1 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
                   {rest.slice(1, 4).map((article, i) => (
@@ -121,7 +131,7 @@ export default function HomePage() {
                 </div>
               )}
 
-              {/* ── Overflow rows: pairs of two ── */}
+              {/* Overflow: pairs */}
               {rest.length > 4 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6">
                   {rest.slice(4).map((article, i) => (
@@ -143,7 +153,7 @@ export default function HomePage() {
   );
 }
 
-// ── Featured tile (wide, taller aspect ratio) ──────────────────────────────
+// ── Featured tile ───────────────────────────────────────────────────────────
 
 function FeaturedTile({
   article,
@@ -265,34 +275,24 @@ function ArticleTile({
           className={`absolute inset-0 ${fallback.bg} ${fallback.border} flex flex-col justify-end p-6 md:p-7 transition-opacity duration-300 group-hover:opacity-95`}
         >
           {article.byline ? (
-            <p
-              className={`text-[10px] uppercase tracking-[0.2em] ${fallback.byline} mb-2 font-semibold`}
-            >
+            <p className={`text-[10px] uppercase tracking-[0.2em] ${fallback.byline} mb-2 font-semibold`}>
               {article.byline}
             </p>
           ) : (
-            <p
-              className={`text-[10px] uppercase tracking-[0.2em] ${fallback.byline} mb-2 font-semibold`}
-            >
+            <p className={`text-[10px] uppercase tracking-[0.2em] ${fallback.byline} mb-2 font-semibold`}>
               Note
             </p>
           )}
-          <h2
-            className={`font-serif text-xl md:text-2xl ${fallback.title} leading-[1.1] tracking-tight font-medium`}
-          >
+          <h2 className={`font-serif text-xl md:text-2xl ${fallback.title} leading-[1.1] tracking-tight font-medium`}>
             {article.title}
           </h2>
           {article.excerpt && (
-            <p
-              className={`mt-3 text-sm ${fallback.excerpt} leading-relaxed line-clamp-2`}
-            >
+            <p className={`mt-3 text-sm ${fallback.excerpt} leading-relaxed line-clamp-2`}>
               {article.excerpt}
             </p>
           )}
           {article.date && (
-            <p
-              className={`mt-3 text-[11px] uppercase tracking-wide ${fallback.date}`}
-            >
+            <p className={`mt-3 text-[11px] uppercase tracking-wide ${fallback.date}`}>
               {formatDate(article.date)}
             </p>
           )}

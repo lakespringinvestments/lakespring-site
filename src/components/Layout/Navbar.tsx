@@ -5,16 +5,15 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 
 const NAV_LINKS = [
-  { href: "/", label: "Portfolio Dashboard" },
+  { href: "/dashboard", label: "Portfolio Dashboard" },
   { href: "/thesis", label: "Strategy & Philosophy" },
-  { href: "/articles", label: "News & Perspectives" },
+  { href: "/", label: "Stories & Perspectives" },
   { href: "/trades", label: "Trade Ledger" },
 ];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
-  // Lock body scroll while the overlay is open, and close on Escape.
   useEffect(() => {
     if (!open) return;
     const prevOverflow = document.body.style.overflow;
@@ -31,7 +30,7 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Top bar — logo left, hamburger right, at ALL screen sizes */}
+      {/* Top bar */}
       <header className="bg-teal-600 border-b border-teal-700 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link
@@ -82,10 +81,8 @@ export default function Navbar() {
         }`}
         aria-hidden={!open}
       >
-        {/* Deep teal backdrop */}
         <div className="absolute inset-0 bg-teal-800" />
 
-        {/* Soft ambient glows echoing the site wash */}
         <div
           className="absolute pointer-events-none"
           style={{
@@ -111,7 +108,6 @@ export default function Navbar() {
           }}
         />
 
-        {/* Explicit close (X) button, top-right — clear way out */}
         <button
           type="button"
           onClick={() => setOpen(false)}
@@ -124,7 +120,6 @@ export default function Navbar() {
           </svg>
         </button>
 
-        {/* Menu content — sits in the upper portion of the screen */}
         <nav className="relative h-full max-w-6xl mx-auto px-6 pt-28 md:pt-32">
           <p className="text-xs uppercase tracking-[0.3em] text-sage-300 mb-8">
             Menu
