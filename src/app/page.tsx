@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getAllArticles } from "@/lib/articles";
+import LatestCarousel from "@/components/Articles/LatestCarousel";
 
 export const metadata = {
   title: "Lakespring Investments",
@@ -57,12 +58,17 @@ function formatDate(iso: string) {
 export default function HomePage() {
   const allArticles = getAllArticles();
 
-  const featuredIndex = allArticles.findIndex(
+  // Latest carousel — articles tagged latest: true in frontmatter
+  const latestArticles = allArticles.filter((a) => a.latest);
+
+  // Pinned grid — everything not in the carousel
+  const pinnedArticles = allArticles.filter((a) => !a.latest);
+  const featuredIndex = pinnedArticles.findIndex(
     (a) => a.slug === FEATURED_SLUG || a.featured
   );
   const featured =
-    featuredIndex !== -1 ? allArticles[featuredIndex] : allArticles[0];
-  const rest = allArticles.filter((a) => a.slug !== featured?.slug);
+    featuredIndex !== -1 ? pinnedArticles[featuredIndex] : pinnedArticles[0];
+  const rest = pinnedArticles.filter((a) => a.slug !== featured?.slug);
 
   return (
     <>
@@ -95,7 +101,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Editorial masonry grid ── */}
+      {/* ── Latest carousel (only rendered when articles are tagged latest: true) ── */}
+      {latestArticles.length > 0 && (
+        <LatestCarousel articles={latestArticles} />
+      )}
+
+      {/* ── Pinned editorial masonry grid ── */}
       <section className="bg-transparent border-t border-cream-200/60">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
           {allArticles.length === 0 ? (
