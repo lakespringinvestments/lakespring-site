@@ -7,7 +7,7 @@ const TICKER_COLORS: Record<string, string> = {
   PLTR:  "#101113",   // Palantir black
   ASML:  "#0071C5",   // ASML blue
   AMZN:  "#FF9900",   // Amazon orange
-  GOOGL: "#4285F4",   // Google blue
+  GOOGL: "#A8B0B6",   // Google — neutral grey on donut (logo is multicolour)
 };
 
 const FALLBACK_RAMP = [
