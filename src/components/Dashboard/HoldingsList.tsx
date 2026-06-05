@@ -78,7 +78,7 @@ function tradeTypeLabel(trade: Trade): string {
 function shortDesc(desc: string): string {
   if (!desc) return "—";
   // Use just the first sentence or up to 80 chars
-  const first = desc.split(/[.|POST-MORTEM|MONDAY]/)[0].trim();
+  const first = desc.split(/\. |POST-MORTEM|MONDAY/)[0].trim();
   return first.length > 90 ? first.slice(0, 87) + "…" : first;
 }
 
