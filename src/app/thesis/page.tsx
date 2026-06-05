@@ -138,7 +138,7 @@ export default function ThesisPage() {
 
         {/* Opening story */}
         <div className="max-w-6xl mx-auto px-6">
-          <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed max-w-2xl">
+          <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed max-w-3xl">
             <p>
               My family came to Canada with nothing. They worked hard for
               decades and still stayed on the wrong side of the wealth divide
@@ -149,7 +149,7 @@ export default function ThesisPage() {
           </div>
 
           {/* Pull quote — the emotional core */}
-          <blockquote className="my-14 md:my-20 max-w-3xl">
+          <blockquote className="my-14 md:my-20">
             <p className="font-serif text-3xl md:text-4xl lg:text-[2.75rem] text-teal-600 leading-[1.15] italic font-medium">
               They knew how to save.
               <br />
@@ -158,7 +158,7 @@ export default function ThesisPage() {
           </blockquote>
 
           {/* Continued story */}
-          <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed max-w-2xl">
+          <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed max-w-3xl">
             <p>
               The economy has split into two tracks — the K-shaped economy —
               and the gap between them is no longer about effort. It&apos;s
@@ -180,7 +180,7 @@ export default function ThesisPage() {
 
         {/* Transition into the framework */}
         <div className="max-w-6xl mx-auto px-6 mt-20 md:mt-28 pb-20 md:pb-24">
-          <p className="font-serif text-2xl md:text-3xl text-teal-600 leading-snug italic max-w-2xl">
+          <p className="font-serif text-2xl md:text-3xl text-teal-600 leading-snug italic max-w-3xl">
             What follows is the framework that turns that conviction into a
             portfolio — and the income engine that runs on top of it.
           </p>
