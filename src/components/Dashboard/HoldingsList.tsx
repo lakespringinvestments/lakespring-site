@@ -16,9 +16,9 @@ const TICKER_LOGOS: Record<string, string> = {
   TSLA:  "/logos/tesla.png",
   NVDA:  "/logos/nvidia.png",
   PLTR:  "/logos/palantir.png",
-  ASML:  "/logos/asml.jpg",
-  AMZN:  "/logos/amazon.jpg",
-  GOOGL: "/logos/google.jpg",
+  ASML:  "/logos/ASML.png",
+  AMZN:  "/logos/amazon.png",
+  GOOGL: "/logos/google.png",
 };
 
 // Tickers to exclude from this page
