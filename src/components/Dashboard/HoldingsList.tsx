@@ -30,7 +30,7 @@ function pickColor(ticker: string, idx: number) {
 
 function pickTextColor(bg: string) {
   // Light backgrounds need dark text
-  const lightBgs = ["#76B900", "#FF9900", "#4285F4"];
+  const lightBgs = ["#76B900", "#FF9900", "#4285F4", "#E8EAED"];
   return lightBgs.includes(bg) ? "#0a0a0a" : "#ffffff";
 }
 
@@ -61,9 +61,9 @@ export default function HoldingsList({ portfolio }: { portfolio: Portfolio }) {
                     <Image
                       src={logoSrc}
                       alt={h.ticker}
-                      width={36}
-                      height={36}
-                      className="object-contain p-0.5"
+                      width={["TSLA","NVDA","PLTR"].includes(h.ticker) ? 40 : h.ticker === "GOOGL" ? 30 : 38}
+                      height={["TSLA","NVDA","PLTR"].includes(h.ticker) ? 40 : h.ticker === "GOOGL" ? 30 : 38}
+                      className="object-contain"
                     />
                   ) : (
                     <span
