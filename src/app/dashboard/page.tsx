@@ -1,10 +1,11 @@
 import { getPortfolio } from "@/lib/data";
+import { getAllTrades } from "@/lib/trades";
 import PortfolioHero from "@/components/Dashboard/PortfolioHero";
 import MetricCards from "@/components/Dashboard/MetricCards";
 import AllocationDonut from "@/components/Dashboard/AllocationDonut";
 import HoldingsList from "@/components/Dashboard/HoldingsList";
 
-export const revalidate = 300;
+export const revalidate = 300; // revalidate every 5 minutes
 
 export const metadata = {
   title: "Portfolio — Lakespring Investments",
@@ -14,6 +15,18 @@ export const metadata = {
 
 export default async function DashboardPage() {
   const portfolio = await getPortfolio();
+  const allTrades = await getAllTrades();
+
+  // Group trades by ticker, most recent first, cap at 8 per ticker
+  const tradesByTicker: Record<string, typeof allTrades> = {};
+  for (const trade of allTrades) {
+    const ticker = trade.ticker.toUpperCase();
+    if (!ticker) continue;
+    if (!tradesByTicker[ticker]) tradesByTicker[ticker] = [];
+    if (tradesByTicker[ticker].length < 8) {
+      tradesByTicker[ticker].push(trade);
+    }
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
@@ -34,7 +47,7 @@ export default async function DashboardPage() {
         <PortfolioHero portfolio={portfolio} />
         <MetricCards portfolio={portfolio} />
         <AllocationDonut portfolio={portfolio} />
-        <HoldingsList portfolio={portfolio} />
+        <HoldingsList portfolio={portfolio} tradesByTicker={tradesByTicker} />
       </div>
 
       <p className="text-xs text-ink-400 mt-8 text-right">
