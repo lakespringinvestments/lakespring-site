@@ -61,9 +61,9 @@ export default function HoldingsList({ portfolio }: { portfolio: Portfolio }) {
                     <Image
                       src={logoSrc}
                       alt={h.ticker}
-                      width={28}
-                      height={28}
-                      className="object-contain"
+                      width={36}
+                      height={36}
+                      className="object-contain p-0.5"
                     />
                   ) : (
                     <span

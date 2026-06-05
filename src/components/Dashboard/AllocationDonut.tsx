@@ -33,13 +33,21 @@ export default function AllocationDonut({ portfolio }: { portfolio: Portfolio })
     weight: totalWeight > 0 ? (h.weight / totalWeight) * 100 : 0,
   }));
 
-  // Top 5 + Other
+  // Top 5 + Other — clamp weights so segments sum to exactly 100
   const sorted = [...normalised].sort((a, b) => b.weight - a.weight);
   const top = sorted.slice(0, 5);
   const otherWeight = sorted.slice(5).reduce((sum, h) => sum + h.weight, 0);
-  const segments = otherWeight > 0
+  const rawSegments = otherWeight > 0
     ? [...top, { ticker: "Other", name: "Other", weight: otherWeight, price: 0, dayChangePct: 0 }]
     : top;
+  // Normalise so segments sum to exactly 100 — prevents gap from float rounding
+  const segTotal = rawSegments.reduce((s, seg) => s + seg.weight, 0);
+  const segments = rawSegments.map((seg, i) => ({
+    ...seg,
+    weight: i === rawSegments.length - 1
+      ? 100 - rawSegments.slice(0, -1).reduce((s, s2) => s + Math.round((s2.weight / segTotal) * 100 * 10) / 10, 0)
+      : Math.round((seg.weight / segTotal) * 100 * 10) / 10,
+  }));
 
   let offset = 0;
 
