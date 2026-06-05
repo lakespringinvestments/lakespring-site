@@ -137,7 +137,7 @@ export default function ThesisPage() {
         </div>
 
         {/* Opening story */}
-        <div className="max-w-4xl mx-auto px-6">
+        <div className="max-w-6xl mx-auto px-6">
           <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed max-w-2xl">
             <p>
               My family came to Canada with nothing. They worked hard for
@@ -179,7 +179,7 @@ export default function ThesisPage() {
         </div>
 
         {/* Transition into the framework */}
-        <div className="max-w-4xl mx-auto px-6 mt-20 md:mt-28">
+        <div className="max-w-6xl mx-auto px-6 mt-20 md:mt-28 pb-20 md:pb-24">
           <p className="font-serif text-2xl md:text-3xl text-teal-600 leading-snug italic max-w-2xl">
             What follows is the framework that turns that conviction into a
             portfolio — and the income engine that runs on top of it.
@@ -321,22 +321,27 @@ export default function ThesisPage() {
               plays out. The premium wheel solves for that.
             </p>
             <p>
+              Our primary strategy is selling cash-secured puts.{" "}
+              <strong className="text-teal-600 font-semibold">
+                Almost all of the time, we never go full wheel.
+              </strong>{" "}
               On positions we already want to own, we sell puts at strike
               prices we&apos;re willing to buy at — collecting premium for the
               obligation. Most of the time, those puts expire worthless and
-              we simply collect the premium and write another one.{" "}
-              <strong className="text-teal-600 font-semibold">
-                That&apos;s the default behavior
-              </strong>{" "}
-              — premium collection without ever touching the underlying.
+              we simply collect the premium and write another one. That&apos;s
+              the default behaviour — premium collection without ever
+              touching the underlying.
             </p>
             <p>
-              The full wheel is the safety net beneath that loop. If a put
-              gets assigned, we acquire shares at the price we&apos;d already
-              targeted — and from there we sell covered calls at strike
-              prices we&apos;d be comfortable exiting at, collecting more premium
-              until called away. Cash returns to step one. The cycle
-              restarts.
+              Covered calls are a more difficult instrument to navigate with
+              asymmetric bets. When you hold a conviction position in a
+              transformative company, the upside can be violently nonlinear
+              — and you don&apos;t want a short call capping your participation
+              during the moments that matter most. We sell covered calls
+              only when a put gets assigned: we acquire shares at our
+              target price and sell calls at levels we&apos;d genuinely be
+              comfortable exiting at, collecting more premium until called
+              away. Cash returns to step one. The cycle restarts.
             </p>
             <p>
               The reason this structure works on these specific names is that
@@ -359,16 +364,21 @@ export default function ThesisPage() {
               persistent income stream rather than a risk to be hedged.
             </p>
             <p>
-              The candidate pool extends beyond the core four. When premiums
-              on the First Principles holdings are compressed — typically
+              The candidate pool extends beyond the core holdings. When premiums
+              on the First Principles names are compressed — typically
               during low-volatility stretches when the thesis is uncontested
-              — we widen the wheel to a select group of secondary names that
-              directly benefit from the same transformations. These are
-              companies we&apos;re independently comfortable holding and swing
-              trading, kept on a deliberately short list. They&apos;re not
-              satellite positions or trade ideas; they&apos;re thesis-aligned
-              vehicles for premium collection when the core names aren&apos;t
-              paying enough to commit capital.
+              — we widen the put-selling programme to a select group of
+              secondary names that directly benefit from the same
+              transformations. These are companies we&apos;re independently
+              comfortable holding and swing trading, kept on a deliberately
+              short list. They&apos;re not satellite positions or trade ideas;
+              they&apos;re thesis-aligned vehicles for premium collection when the
+              core names aren&apos;t paying enough to commit capital. We call
+              this the{" "}
+              <strong className="text-teal-600 font-semibold">
+                Second Derivatives Portfolio
+              </strong>
+              .
             </p>
             <p className="italic text-ink-500">
               The premium isn&apos;t speculative income. It&apos;s compensation for
@@ -479,10 +489,10 @@ export default function ThesisPage() {
             </p>
             <p>
               The goal is to be paid to wait for the thesis to be obvious to
-              everyone else.{" "}
-              <strong className="text-teal-600 font-semibold">
-                This is the Lakespring Investments playbook.
-              </strong>
+              everyone else.
+            </p>
+            <p className="font-serif text-xl md:text-2xl text-teal-600 font-medium tracking-tight pt-4">
+              This is the Lakespring Investments playbook.
             </p>
           </div>
         </div>
