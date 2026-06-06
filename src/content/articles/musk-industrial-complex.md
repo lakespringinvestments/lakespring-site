@@ -2,7 +2,7 @@
 title: "The Business Model Most Investors Still Misunderstand"
 date: "2026-06-06"
 byline: "Holdings deep-dive"
-author: "Brian Li"
+author: "Brian L."
 featured: false
 excerpt: "Wall Street still treats Tesla like a car company. But the empire being assembled across vehicles, robots, energy, connectivity, compute, and orbit has no real precedent in the history of capital markets."
 coverImage: "/article-images/musk-industrial-complex.png"

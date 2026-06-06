@@ -1,6 +1,7 @@
 ---
 title: "Amazon: The Everything Infrastructure"
 date: "2026-05-10"
+author: "Brian L."
 byline: "Holdings deep-dive"
 excerpt: "AWS, Prime, advertising, logistics. The market prices Amazon as a retailer. The thesis is that it's the backbone of the digital economy — and the moat compounds with every dollar of capex."
 coverImage: "/article-images/amazon.png"
