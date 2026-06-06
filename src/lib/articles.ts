@@ -16,8 +16,8 @@ export type ArticleMeta = {
   byline?: string;
   /** When true, this article occupies the wide featured slot in the masonry grid. */
   featured?: boolean;
-  /** When true, this article appears in the Latest carousel at the top of the page. */
-  latest?: boolean;
+  /** Article author name */
+  author?: string;
   /** CSS object-position value for the cover image (e.g. "center 35%").
    *  Defaults to "center center" when absent. */
   coverPosition?: string;
@@ -45,7 +45,6 @@ export function getAllArticles(): ArticleMeta[] {
       coverImage: data.coverImage ?? undefined,
       byline: data.byline ?? undefined,
       featured: data.featured ?? false,
-      latest: data.latest ?? false,
       coverPosition: data.coverPosition ?? undefined,
       coverScale: data.coverScale ?? undefined,
     };
@@ -66,7 +65,7 @@ export function getArticleBySlug(slug: string): Article | null {
     coverImage: data.coverImage ?? undefined,
     byline: data.byline ?? undefined,
     featured: data.featured ?? false,
-    latest: data.latest ?? false,
+    coverPosition: data.coverPosition ?? undefined,
     coverScale: data.coverScale ?? undefined,
     content,
   };

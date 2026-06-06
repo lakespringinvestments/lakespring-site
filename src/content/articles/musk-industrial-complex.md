@@ -2,6 +2,7 @@
 title: "The Business Model Most Investors Still Misunderstand"
 date: "2026-06-06"
 byline: "Holdings deep-dive"
+author: "Brian Li"
 featured: false
 excerpt: "Wall Street still treats Tesla like a car company. But the empire being assembled across vehicles, robots, energy, connectivity, compute, and orbit has no real precedent in the history of capital markets."
 coverImage: "/article-images/musk-industrial-complex.jpg"
@@ -26,11 +27,15 @@ But here is what matters more: Tesla is no longer building toward an automotive 
 
 In January 2026, Musk announced during Tesla's Q4 earnings call that the company would discontinue the Model S and Model X — its longest-running vehicles — by Q2 2026. Production wound down in April. The Fremont factory floor that built those vehicles for fourteen years is not going idle. It is being converted into a large-scale production base for Optimus humanoid robots and Cybercab autonomous taxis, with a long-term target of up to one million humanoid robots annually from the first-generation line alone. A second-generation line at Gigafactory Texas is being designed for ten million robots per year.
 
-This is not a product cancellation. It is a declaration of priorities. When a company walks away from $100,000 vehicles with established demand because the factory floor is worth more pointed at something else, that is a statement about where the real value lies. Musk put it plainly on the earnings call: *"We're really moving into a future that is based on autonomy. Vehicles are no longer Tesla's core product."*
+This is not a product cancellation. It is a declaration of priorities. When a company walks away from $100,000 vehicles with established demand because the factory floor is worth more pointed at something else, that is a statement about where the real value lies. Musk put it plainly on the earnings call:
+
+> "We're really moving into a future that is based on autonomy. Vehicles are no longer Tesla's core product."
 
 That is a remarkable sentence for the CEO of a company that built its entire foundation on vehicles. And it deserves to be taken seriously.
 
+:::section-callout
 **The Robotaxi Thesis Is No Longer a Thesis**
+:::
 
 The Robotaxi service launched commercially in Austin in June 2025. By January 2026, Tesla had begun removing safety monitors from operating vehicles. By June 4, 2026, the service expanded to cover the entire Austin metropolitan area — suburbs, major highways, and Austin-Bergstrom International Airport. Dallas and Houston went live in April. Tesla is targeting unsupervised Full Self-Driving in roughly a dozen U.S. states by year end.
 
@@ -70,7 +75,9 @@ Starlink is the most important infrastructure business most investors aren't mod
 
 SpaceX's IPO on June 12th, targeting $135 per share and raising $75 billion, would surpass Saudi Aramco's 2019 offering as the largest public listing in history. Tesla, the publicly traded half of the empire, sits at roughly a $1.66 trillion market cap. Stitch them together and you have a single entity worth approximately $3.4 trillion — the largest company ever assembled under one operational umbrella.
 
+:::section-callout
 **The Colossus Wildcard**
+:::
 
 One of the more remarkable developments ahead of the IPO is what SpaceX did with its Colossus 1 data center in Memphis, Tennessee. The facility — housing over 220,000 Nvidia GPUs including H100, H200, and GB200 chips, drawing more than 300 megawatts of power — was originally built to train Grok. SpaceX's S-1 filing indicates Colossus was running at approximately 11% model flop utilization. Rather than let that infrastructure sit underutilized, SpaceX leased the entire cluster to Anthropic under a six-month arrangement at a reported $1.25 billion per month — with an extension to Colossus 2 planned, and total potential payments approaching $15 billion through May 2029.
 
@@ -88,7 +95,7 @@ AI data centers require enormous amounts of power. The hyperscalers — Microsof
 
 ![The AI Power Gap](/article-images/lakespring_ai_power_gap.png)
 
-Space has neither of these constraints. A satellite in geosynchronous orbit receives solar energy continuously, without the intermittency of terrestrial solar, without competing for land, without requiring cooling water, and without being subject to national permitting regimes. The energy available from the sun is, for any practical horizon, unlimited. SpaceX's S-1 states the company's goal directly: *"Our goal over time is to launch 100 gigawatts of compute to space each year."* For context, 100 gigawatts of continuously operating compute would represent roughly one-fifth of total annual U.S. electricity production — delivered from orbit, powered entirely by solar energy, outside the constraints that are choking terrestrial expansion.
+Space has neither of these constraints. A satellite in geosynchronous orbit receives solar energy continuously, without the intermittency of terrestrial solar, without competing for land, without requiring cooling water, and without being subject to national permiting regimes. The energy available from the sun is, for any practical horizon, unlimited. SpaceX's S-1 states the company's goal directly: *"Our goal over time is to launch 100 gigawatts of compute to space each year."* For context, 100 gigawatts of continuously operating compute would represent roughly one-fifth of total annual U.S. electricity production — delivered from orbit, powered entirely by solar energy, outside the constraints that are choking terrestrial expansion.
 
 SpaceX formally filed plans with the FCC in January 2026 for a constellation of up to one million computing satellites. Google and SpaceX are in active discussions to co-develop orbital AI infrastructure. NVIDIA announced the Space-1 Vera Rubin Module at GTC in March 2026 — a dedicated space-rated GPU platform — signaling that the chip ecosystem is preparing for an orbital compute market.
 

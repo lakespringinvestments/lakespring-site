@@ -71,3 +71,58 @@ body {
   font-size: 0.9em;
 }
 
+
+/* Article body — wide layout matching Strategy & Philosophy page */
+.prose-lakespring-wide {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.8;
+  color: #2C353D;
+  max-width: 52rem;
+}
+.prose-lakespring-wide p { margin-bottom: 1.4rem; }
+.prose-lakespring-wide h2 {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: #034147;
+  letter-spacing: -0.01em;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+}
+.prose-lakespring-wide h3 {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+  color: #0F1419;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+.prose-lakespring-wide a { color: #034147; text-decoration: underline; text-underline-offset: 3px; }
+.prose-lakespring-wide a:hover { color: #1D9E75; }
+.prose-lakespring-wide img {
+  width: 100%;
+  max-width: 52rem;
+  height: auto;
+  border-radius: 12px;
+  margin: 2.5rem 0;
+}
+.prose-lakespring-wide figure {
+  margin: 2.5rem 0;
+  width: 100%;
+  max-width: 52rem;
+}
+.prose-lakespring-wide blockquote {
+  border-left: 3px solid #034147;
+  padding-left: 1.5rem;
+  margin: 2.5rem 0;
+}
+.prose-lakespring-wide ul, .prose-lakespring-wide ol {
+  margin: 1rem 0 1.5rem 1.5rem;
+}
+.prose-lakespring-wide li { margin-bottom: 0.5rem; }
+.prose-lakespring-wide hr {
+  border: none;
+  border-top: 1px solid rgba(224, 216, 204, 0.6);
+  margin: 3rem 0;
+}
