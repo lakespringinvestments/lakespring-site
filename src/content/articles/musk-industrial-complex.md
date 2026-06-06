@@ -5,14 +5,15 @@ byline: "Holdings deep-dive"
 author: "Brian Li"
 featured: false
 excerpt: "Wall Street still treats Tesla like a car company. But the empire being assembled across vehicles, robots, energy, connectivity, compute, and orbit has no real precedent in the history of capital markets."
-coverImage: "/article-images/musk-industrial-complex.jpg"
-coverPosition: "center center"
-hideTileImage: true
+coverImage: "/article-images/musk-industrial-complex.png"
+coverPosition: "center 35%"
 ---
 
 Wall Street still treats Tesla like a car company.
 
-Analysts compare it to Ford and GM. They model automotive revenue growing at some percentage and call it a day. But there's a deeper misreading happening now that is arguably more consequential: investors are treating Elon Musk's companies as separate entities. They're not. They are converging — operationally, financially, and strategically — into something that has no real precedent in the history of capital markets. Musk himself said it in November 2025: *"My companies are, surprisingly in some ways, trending towards convergence."*
+Analysts compare it to Ford and GM. They model automotive revenue growing at some percentage and call it a day. But there's a deeper misreading happening now that is arguably more consequential: investors are treating Elon Musk's companies as separate entities. They're not. They are converging — operationally, financially, and strategically — into something that has no real precedent in the history of capital markets. Musk himself said it in November 2025:
+
+> "My companies are, surprisingly in some ways, trending towards convergence."
 
 With SpaceX pricing its IPO at $135 per share and debuting on Nasdaq under the ticker SPCX on June 12th — in what would be the largest public offering in history at a $1.75 trillion valuation — this is the right moment to zoom out and look at the whole picture. Not Tesla. Not SpaceX. The empire.
 
@@ -20,7 +21,7 @@ With SpaceX pricing its IPO at $135 per share and debuting on Nasdaq under the t
 
 ## Tesla: The Foundation Is Being Rebuilt From the Floor Up
 
-Tesla delivered 1.636 million vehicles in 2025, with full-year automotive revenue of $69.5 billion. Deliveries fell 8.6% for the second consecutive year. Brand damage from Musk's political activity created real consumer headwinds in Europe and the U.S., and BYD surpassed Tesla as the global EV volume leader. These are legitimate data points, and any honest analysis has to include them.
+Tesla delivered 1.6 million vehicles in 2025, with full-year automotive revenue of $69.5 billion. Deliveries fell 8.6% for the second consecutive year. Brand damage from Musk's political activity created real consumer headwinds in Europe and the U.S., and BYD surpassed Tesla as the global EV volume leader. These are legitimate data points, and any honest analysis has to include them.
 
 But here is what matters more: Tesla is no longer building toward an automotive future. The company is actively dismantling its automotive past to fund something far larger.
 
