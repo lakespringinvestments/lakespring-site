@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getAllArticles, getArticleBySlug } from "@/lib/articles";
@@ -170,16 +169,16 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
       {/* ── Cover image ── */}
       {article.coverImage && (
         <div className="max-w-6xl mx-auto px-6 mb-12">
-          <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden">
-            <Image
-              src={article.coverImage}
-              alt={article.title}
-              fill
-              priority
-              className="object-cover"
-              style={{ objectPosition: article.coverPosition ?? "center center" }}
-            />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={article.coverImage}
+            alt={article.title}
+            className="w-full rounded-2xl object-cover"
+            style={{
+              aspectRatio: "16/9",
+              objectPosition: article.coverPosition ?? "center center",
+            }}
+          />
         </div>
       )}
 
