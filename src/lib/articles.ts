@@ -9,21 +9,15 @@ export type ArticleMeta = {
   title: string;
   date: string;
   excerpt: string;
-  /** Optional path to a cover image (e.g. "/article-images/foo.jpg"). When
-   *  absent, the grid renders a color-blocked fallback tile. */
   coverImage?: string;
-  /** Optional thematic byline shown above the title on the grid tile. */
   byline?: string;
-  /** When true, this article occupies the wide featured slot in the masonry grid. */
   featured?: boolean;
-  /** Article author name */
+  latest?: boolean;
   author?: string;
-  /** CSS object-position value for the cover image (e.g. "center 35%").
-   *  Defaults to "center center" when absent. */
   coverPosition?: string;
-  /** CSS scale transform for the cover image (e.g. "1.12").
-   *  Use to push illustration paper-edges outside the tile boundary. */
   coverScale?: string;
+  /** When true, the tile on the homepage uses a color block instead of the cover image */
+  hideTileImage?: boolean;
 };
 
 export type Article = ArticleMeta & {
@@ -45,8 +39,11 @@ export function getAllArticles(): ArticleMeta[] {
       coverImage: data.coverImage ?? undefined,
       byline: data.byline ?? undefined,
       featured: data.featured ?? false,
+      latest: data.latest ?? false,
+      author: data.author ?? undefined,
       coverPosition: data.coverPosition ?? undefined,
       coverScale: data.coverScale ?? undefined,
+      hideTileImage: data.hideTileImage ?? false,
     };
   });
   return articles.sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -65,8 +62,11 @@ export function getArticleBySlug(slug: string): Article | null {
     coverImage: data.coverImage ?? undefined,
     byline: data.byline ?? undefined,
     featured: data.featured ?? false,
+    latest: data.latest ?? false,
+    author: data.author ?? undefined,
     coverPosition: data.coverPosition ?? undefined,
     coverScale: data.coverScale ?? undefined,
+    hideTileImage: data.hideTileImage ?? false,
     content,
   };
 }

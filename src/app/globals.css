@@ -78,7 +78,6 @@ body {
   font-size: 17px;
   line-height: 1.8;
   color: #2C353D;
-  max-width: 52rem;
 }
 .prose-lakespring-wide p { margin-bottom: 1.4rem; }
 .prose-lakespring-wide h2 {
@@ -102,15 +101,13 @@ body {
 .prose-lakespring-wide a:hover { color: #1D9E75; }
 .prose-lakespring-wide img {
   width: 100%;
-  max-width: 52rem;
   height: auto;
   border-radius: 12px;
   margin: 2.5rem 0;
 }
 .prose-lakespring-wide figure {
-  margin: 2.5rem 0;
+  margin: 1.5rem 0;
   width: 100%;
-  max-width: 52rem;
 }
 .prose-lakespring-wide blockquote {
   border-left: 3px solid #034147;

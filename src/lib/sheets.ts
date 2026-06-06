@@ -40,9 +40,9 @@ export async function fetchHoldingsFromSheet(): Promise<Holding[]> {
   const holdings: Holding[] = [];
 
   for (const row of rows) {
-    const ticker = (row[2] ?? "").trim().toUpperCase()
-      .replace("-USD", "") // BTC-USD → BTC
-      .replace("BTC-USD", "BTC");
+    let ticker = (row[2] ?? "").trim().toUpperCase();
+    // Normalise crypto tickers
+    ticker = ticker.replace(/-USD$/, "").replace(/-CAD$/, "");
 
     if (!HOLDINGS_TICKERS.has(ticker)) continue;
 

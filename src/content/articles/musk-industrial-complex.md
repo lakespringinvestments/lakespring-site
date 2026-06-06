@@ -7,6 +7,7 @@ featured: false
 excerpt: "Wall Street still treats Tesla like a car company. But the empire being assembled across vehicles, robots, energy, connectivity, compute, and orbit has no real precedent in the history of capital markets."
 coverImage: "/article-images/musk-industrial-complex.jpg"
 coverPosition: "center center"
+hideTileImage: true
 ---
 
 Wall Street still treats Tesla like a car company.
