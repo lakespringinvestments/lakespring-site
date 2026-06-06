@@ -3,7 +3,7 @@ title: "Bitcoin as Digital Gold"
 date: "2026-05-28"
 byline: "Holdings deep-dive"
 excerpt: "The Strategy page says Bitcoin is the defining asset of the digital era. This piece tests one specific corner of that thesis: what would actually make me trim the position?"
-coverImage: "/article-images/bitcoin-as-digital-gold.jpg"
+coverImage: "/article-images/bitcoin-as-digital-gold.png"
 coverPosition: "center center"
 ---
 
