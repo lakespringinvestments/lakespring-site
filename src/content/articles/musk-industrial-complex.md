@@ -1,5 +1,5 @@
 ---
-title: "The Business Model Most Investors Still Misunderstand"
+title: "The Musk Industrial Complex: Valuing the Dream of the Future"
 date: "2026-06-06"
 byline: "Holdings deep-dive"
 author: "Brian L."

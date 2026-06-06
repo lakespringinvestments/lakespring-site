@@ -157,10 +157,13 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
           </div>
           <div>
             <p className="text-sm font-medium text-ink-900">
-              {article.author ?? "Lakespring Investments"}
+              {article.author ?? "Brian L."}
+            </p>
+            <p className="text-xs text-ink-500">
+              Principal &amp; CIO, Lakespring Investments
             </p>
             {article.date && (
-              <p className="text-xs text-ink-400">{formatDate(article.date)}</p>
+              <p className="text-xs text-ink-400 mt-0.5">{formatDate(article.date)}</p>
             )}
           </div>
         </div>
