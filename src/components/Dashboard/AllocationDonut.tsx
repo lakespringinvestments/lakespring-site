@@ -5,7 +5,6 @@ const TICKER_COLORS: Record<string, string> = {
   TSLA:  "#CC0000",   // Tesla red
   NVDA:  "#76B900",   // Nvidia green
   PLTR:  "#101113",   // Palantir black
-  ASML:  "#0071C5",   // ASML blue
   AMZN:  "#FF9900",   // Amazon orange
   GOOGL: "#A8B0B6",   // Google — neutral grey on donut (logo is multicolour)
 };
@@ -15,7 +14,7 @@ const FALLBACK_RAMP = [
 ];
 
 // Tickers to exclude from this page
-const EXCLUDED = new Set(["BTC", "SOL"]);
+const EXCLUDED = new Set(["BTC", "SOL", "ASML"]);
 
 function pickColor(ticker: string, idx: number) {
   return TICKER_COLORS[ticker] ?? FALLBACK_RAMP[idx % FALLBACK_RAMP.length];
