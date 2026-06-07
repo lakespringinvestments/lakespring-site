@@ -1,16 +1,17 @@
 import { getPortfolio } from "@/lib/data";
 import { getAllTrades } from "@/lib/trades";
 import PortfolioHero from "@/components/Dashboard/PortfolioHero";
+import PremiumChart from "@/components/Dashboard/PremiumChart";
 import MetricCards from "@/components/Dashboard/MetricCards";
 import AllocationDonut from "@/components/Dashboard/AllocationDonut";
+import CapitalGainsTable from "@/components/Dashboard/CapitalGainsTable";
 import HoldingsList from "@/components/Dashboard/HoldingsList";
 
-export const revalidate = 300; // revalidate every 5 minutes
+export const revalidate = 300;
 
 export const metadata = {
   title: "Portfolio — Lakespring Investments",
-  description:
-    "A live look at how a first-principles thesis plays out across AI, energy, and digital assets.",
+  description: "First-principles portfolio — concentrated bets, patient compounding.",
 };
 
 export default async function DashboardPage() {
@@ -28,29 +29,50 @@ export default async function DashboardPage() {
     }
   }
 
-  return (
-    <div className="max-w-6xl mx-auto px-6 py-12">
-      <section className="mb-12 max-w-2xl">
-        <p className="text-xs uppercase tracking-[0.2em] text-sage-500 mb-3">
-          First Principles Portfolio
-        </p>
-        <h1 className="text-4xl md:text-5xl text-teal-600 tracking-tight leading-tight mb-4 font-semibold">
-          Concentrated bets. Patient compounding.
-        </h1>
-        <p className="text-ink-500 text-lg leading-relaxed">
-          A live look at how a first-principles thesis plays out across AI,
-          energy, and digital assets — and the premium collected along the way.
-        </p>
-      </section>
+  // Build weekly premium data from trades for the chart
+  // Group options trades by week, sum premiums
+  const weeklyMap: Record<string, number> = {};
+  for (const trade of allTrades) {
+    if (!["CSP", "CC"].includes(trade.optionType?.toUpperCase() ?? "")) continue;
+    const val = trade.totalPremiumUsd ?? 0;
+    if (val <= 0) continue;
+    const date = trade.closeDate || trade.openDate;
+    if (!date) continue;
+    // Get week start (Monday)
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    d.setDate(diff);
+    const weekKey = d.toISOString().slice(0, 10);
+    weeklyMap[weekKey] = (weeklyMap[weekKey] ?? 0) + val;
+  }
+  const weeklyPremiums = Object.entries(weeklyMap)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, amount]) => ({ date, amount }));
 
-      <div className="space-y-6">
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-10">
+      {/* Row 1: Portfolio value card + Weekly premium chart */}
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-5 mb-5">
         <PortfolioHero portfolio={portfolio} />
-        <MetricCards portfolio={portfolio} />
+        <PremiumChart weeklyData={weeklyPremiums} premiumYTD={portfolio.premiumYTD} />
+      </div>
+
+      {/* Row 2: Metric cards with portfolio toggle */}
+      <MetricCards portfolio={portfolio} allTrades={allTrades} />
+
+      {/* Row 3: Donut + Capital Gains table */}
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-5 mt-5">
         <AllocationDonut portfolio={portfolio} />
+        <CapitalGainsTable portfolio={portfolio} />
+      </div>
+
+      {/* Row 4: Holdings with trade dropdown */}
+      <div className="mt-5">
         <HoldingsList portfolio={portfolio} tradesByTicker={tradesByTicker} />
       </div>
 
-      <p className="text-xs text-ink-400 mt-8 text-right">
+      <p className="text-xs text-ink-400 mt-6 text-right">
         Updated{" "}
         {new Date(portfolio.lastUpdated).toLocaleString("en-US", {
           dateStyle: "medium",

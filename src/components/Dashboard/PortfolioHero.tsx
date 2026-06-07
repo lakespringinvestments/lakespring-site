@@ -8,85 +8,83 @@ function formatCurrency(n: number): string {
   });
 }
 
-function buildSparklinePath(points: { value: number }[], width: number, height: number) {
-  if (points.length === 0) return { line: "", fill: "" };
+function buildSparklinePath(
+  points: { value: number }[],
+  width: number,
+  height: number
+) {
+  if (points.length < 2) return { line: "", fill: "" };
   const values = points.map((p) => p.value);
   const min = Math.min(...values);
   const max = Math.max(...values);
   const range = max - min || 1;
-  const step = width / (points.length - 1 || 1);
+  const step = width / (points.length - 1);
   const coords = points.map((p, i) => {
     const x = i * step;
-    const y = height - ((p.value - min) / range) * (height - 20) - 10;
+    const y = height - ((p.value - min) / range) * (height - 8) - 4;
     return [x, y] as const;
   });
-  // Smooth-ish line via simple curve
   const line = coords
-    .map(([x, y], i) =>
-      i === 0 ? `M${x},${y}` : `L${x},${y}`
-    )
+    .map(([x, y], i) => (i === 0 ? `M${x},${y}` : `L${x},${y}`))
     .join(" ");
   const fill = `${line} L${width},${height} L0,${height} Z`;
   return { line, fill };
 }
 
 export default function PortfolioHero({ portfolio }: { portfolio: Portfolio }) {
-  const isPositive = portfolio.dayChange >= 0;
-  const { line, fill } = buildSparklinePath(portfolio.performance, 600, 140);
+  const { line, fill } = buildSparklinePath(portfolio.performance, 400, 60);
+  const avgWeekly = portfolio.premiumYTD > 0
+    ? Math.round(portfolio.premiumYTD / 22)
+    : 0;
 
   return (
-    <section className="bg-white rounded-2xl border border-cream-200 p-8 md:p-10">
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-6">
-        <div>
-          <p className="text-sm text-ink-500 mb-2 tracking-wide uppercase">
-            Portfolio value
-          </p>
-          <div className="flex items-baseline gap-3 flex-wrap">
-            <span className="font-serif text-5xl md:text-6xl text-teal-600 tracking-tight">
-              {formatCurrency(portfolio.totalValue)}
-            </span>
-            <span
-              className={`text-sm font-medium ${
-                isPositive ? "text-sage-500" : "text-red-600"
-              }`}
-            >
-              {isPositive ? "+" : ""}
-              {formatCurrency(portfolio.dayChange)} ({isPositive ? "+" : ""}
-              {portfolio.dayChangePct.toFixed(2)}%)
-            </span>
-          </div>
-        </div>
-        <div className="flex gap-1.5 self-start">
-          {["1M", "3M", "YTD", "All"].map((p, i) => (
-            <span
-              key={p}
-              className={`text-xs px-3 py-1.5 rounded-full ${
-                i === 0
-                  ? "bg-teal-600 text-white font-medium"
-                  : "bg-cream-100 text-ink-500"
-              }`}
-            >
-              {p}
-            </span>
-          ))}
-        </div>
+    <section className="bg-[#034147] rounded-2xl p-6 flex flex-col gap-4">
+      {/* Portfolio value */}
+      <div>
+        <p className="text-[10px] uppercase tracking-[0.18em] text-white/50 mb-1">
+          Portfolio value
+        </p>
+        <p className="text-3xl font-semibold text-white tracking-tight leading-none">
+          {formatCurrency(portfolio.totalValue)}
+        </p>
+        <p className="text-xs text-white/40 mt-1">
+          USD · {new Date(portfolio.lastUpdated).toLocaleDateString("en-US", {
+            month: "short", day: "numeric", year: "numeric"
+          })}
+        </p>
       </div>
 
-      <div className="relative">
+      {/* Sparkline */}
+      <div className="w-full">
         <svg
-          viewBox="0 0 600 140"
-          className="w-full h-32"
+          viewBox="0 0 400 60"
+          className="w-full h-14"
           preserveAspectRatio="none"
         >
           <defs>
-            <linearGradient id="heroFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#1D9E75" stopOpacity="0.18" />
-              <stop offset="100%" stopColor="#1D9E75" stopOpacity="0" />
+            <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#5DCAA5" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#5DCAA5" stopOpacity="0" />
             </linearGradient>
           </defs>
-          <path d={fill} fill="url(#heroFill)" />
-          <path d={line} fill="none" stroke="#1D9E75" strokeWidth="2" />
+          {fill && <path d={fill} fill="url(#sparkFill)" />}
+          {line && <path d={line} fill="none" stroke="#5DCAA5" strokeWidth="1.5" />}
         </svg>
+      </div>
+
+      {/* YTD premiums */}
+      <div className="border-t border-white/10 pt-4">
+        <p className="text-[10px] uppercase tracking-[0.18em] text-white/50 mb-1">
+          Premiums YTD
+        </p>
+        <p className="text-xl font-semibold text-[#5DCAA5] leading-none">
+          {formatCurrency(portfolio.premiumYTD)}
+        </p>
+        {avgWeekly > 0 && (
+          <p className="text-xs text-white/40 mt-1">
+            Avg {formatCurrency(avgWeekly)} / week
+          </p>
+        )}
       </div>
     </section>
   );
