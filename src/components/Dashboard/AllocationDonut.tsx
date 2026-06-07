@@ -21,7 +21,7 @@ function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
 }
 
 export default function AllocationDonut({ portfolio }: { portfolio: Portfolio }) {
-  const cx = 90, cy = 90, outerR = 78, innerR = 48;
+  const cx = 110, cy = 110, outerR = 95, innerR = 58;
 
   const filtered = portfolio.holdings.filter((h) => !EXCLUDED.has(h.ticker));
   const totalWeight = filtered.reduce((sum, h) => sum + h.weight, 0);
@@ -67,7 +67,7 @@ export default function AllocationDonut({ portfolio }: { portfolio: Portfolio })
     ].join(" ");
 
     // Label position — midpoint at label radius
-    const labelR = outerR + 14;
+    const labelR = outerR + 18;
     const labelPos = polarToCartesian(cx, cy, labelR, midAngle);
 
     const color = pickColor(seg.ticker, i);
@@ -86,7 +86,7 @@ export default function AllocationDonut({ portfolio }: { portfolio: Portfolio })
         Allocation
       </h2>
       <div className="flex justify-center">
-        <svg viewBox="0 0 180 180" className="w-48 h-48">
+        <svg viewBox="0 0 220 220" className="w-full h-full" style={{maxHeight: '240px'}}>
           {slices.map(({ seg, path, color, labelPos, midAngle }) => {
             const showLabel = seg.weight >= 8;
             // Anchor based on position
@@ -100,7 +100,7 @@ export default function AllocationDonut({ portfolio }: { portfolio: Portfolio })
                     y={labelPos.y}
                     textAnchor={anchor}
                     dominantBaseline="middle"
-                    fontSize="8"
+                    fontSize="9"
                     fontWeight="600"
                     fill={color === "#101113" ? "#101113" : color}
                     fontFamily="system-ui"
@@ -112,8 +112,8 @@ export default function AllocationDonut({ portfolio }: { portfolio: Portfolio })
             );
           })}
           {/* Center label */}
-          <text x={cx} y={cy - 6} textAnchor="middle" fontSize="8" fill="#888" fontFamily="system-ui">total</text>
-          <text x={cx} y={cy + 8} textAnchor="middle" fontSize="13" fontWeight="600" fill="#034147" fontFamily="system-ui">{totalValue}</text>
+          <text x={cx} y={cy - 8} textAnchor="middle" fontSize="9" fill="#888" fontFamily="system-ui">total</text>
+          <text x={cx} y={cy + 10} textAnchor="middle" fontSize="15" fontWeight="600" fill="#034147" fontFamily="system-ui">{totalValue}</text>
         </svg>
       </div>
     </section>

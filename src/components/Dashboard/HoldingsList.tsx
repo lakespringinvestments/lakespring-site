@@ -9,7 +9,7 @@ const TICKER_COLORS: Record<string, string> = {
   TSLA:  "#CC0000",
   NVDA:  "#76B900",
   PLTR:  "#101113",
-  AMZN:  "#FF9900",
+  AMZN:  "#FF9900",   // exact Amazon orange
   GOOGL: "#E8EAED",
 };
 
@@ -25,6 +25,8 @@ const EXCLUDED = new Set(["BTC", "SOL", "ASML"]);
 const OPTIONS_TYPES = new Set(["CSP", "CC"]);
 
 function pickColor(ticker: string, idx: number) {
+  // Amazon logo has its own orange background — use transparent tile
+  if (ticker === 'AMZN') return 'transparent';
   return TICKER_COLORS[ticker] ?? ["#034147", "#1D9E75", "#5DCAA5", "#347278"][idx % 4];
 }
 
@@ -42,7 +44,7 @@ function logoSize(ticker: string): number {
 function formatDate(iso: string): string {
   if (!iso) return "—";
   try {
-    return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "2-digit" });
+    return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   } catch { return iso; }
 }
 
@@ -175,7 +177,7 @@ export default function HoldingsList({ portfolio, tradesByTicker }: HoldingsList
                     <div className="rounded-xl border border-cream-200 overflow-hidden text-xs">
                       <div
                         className="grid px-4 py-2.5"
-                        style={{ gridTemplateColumns: "80px 50px 70px 55px 110px 80px 80px", gap: "8px", background: "#034147" }}
+                        style={{ gridTemplateColumns: "80px 50px 75px 65px 115px 75px 80px", gap: "8px", background: "#034147" }}
                       >
                         {["Date", "Type", "Strike", "Contracts", "Capital req.", "Premium", "Status"].map(col => (
                           <span key={col} className="text-[10px] uppercase tracking-wide font-medium text-white/80">{col}</span>
@@ -184,8 +186,8 @@ export default function HoldingsList({ portfolio, tradesByTicker }: HoldingsList
                       {optionsTrades.map((trade, idx) => (
                         <div
                           key={idx}
-                          className="grid px-4 py-2.5 border-b border-cream-100 last:border-0 items-center odd:bg-cream-50/50"
-                          style={{ gridTemplateColumns: "80px 50px 70px 55px 110px 80px 80px", gap: "8px" }}
+                          className="grid px-4 py-2.5 border-b border-cream-100 last:border-0 items-center text-center odd:bg-cream-50/50"
+                          style={{ gridTemplateColumns: "80px 50px 75px 65px 115px 75px 80px", gap: "8px" }}
                         >
                           <span className="text-ink-500 tabular-nums">
                             {formatDate(trade.closeDate || trade.openDate)}

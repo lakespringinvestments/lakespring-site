@@ -9,15 +9,14 @@ interface PremiumChartProps {
   premiumYTD: number;
 }
 
-const FILTERS = ["4W", "1M", "3M", "YTD", "All"] as const;
+const FILTERS = ["1M", "3M", "YTD", "All"] as const;
 type Filter = (typeof FILTERS)[number];
 
 function filterData(data: WeeklyPoint[], filter: Filter): WeeklyPoint[] {
   if (!data.length) return [];
   const now = new Date();
   const cutoff = new Date(now);
-  if (filter === "4W") cutoff.setDate(now.getDate() - 28);
-  else if (filter === "1M") cutoff.setMonth(now.getMonth() - 1);
+  if (filter === "1M") cutoff.setMonth(now.getMonth() - 1);
   else if (filter === "3M") cutoff.setMonth(now.getMonth() - 3);
   else if (filter === "YTD") cutoff.setMonth(0, 1);
   else return data; // All
@@ -30,7 +29,7 @@ function formatWeekLabel(date: string): string {
 }
 
 export default function PremiumChart({ weeklyData, premiumYTD }: PremiumChartProps) {
-  const [activeFilter, setActiveFilter] = useState<Filter>("4W");
+  const [activeFilter, setActiveFilter] = useState<Filter>("1M");
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const filtered = filterData(weeklyData, activeFilter);
