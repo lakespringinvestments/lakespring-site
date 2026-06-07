@@ -76,11 +76,11 @@ Vera Rubin is explicitly designed for this. The Vera CPU Rack within the platfor
 
 None of this matters without buyers, and the buyers are in a structural spending race that has no visible exit.
 
-![The AI Arms Race: $24B to $600B in 11 Years](/article-images/nvidia_hyperscaler_capex.png)
-
 The big five hyperscalers — Amazon, Microsoft, Google, Meta, Oracle — committed approximately $443 billion in capex in 2025, a 73% year-over-year increase. For 2026, spending is projected to approach $600 billion, with roughly 75% tied to AI infrastructure. Goldman Sachs projects total hyperscaler CapEx from 2025–2027 will reach $1.15 trillion. Each of the four largest hyperscalers now individually exceeds $100 billion in annual infrastructure spending.
 
 The dynamic driving this is a prisoner's dilemma. If Microsoft pulls back, AWS captures enterprise AI customers. If Google pauses, Microsoft wins. No single player can afford to slow down, which means the capital commitment is sticky even if individual ROI remains unproven. The companies most capable of moderating spending are the ones with the most to lose by doing so first.
+
+![The AI Arms Race: $24B to $600B in 11 Years](/article-images/nvidia_hyperscaler_capex.png)
 
 NVIDIA is not just a beneficiary of this dynamic — it shapes it. When NVIDIA forecasts demand for the next generation, memory manufacturers build HBM production capacity to match. Server OEMs design chassis specifically for each new NVIDIA architecture. The entire supply chain scales in direct response to NVIDIA's product roadmap, which means NVIDIA's influence on the AI infrastructure economy extends well beyond the chips it ships.
 

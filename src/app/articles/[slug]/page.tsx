@@ -176,9 +176,10 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
           <img
             src={article.coverImage}
             alt={article.title}
-            className="w-full rounded-2xl object-cover"
+            className="w-full rounded-2xl"
             style={{
               aspectRatio: "16/9",
+              objectFit: "cover",
               objectPosition: article.coverPosition ?? "center center",
             }}
           />
