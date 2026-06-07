@@ -203,9 +203,9 @@ function FeaturedTile({
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/0" />
           <div className="absolute inset-0 flex flex-col justify-end p-7 md:p-9">
             {article.byline && (
-              <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-3 font-semibold">
+              <span className="inline-block bg-black/80 text-white text-[9px] uppercase tracking-[0.2em] font-semibold px-2 py-1 rounded mb-3 w-fit">
                 {article.byline}
-              </p>
+              </span>
             )}
             <h2 className="font-serif text-3xl md:text-4xl text-cream-50 leading-[1.08] tracking-tight font-medium">
               {article.title}
@@ -225,9 +225,9 @@ function FeaturedTile({
       ) : (
         <div className="absolute inset-0 bg-[#0A0A0A] flex flex-col justify-end p-7 md:p-9 transition-opacity duration-300 group-hover:opacity-95">
           {article.byline && (
-            <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-3 font-semibold">
+            <span className="inline-block bg-black/80 text-white text-[9px] uppercase tracking-[0.2em] font-semibold px-2 py-1 rounded mb-3 w-fit">
               {article.byline}
-            </p>
+            </span>
           )}
           <h2 className="font-serif text-3xl md:text-4xl text-cream-50 leading-[1.08] tracking-tight font-medium">
             {article.title}
@@ -283,9 +283,9 @@ function ArticleTile({
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-black/0" />
           <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-7">
             {article.byline && (
-              <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2 font-semibold">
+              <span className="inline-block bg-black/80 text-white text-[9px] uppercase tracking-[0.2em] font-semibold px-2 py-1 rounded mb-2 w-fit">
                 {article.byline}
-              </p>
+              </span>
             )}
             <h2 className="font-serif text-xl md:text-2xl text-cream-50 leading-[1.1] tracking-tight font-medium">
               {article.title}
@@ -301,15 +301,9 @@ function ArticleTile({
         <div
           className={`absolute inset-0 ${fallback.bg} ${fallback.border} flex flex-col justify-end p-6 md:p-7 transition-opacity duration-300 group-hover:opacity-95`}
         >
-          {article.byline ? (
-            <p className={`text-[10px] uppercase tracking-[0.2em] ${fallback.byline} mb-2 font-semibold`}>
-              {article.byline}
-            </p>
-          ) : (
-            <p className={`text-[10px] uppercase tracking-[0.2em] ${fallback.byline} mb-2 font-semibold`}>
-              Note
-            </p>
-          )}
+          <span className="inline-block bg-black/80 text-white text-[9px] uppercase tracking-[0.2em] font-semibold px-2 py-1 rounded mb-2 w-fit">
+            {article.byline ?? "Note"}
+          </span>
           <h2 className={`font-serif text-xl md:text-2xl ${fallback.title} leading-[1.1] tracking-tight font-medium`}>
             {article.title}
           </h2>

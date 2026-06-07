@@ -1,5 +1,5 @@
 ---
-title: "The Musk Industrial Complex: Valuing the Dream of the Future"
+title: "The Musk Industrial Complex: Valuing the Vision of Abundance"
 date: "2026-06-06"
 byline: "Holdings deep-dive"
 author: "Brian L."
