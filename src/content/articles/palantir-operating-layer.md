@@ -1,5 +1,5 @@
 ---
-title: "Palantir: The Brain that is Way Beyond Warfare Intelligence"
+title: "Palantir: Beyond Warfare Intelligence"
 date: "2026-05-24"
 author: "Brian L."
 byline: "Holdings deep-dive"

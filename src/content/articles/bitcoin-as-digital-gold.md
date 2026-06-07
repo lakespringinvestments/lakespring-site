@@ -1,11 +1,11 @@
 ---
 title: "Bitcoin as Digital Gold"
 date: "2026-05-28"
-author: "Brian L."
 byline: "Holdings deep-dive"
 excerpt: "The Strategy page says Bitcoin is the defining asset of the digital era. This piece tests one specific corner of that thesis: what would actually make me trim the position?"
 coverImage: "/article-images/bitcoin-as-digital-gold.png"
-coverPosition: "center center"
+coverPosition: "center 35%"
+coverScale: "1.25"
 ---
 
 The Strategy page makes the case that Bitcoin is digital gold — the only credibly neutral monetary asset emerging in a fiat-debasement world. That argument has been compounding in the background of every conversation about hard assets for over a decade now.
