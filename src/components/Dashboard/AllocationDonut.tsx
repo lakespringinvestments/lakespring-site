@@ -1,3 +1,5 @@
+"use client";
+
 import type { Portfolio } from "../../../types/portfolio";
 
 const TICKER_COLORS: Record<string, string> = {

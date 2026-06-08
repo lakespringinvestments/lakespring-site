@@ -13,12 +13,33 @@ export const metadata = {
 };
 
 export default async function DashboardPage() {
-  const portfolio = await getPortfolio();
-  const allTrades = await getAllTrades();
+  let portfolio;
+  let allTrades: Awaited<ReturnType<typeof getAllTrades>> = [];
+
+  try {
+    portfolio = await getPortfolio();
+  } catch (e) {
+    console.error("getPortfolio failed:", e);
+    portfolio = null;
+  }
+
+  try {
+    allTrades = await getAllTrades();
+  } catch (e) {
+    console.error("getAllTrades failed:", e);
+  }
+
+  if (!portfolio) {
+    return (
+      <div className="max-w-6xl mx-auto px-6 py-20 text-center">
+        <p className="text-ink-400 text-sm">Portfolio data unavailable — check back shortly.</p>
+      </div>
+    );
+  }
 
   const tradesByTicker: Record<string, typeof allTrades> = {};
   for (const trade of allTrades) {
-    const ticker = trade.ticker.toUpperCase();
+    const ticker = (trade.ticker ?? "").toUpperCase();
     if (!ticker) continue;
     if (!tradesByTicker[ticker]) tradesByTicker[ticker] = [];
     if (tradesByTicker[ticker].length < 8) tradesByTicker[ticker].push(trade);
@@ -31,37 +52,35 @@ export default async function DashboardPage() {
     if (val <= 0) continue;
     const date = trade.closeDate || trade.openDate;
     if (!date) continue;
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-    d.setDate(diff);
-    const weekKey = d.toISOString().slice(0, 10);
-    weeklyMap[weekKey] = (weeklyMap[weekKey] ?? 0) + val;
+    try {
+      const d = new Date(date);
+      if (isNaN(d.getTime())) continue;
+      const day = d.getDay();
+      d.setDate(d.getDate() - day + (day === 0 ? -6 : 1));
+      const weekKey = d.toISOString().slice(0, 10);
+      weeklyMap[weekKey] = (weeklyMap[weekKey] ?? 0) + val;
+    } catch { continue; }
   }
+
   const weeklyPremiums = Object.entries(weeklyMap)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([date, amount]) => ({ date, amount }));
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
-      {/* Row 1: Hero + Chart */}
       <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-5 mb-5">
         <PortfolioHero portfolio={portfolio} />
         <PremiumChart weeklyData={weeklyPremiums} premiumYTD={portfolio.premiumYTD} />
       </div>
-
-      {/* Rows 2+3: Toggle + Metric cards + Donut + Capital Gains (shared state) */}
       <DashboardClient portfolio={portfolio} allTrades={allTrades} />
-
-      {/* Row 4: Holdings */}
       <div className="mt-5">
         <HoldingsList portfolio={portfolio} tradesByTicker={tradesByTicker} />
       </div>
-
       <p className="text-xs text-ink-400 mt-6 text-right">
         Updated{" "}
         {new Date(portfolio.lastUpdated).toLocaleString("en-US", {
-          dateStyle: "medium", timeStyle: "short",
+          dateStyle: "medium",
+          timeStyle: "short",
         })}
       </p>
     </div>
