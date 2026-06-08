@@ -2,7 +2,7 @@
 
 import type { Portfolio } from "../../../types/portfolio";
 import type { Trade } from "@/lib/trades";
-import type { PortfolioView } from "./DashboardClient";
+import type { PortfolioView } from "./types";
 
 interface MetricCardsProps {
   portfolio: Portfolio;

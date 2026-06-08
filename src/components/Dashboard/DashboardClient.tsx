@@ -7,7 +7,7 @@ import MetricCards from "./MetricCards";
 import CapitalGainsTable from "./CapitalGainsTable";
 import AllocationDonut from "./AllocationDonut";
 
-export type PortfolioView = "first" | "second";
+import type { PortfolioView } from "./types";
 
 interface Props {
   portfolio: Portfolio;

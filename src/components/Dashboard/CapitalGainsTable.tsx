@@ -1,7 +1,7 @@
 "use client";
 
 import type { Portfolio } from "../../../types/portfolio";
-import type { PortfolioView } from "./DashboardClient";
+import type { PortfolioView } from "./types";
 
 const BOOK_COSTS: Record<string, number> = {
   TSLA:  210675,
