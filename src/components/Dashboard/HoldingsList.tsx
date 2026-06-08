@@ -144,8 +144,7 @@ export default function HoldingsList({ portfolio, tradesByTicker }: HoldingsList
                   <div
                     className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center"
                     style={{
-                      background: h.ticker === "AMZN" ? "transparent" : bg,
-                      padding: 0,
+                      background: bg,
                     }}
                   >
                     {logoSrc ? (
@@ -154,7 +153,7 @@ export default function HoldingsList({ portfolio, tradesByTicker }: HoldingsList
                         alt={h.ticker}
                         width={logoSize(h.ticker)}
                         height={logoSize(h.ticker)}
-                        className={h.ticker === "AMZN" ? "w-full h-full object-cover" : "object-contain"}
+                        className="object-contain"
                       />
                     ) : (
                       <span className="text-[11px] font-medium" style={{ color: fg }}>

@@ -24,7 +24,7 @@ function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
 
 export default function AllocationDonut({ portfolio }: { portfolio: Portfolio }) {
   // Generous viewBox so labels never get cut — ring centred inside
-  const VW = 360, VH = 360;
+  const VW = 300, VH = 300;
   const cx = VW / 2, cy = VH / 2;
   const outerR = 108, innerR = 66;
 
@@ -97,7 +97,7 @@ export default function AllocationDonut({ portfolio }: { portfolio: Portfolio })
         <svg
           viewBox={`0 0 ${VW} ${VH}`}
           className="w-full"
-          style={{ maxHeight: "340px" }}
+          style={{ maxHeight: "360px" }}
           aria-label="Portfolio allocation donut chart"
         >
           {slices.map(({ seg, path, color, p1, p2, lp, anchor }) => (
@@ -111,7 +111,7 @@ export default function AllocationDonut({ portfolio }: { portfolio: Portfolio })
                 y={lp.y - 6}
                 textAnchor={anchor}
                 dominantBaseline="auto"
-                fontSize="9.5"
+                fontSize="11"
                 fontWeight="700"
                 fill={color === "#101113" ? "#444" : color}
                 fontFamily="system-ui, sans-serif"
@@ -124,8 +124,8 @@ export default function AllocationDonut({ portfolio }: { portfolio: Portfolio })
                 y={lp.y + 7}
                 textAnchor={anchor}
                 dominantBaseline="auto"
-                fontSize="8.5"
-                fill="#999"
+                fontSize="10"
+                fill="#888"
                 fontFamily="system-ui, sans-serif"
               >
                 {seg.weight.toFixed(0)}%
@@ -133,8 +133,8 @@ export default function AllocationDonut({ portfolio }: { portfolio: Portfolio })
             </g>
           ))}
           {/* Centre text */}
-          <text x={cx} y={cy - 12} textAnchor="middle" fontSize="10" fill="#bbb" fontFamily="system-ui">total</text>
-          <text x={cx} y={cy + 10} textAnchor="middle" fontSize="18" fontWeight="700" fill="#034147" fontFamily="system-ui">{totalDisplay}</text>
+          <text x={cx} y={cy - 12} textAnchor="middle" fontSize="11" fill="#bbb" fontFamily="system-ui">total</text>
+          <text x={cx} y={cy + 12} textAnchor="middle" fontSize="20" fontWeight="700" fill="#034147" fontFamily="system-ui">{totalDisplay}</text>
         </svg>
       </div>
     </section>

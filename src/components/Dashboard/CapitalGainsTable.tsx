@@ -82,7 +82,7 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
               {ticker}
             </span>
             <span className="text-ink-700 tabular-nums">{fmt(bookCost)}</span>
-            <span className="tabular-nums font-medium" style={{ color: mktValue > 0 ? "#1D9E75" : "#888" }}>
+            <span className="tabular-nums" style={{ color: mktValue > 0 ? "#0a0a0a" : "#888" }}>
               {mktValue > 0 ? fmt(mktValue) : "—"}
             </span>
             <span
