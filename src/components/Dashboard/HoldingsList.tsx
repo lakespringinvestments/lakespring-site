@@ -18,7 +18,6 @@ const TICKER_COLORS: Record<string, string> = {
   SMCI: "#8A9BB0",   // gray
   ASML: "transparent",
   BE:   "transparent",
-  SMCI: "transparent",
 };
 
 const TICKER_LOGOS: Record<string, string> = {
