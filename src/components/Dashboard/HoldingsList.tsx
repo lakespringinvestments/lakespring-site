@@ -14,10 +14,10 @@ const TICKER_COLORS: Record<string, string> = {
   // SD tickers — use transparent so each logo PNG's own background shows
   MRVL: "transparent",
   NBIS: "transparent",
-  LLY:  "#FAF8F3",   // cream white — Lilly logo contains on light bg
+  LLY:  "transparent",
   ASML: "transparent",
   BE:   "transparent",
-  TSM:  "transparent",
+  SMCI: "transparent",
 };
 
 const TICKER_LOGOS: Record<string, string> = {
@@ -32,18 +32,18 @@ const TICKER_LOGOS: Record<string, string> = {
   LLY:  "/logos/lilly.png",
   ASML: "/logos/asml.png",
   BE:   "/logos/bloom_energy.png",
-  TSM:  "/logos/tsmc.png",
+  SMCI: "/logos/smci.png",
 };
 
 const EXCLUDED = new Set(["BTC", "SOL"]);
 const OPTIONS_TYPES = new Set(["CSP", "CC"]);
 const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL"]);
-const SD_TICKERS  = new Set(["MRVL","NBIS","LLY","ASML","BE","TSM"]);
+const SD_TICKERS  = new Set(["MRVL","NBIS","LLY","ASML","BE","SMCI"]);
 
 // SD tickers that may not be in portfolio.holdings — show as placeholders
 const SD_NAMES: Record<string, string> = {
   MRVL: "Marvell", NBIS: "Nebius Group", LLY: "Eli Lilly",
-  ASML: "ASML", BE: "Bloom Energy", TSM: "TSMC",
+  ASML: "ASML", BE: "Bloom Energy", SMCI: "Super Micro Computer",
 };
 
 function pickColor(ticker: string) {
@@ -198,14 +198,9 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                     style={{ background: bg }}
                   >
                     {logoSrc ? (
-                      // LLY has a wide landscape logo — white bg + contain so full text shows
-                      h.ticker === "LLY" ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={logoSrc} alt={h.ticker}
-                          style={{ width: "90%", height: "90%", objectFit: "contain", display: "block" }}
-                        />
-                      ) : ["MRVL","NBIS","ASML","BE","TSM"].includes(h.ticker) ? (
-                        // Other SD logos fill the tile with their own background
+                      // SD logos have their own backgrounds — fill tile with plain img
+                      // to avoid Next.js Image sizing interference
+                      ["MRVL","NBIS","LLY","ASML","BE","SMCI"].includes(h.ticker) ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logoSrc} alt={h.ticker}
                           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
