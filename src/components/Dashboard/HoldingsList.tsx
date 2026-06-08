@@ -14,7 +14,7 @@ const TICKER_COLORS: Record<string, string> = {
   // SD tickers — use transparent so each logo PNG's own background shows
   MRVL: "transparent",
   NBIS: "transparent",
-  LLY:  "#000000",   // Lilly logo has black background
+  LLY:  "#FAF8F3",   // cream white — Lilly logo contains on light bg
   ASML: "transparent",
   BE:   "transparent",
   TSM:  "transparent",

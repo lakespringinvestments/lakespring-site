@@ -78,11 +78,21 @@ export default function AllocationDonut({ portfolio, view }: Props) {
     const sweep = (seg.weight / 100) * 360;
     const end = start + sweep;
     const mid = start + sweep / 2;
-    // Large segments get labels pushed further out — prevent line/label collision
+
+    // Normalise mid angle to 0–360
+    const normMid = ((mid % 360) + 360) % 360;
+    // Detect bottom-center zone (220°–320°) — push label left or right
+    const isBottom = normMid >= 220 && normMid <= 320;
     const labelOffset = sweep > 50 ? 42 : 32;
-    const lp = polarToCartesian(cx, cy, outerR + labelOffset, mid);
+
+    let lp = polarToCartesian(cx, cy, outerR + labelOffset, mid);
+    // For bottom segments, nudge the label horizontally away from center
+    if (isBottom) {
+      const nudge = normMid < 270 ? -18 : 18;  // left of center goes left, right goes right
+      lp = { x: lp.x + nudge, y: lp.y + 6 };
+    }
+
     const p1 = polarToCartesian(cx, cy, outerR + 4, mid);
-    // Line ends 14px before label to leave clear gap
     const p2 = polarToCartesian(cx, cy, outerR + labelOffset - 14, mid);
     const anchor = (lp.x < cx - 3 ? "end" : lp.x > cx + 3 ? "start" : "middle") as "end"|"start"|"middle";
     cumulAngle = end;
