@@ -173,14 +173,11 @@ export default function ThesisPage() {
               hard that defines an entire generation of immigrant households — and yet they stayed
               on the wrong side of the wealth divide. Not because they lacked intelligence. Not
               because they lacked discipline. But because no one ever taught them how modern
-              wealth is actually built.
-            </p>
-            <p>
-              In other words, they knew how to save but not how to own.
+              wealth is actually built. In other words, they knew how to save but not how to own.
             </p>
           </div>
 
-          <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed">
+          <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed mt-7">
             <p>
               That distinction sounds small until you live through what we&apos;re living through
               now. The economy has split into two tracks — what economists call the K-shaped
@@ -243,7 +240,7 @@ export default function ThesisPage() {
               Lakespring Investments starts somewhere else. The question isn&apos;t which stocks
               will beat the S&amp;P 500 over the next year. It&apos;s:
             </p>
-            <blockquote className="border-l-4 border-sage-500 pl-6 my-8 text-xl md:text-2xl text-teal-600 font-medium leading-snug">
+            <blockquote className="border-l-4 border-sage-500 pl-6 my-8 text-2xl md:text-3xl text-teal-600 font-medium leading-snug">
               What structural transformations are actually underway in the global economy, and
               which businesses own the moats that will define the outcome?
             </blockquote>
@@ -257,8 +254,8 @@ export default function ThesisPage() {
               in the transformations themselves.
             </p>
             <p>
-              Among some of our core convictions: Bitcoin, Tesla, Palantir, Nvidia, Alphabet,
-              and Amazon — among others. Each position is chosen not purely on transformation
+              Some of our core convictions include Bitcoin, Tesla, Palantir, Nvidia, Alphabet,
+              and Amazon. Each position is chosen not purely on transformation
               narrative or projected ROI, but on three questions we take seriously: does the
               company have the execution power to actually deliver on what it&apos;s promising? Does
               it have structural moats — network effects, vertical integration, switching costs,
@@ -477,7 +474,7 @@ export default function ThesisPage() {
               real. But it is the supporting act, not the headline.
             </p>
             <p>
-              <strong className="text-[#0a0a0a] font-bold">
+              <strong className="text-teal-600 font-bold">
                 The real win is holding the right positions long enough for the transformation to
                 be obvious to everyone else.
               </strong>{" "}
