@@ -126,7 +126,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
       {/* ── Header ── */}
       <header className="max-w-6xl mx-auto px-6 pt-16 md:pt-20 pb-10 md:pb-12">
         <Link
-          href="/"
+          href="/stories"
           className="text-xs uppercase tracking-wide text-ink-400 hover:text-teal-600 mb-8 inline-block transition-colors"
         >
           ← Stories &amp; Perspectives
@@ -176,10 +176,9 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
           <img
             src={article.coverImage}
             alt={article.title}
-            className="w-full rounded-2xl"
+            className="w-full rounded-2xl object-cover"
             style={{
               aspectRatio: "16/9",
-              objectFit: "cover",
               objectPosition: article.coverPosition ?? "center center",
             }}
           />

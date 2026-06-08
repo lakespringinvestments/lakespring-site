@@ -9,6 +9,7 @@ const TICKER_COLORS: Record<string, string> = {
   TSLA:  "#CC0000",
   NVDA:  "#76B900",
   PLTR:  "#101113",
+  // Amazon: we set background to match the logo PNG's own orange exactly
   AMZN:  "#FF9900",
   GOOGL: "#E8EAED",
 };
@@ -36,12 +37,19 @@ function logoSize(ticker: string): number {
   if (ticker === "TSLA") return 38;
   if (ticker === "NVDA") return 36;
   if (ticker === "PLTR") return 36;
-  if (ticker === "AMZN") return 26;
+  if (ticker === "AMZN") return 40;   // fill tile
   if (ticker === "GOOGL") return 28;
   return 36;
 }
 
-function formatDate(iso: string): string {
+function friendlyType(optionType: string): string {
+  const t = optionType?.toUpperCase();
+  if (t === "CSP") return "Put";
+  if (t === "CC")  return "Covered Call";
+  return optionType;
+}
+
+function formatDate(iso: string, fullYear = false): string {
   if (!iso) return "—";
   try {
     return new Date(iso).toLocaleDateString("en-US", {
@@ -51,7 +59,7 @@ function formatDate(iso: string): string {
 }
 
 function statusColor(status: string): string {
-  const s = status.toLowerCase();
+  const s = status?.toLowerCase() ?? "";
   if (s.includes("expired") || s.includes("closed")) return "#1D9E75";
   if (s.includes("assigned")) return "#D97706";
   if (s.includes("open")) return "#034147";
@@ -79,18 +87,31 @@ function capitalRequired(trade: Trade): string {
   return "—";
 }
 
-function premiumValue(trade: Trade): string {
-  const val = trade.totalPremiumUsd != null && trade.totalPremiumUsd > 0
-    ? trade.totalPremiumUsd
-    : trade.premiumPerContract != null && trade.contracts != null && trade.premiumPerContract > 0
-    ? Math.abs(trade.premiumPerContract * trade.contracts)
-    : null;
+function premiumTotal(trade: Trade): number | null {
+  if (trade.totalPremiumUsd != null && trade.totalPremiumUsd > 0) return trade.totalPremiumUsd;
+  if (trade.premiumPerContract != null && trade.contracts != null && trade.premiumPerContract > 0)
+    return Math.abs(trade.premiumPerContract * trade.contracts);
+  return null;
+}
+
+function optionPrice(trade: Trade): string {
+  // Option price per share = total premium / (contracts * 100)
+  const total = premiumTotal(trade);
+  if (total != null && trade.contracts && trade.contracts > 0) {
+    const perShare = total / (trade.contracts * 100);
+    return "$" + perShare.toFixed(2);
+  }
+  return "—";
+}
+
+function premiumDisplay(trade: Trade): string {
+  const val = premiumTotal(trade);
   return val ? "$" + val.toLocaleString() : "—";
 }
 
-const COLS = ["Date", "Type", "Strike", "Contracts", "Capital req.", "Premium", "Status"];
-// grid template — generous spacing so nothing squishes
-const GRID = "90px 55px 75px 70px 115px 80px 80px";
+// Columns: Date | Type | Strike | Contracts | Capital req. | Option price | Premium | Expiry | Status
+const COLS = ["Date", "Type", "Strike", "Contracts", "Capital req.", "Opt. price", "Premium", "Expiry", "Status"];
+const GRID = "90px 95px 70px 70px 105px 75px 75px 100px 80px";
 
 interface HoldingsListProps {
   portfolio: Portfolio;
@@ -119,10 +140,13 @@ export default function HoldingsList({ portfolio, tradesByTicker }: HoldingsList
             <div key={h.ticker}>
               <button onClick={() => toggle(h.ticker)} className="w-full py-3 text-left" aria-expanded={isOpen}>
                 <div className="flex items-center gap-3">
-                  {/* Logo tile — rounded-lg with overflow-hidden for clean corners */}
+                  {/* Logo tile */}
                   <div
                     className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center"
-                    style={{ background: bg }}
+                    style={{
+                      background: h.ticker === "AMZN" ? "transparent" : bg,
+                      padding: 0,
+                    }}
                   >
                     {logoSrc ? (
                       <Image
@@ -130,7 +154,7 @@ export default function HoldingsList({ portfolio, tradesByTicker }: HoldingsList
                         alt={h.ticker}
                         width={logoSize(h.ticker)}
                         height={logoSize(h.ticker)}
-                        className="object-contain"
+                        className={h.ticker === "AMZN" ? "w-full h-full object-cover" : "object-contain"}
                       />
                     ) : (
                       <span className="text-[11px] font-medium" style={{ color: fg }}>
@@ -166,11 +190,11 @@ export default function HoldingsList({ portfolio, tradesByTicker }: HoldingsList
               </button>
 
               {isOpen && (
-                <div className="pb-4 pt-1">
+                <div className="pb-4 pt-1 overflow-x-auto">
                   {optionsTrades.length === 0 ? (
                     <p className="text-xs text-ink-400 py-2">No options trades found for {h.ticker}.</p>
                   ) : (
-                    <div className="rounded-xl border border-cream-200 overflow-hidden text-xs">
+                    <div className="rounded-xl border border-cream-200 overflow-hidden text-xs min-w-[760px]">
                       {/* Header */}
                       <div
                         className="grid px-4 py-2.5"
@@ -198,10 +222,10 @@ export default function HoldingsList({ portfolio, tradesByTicker }: HoldingsList
                           }}
                         >
                           <span className="text-ink-500 tabular-nums text-left">
-                            {formatDate(trade.closeDate || trade.openDate)}
+                            {formatDate(trade.openDate)}
                           </span>
                           <span className="text-center font-medium" style={{ color: "#034147" }}>
-                            {trade.optionType}
+                            {friendlyType(trade.optionType)}
                           </span>
                           <span className="text-center text-ink-700 tabular-nums">
                             {trade.strike ? `$${trade.strike.toLocaleString()}` : "—"}
@@ -213,7 +237,13 @@ export default function HoldingsList({ portfolio, tradesByTicker }: HoldingsList
                             {capitalRequired(trade)}
                           </span>
                           <span className="text-center text-ink-700 tabular-nums">
-                            {premiumValue(trade)}
+                            {optionPrice(trade)}
+                          </span>
+                          <span className="text-center text-ink-700 tabular-nums">
+                            {premiumDisplay(trade)}
+                          </span>
+                          <span className="text-center text-ink-500 tabular-nums">
+                            {formatDate(trade.closeDate)}
                           </span>
                           <span
                             className="text-center font-medium"

@@ -29,7 +29,7 @@ function formatWeekLabel(date: string): string {
 }
 
 export default function PremiumChart({ weeklyData, premiumYTD }: PremiumChartProps) {
-  const [activeFilter, setActiveFilter] = useState<Filter>("1M");
+  const [activeFilter, setActiveFilter] = useState<Filter>("3M");
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const filtered = filterData(weeklyData, activeFilter);
