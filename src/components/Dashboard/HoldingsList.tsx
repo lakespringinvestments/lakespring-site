@@ -14,7 +14,7 @@ const TICKER_COLORS: Record<string, string> = {
   // SD tickers — use transparent so each logo PNG's own background shows
   MRVL: "transparent",
   NBIS: "transparent",
-  LLY:  "transparent",
+  LLY:  "#000000",   // Lilly logo has black background
   ASML: "transparent",
   BE:   "transparent",
   TSM:  "transparent",
@@ -198,9 +198,14 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                     style={{ background: bg }}
                   >
                     {logoSrc ? (
-                      // SD logos have their own backgrounds — fill tile with plain img
-                      // to avoid Next.js Image sizing interference
-                      ["MRVL","NBIS","LLY","ASML","BE","TSM"].includes(h.ticker) ? (
+                      // LLY has a wide landscape logo — white bg + contain so full text shows
+                      h.ticker === "LLY" ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={logoSrc} alt={h.ticker}
+                          style={{ width: "90%", height: "90%", objectFit: "contain", display: "block" }}
+                        />
+                      ) : ["MRVL","NBIS","ASML","BE","TSM"].includes(h.ticker) ? (
+                        // Other SD logos fill the tile with their own background
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logoSrc} alt={h.ticker}
                           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}

@@ -78,11 +78,12 @@ export default function AllocationDonut({ portfolio, view }: Props) {
     const sweep = (seg.weight / 100) * 360;
     const end = start + sweep;
     const mid = start + sweep / 2;
-    // Larger segments get labels pushed further out to avoid line overlap
-    const labelOffset = sweep > 60 ? 38 : 30;
+    // Large segments get labels pushed further out — prevent line/label collision
+    const labelOffset = sweep > 50 ? 42 : 32;
     const lp = polarToCartesian(cx, cy, outerR + labelOffset, mid);
     const p1 = polarToCartesian(cx, cy, outerR + 4, mid);
-    const p2 = polarToCartesian(cx, cy, outerR + labelOffset - 10, mid);
+    // Line ends 14px before label to leave clear gap
+    const p2 = polarToCartesian(cx, cy, outerR + labelOffset - 14, mid);
     const anchor = (lp.x < cx - 3 ? "end" : lp.x > cx + 3 ? "start" : "middle") as "end"|"start"|"middle";
     cumulAngle = end;
     return { ...seg, start, end, mid, lp, p1, p2, anchor };
