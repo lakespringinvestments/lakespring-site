@@ -140,20 +140,20 @@ export default function HoldingsList({ portfolio, tradesByTicker }: HoldingsList
             <div key={h.ticker}>
               <button onClick={() => toggle(h.ticker)} className="w-full py-3 text-left" aria-expanded={isOpen}>
                 <div className="flex items-center gap-3">
-                  {/* Logo tile */}
+                  {/* Logo tile — Amazon uses object-cover so its own PNG background fills the tile */}
                   <div
                     className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center"
                     style={{
-                      background: bg,
+                      background: h.ticker === "AMZN" ? "transparent" : bg,
                     }}
                   >
                     {logoSrc ? (
                       <Image
                         src={logoSrc}
                         alt={h.ticker}
-                        width={logoSize(h.ticker)}
-                        height={logoSize(h.ticker)}
-                        className="object-contain"
+                        width={h.ticker === "AMZN" ? 40 : logoSize(h.ticker)}
+                        height={h.ticker === "AMZN" ? 40 : logoSize(h.ticker)}
+                        className={h.ticker === "AMZN" ? "w-full h-full object-cover" : "object-contain"}
                       />
                     ) : (
                       <span className="text-[11px] font-medium" style={{ color: fg }}>
