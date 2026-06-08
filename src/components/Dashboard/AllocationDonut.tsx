@@ -87,9 +87,6 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   });
 
   useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
-
     // Cancel any running animation
     if (animRef.current) cancelAnimationFrame(animRef.current);
 
@@ -101,6 +98,8 @@ export default function AllocationDonut({ portfolio, view }: Props) {
     function easeOutCubic(t: number) { return 1 - Math.pow(1 - t, 3); }
 
     function frame(now: number) {
+      const svg = svgRef.current;
+      if (!svg) return;
       const raw = Math.min((now - startTime) / DURATION, 1);
       const progress = easeOutCubic(raw);
 
