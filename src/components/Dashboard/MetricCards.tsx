@@ -1,30 +1,29 @@
 "use client";
 
-import { useState } from "react";
 import type { Portfolio } from "../../../types/portfolio";
 import type { Trade } from "@/lib/trades";
+import type { PortfolioView } from "./DashboardClient";
 
 interface MetricCardsProps {
   portfolio: Portfolio;
   allTrades: Trade[];
+  view: PortfolioView;
+  setView: (v: PortfolioView) => void;
 }
-
-type PortfolioView = "first" | "second";
 
 const OPTIONS_TYPES = new Set(["CSP", "CC"]);
 const FP_TICKERS = new Set(["TSLA", "NVDA", "PLTR", "AMZN", "GOOGL"]);
 
-const THEME = {
+const THEME: Record<PortfolioView, { bg: string; label: string }> = {
   first:  { bg: "#034147", label: "First Principles Portfolio" },
-  second: { bg: "#2D1B69", label: "Second Derivatives Portfolio" },
+  second: { bg: "#1D9E75", label: "Second Derivatives Portfolio" },
 };
 
 function fmt(n: number) {
   return n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
 
-export default function MetricCards({ portfolio, allTrades }: MetricCardsProps) {
-  const [view, setView] = useState<PortfolioView>("first");
+export default function MetricCards({ portfolio, allTrades, view, setView }: MetricCardsProps) {
   const theme = THEME[view];
 
   const relevantTrades = allTrades.filter((t) => {
@@ -59,8 +58,7 @@ export default function MetricCards({ portfolio, allTrades }: MetricCardsProps) 
     return sum;
   }, 0);
   const yieldPct = capitalDeployed > 0
-    ? ((totalPremiums / capitalDeployed) * 100).toFixed(1) + "%"
-    : "—";
+    ? ((totalPremiums / capitalDeployed) * 100).toFixed(1) + "%" : "—";
 
   const openCount = optionsTrades.filter((t) => t.status?.toLowerCase() === "open").length;
 
