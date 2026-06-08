@@ -40,7 +40,13 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   const animRef = useRef<number | null>(null);
   const prevView = useRef<PortfolioView | null>(null);
 
-  const VW = 300, VH = 300, cx = 150, cy = 150, outerR = 108, innerR = 66;
+  // Larger viewBox — ring fills more space since no leader lines needed
+  const VW = 320, VH = 320, cx = 160, cy = 160;
+  const outerR = 118, innerR = 72;
+  // Ticker labels sit just outside the ring
+  const tickerR = outerR + 14;
+  // Percentages sit in the middle of the ring band
+  const pctR = (outerR + innerR) / 2;
 
   const tickers = view === "first" ? FP_TICKERS : SD_TICKERS;
   const colors  = view === "first" ? FP_COLORS  : SD_COLORS;
@@ -49,7 +55,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   const totalWeight = relevant.reduce((s, h) => s + h.weight, 0);
 
   const rawSegs = relevant.length > 0
-    ? relevant.map((h, i) => ({
+    ? relevant.map((h) => ({
         ticker: h.ticker,
         weight: totalWeight > 0 ? (h.weight / totalWeight) * 100 : 100 / relevant.length,
         color: colors[h.ticker] ?? "#A8B0B6",
@@ -68,31 +74,31 @@ export default function AllocationDonut({ portfolio, view }: Props) {
       : Math.round((seg.weight/segTotal)*1000)/10,
   }));
 
-  const totalDisplay = portfolio.totalValue > 0
-    ? "$" + (portfolio.totalValue / 1000).toFixed(0) + "K" : "—";
-
-  // Build full segment data (angles at 100% progress)
   let cumulAngle = 0;
   const sliceData = segments.map(seg => {
     const start = cumulAngle;
     const sweep = (seg.weight / 100) * 360;
     const end = start + sweep;
     const mid = start + sweep / 2;
-    const lp = polarToCartesian(cx, cy, outerR + 30, mid);
-    const p1 = polarToCartesian(cx, cy, outerR + 5, mid);
-    const p2 = polarToCartesian(cx, cy, outerR + 18, mid);
-    const anchor = (lp.x < cx - 3 ? "end" : lp.x > cx + 3 ? "start" : "middle") as "end"|"start"|"middle";
+
+    // Ticker label: just outside ring
+    const tp = polarToCartesian(cx, cy, tickerR, mid);
+    const tickerAnchor = (tp.x < cx - 4 ? "end" : tp.x > cx + 4 ? "start" : "middle") as "end"|"start"|"middle";
+
+    // Percentage: middle of ring band — only show if slice is wide enough
+    const pp = polarToCartesian(cx, cy, pctR, mid);
+
     cumulAngle = end;
-    return { ...seg, start, end, mid, lp, p1, p2, anchor };
+    return { ...seg, start, end, mid, tp, tickerAnchor, pp, sweep };
   });
 
-  useEffect(() => {
-    // Cancel any running animation
-    if (animRef.current) cancelAnimationFrame(animRef.current);
+  const totalDisplay = portfolio.totalValue > 0
+    ? "$" + (portfolio.totalValue / 1000).toFixed(0) + "K" : "—";
 
-    const DURATION = 700; // ms
+  useEffect(() => {
+    if (animRef.current) cancelAnimationFrame(animRef.current);
+    const DURATION = 700;
     const startTime = performance.now();
-    const isFirstRender = prevView.current === null;
     prevView.current = view;
 
     function easeOutCubic(t: number) { return 1 - Math.pow(1 - t, 3); }
@@ -103,10 +109,9 @@ export default function AllocationDonut({ portfolio, view }: Props) {
       const raw = Math.min((now - startTime) / DURATION, 1);
       const progress = easeOutCubic(raw);
 
-      // Clear and redraw paths
-      const paths = svg.querySelectorAll(".donut-slice");
-      const lines = svg.querySelectorAll(".donut-line");
-      const labels = svg.querySelectorAll(".donut-label");
+      const paths   = svg.querySelectorAll(".donut-slice");
+      const pctTexts = svg.querySelectorAll(".donut-pct");
+      const tickerTexts = svg.querySelectorAll(".donut-ticker");
 
       let cumul = 0;
       sliceData.forEach((seg, i) => {
@@ -114,23 +119,19 @@ export default function AllocationDonut({ portfolio, view }: Props) {
         if (sweep <= 0) return;
         const end = cumul + sweep;
         const path = paths[i] as SVGPathElement;
-        if (path) {
-          path.setAttribute("d", buildPath(cx, cy, outerR, innerR, cumul, end));
-        }
+        if (path) path.setAttribute("d", buildPath(cx, cy, outerR, innerR, cumul, end));
 
-        // Show labels only when nearly done
-        const line = lines[i] as SVGLineElement;
-        const labelGroup = labels[i] as SVGGElement;
-        const opacity = progress > 0.85 ? ((progress - 0.85) / 0.15).toString() : "0";
-        if (line) line.style.opacity = opacity;
-        if (labelGroup) labelGroup.style.opacity = opacity;
+        // Fade in labels in final 20%
+        const opacity = progress > 0.8 ? ((progress - 0.8) / 0.2).toString() : "0";
+        const pct = pctTexts[i] as SVGTextElement;
+        const ticker = tickerTexts[i] as SVGTextElement;
+        if (pct) pct.style.opacity = opacity;
+        if (ticker) ticker.style.opacity = opacity;
 
         cumul = end;
       });
 
-      if (raw < 1) {
-        animRef.current = requestAnimationFrame(frame);
-      }
+      if (raw < 1) animRef.current = requestAnimationFrame(frame);
     }
 
     animRef.current = requestAnimationFrame(frame);
@@ -141,37 +142,45 @@ export default function AllocationDonut({ portfolio, view }: Props) {
     <section className="bg-white rounded-2xl border border-cream-200 p-6">
       <h2 className="text-[11px] uppercase tracking-[0.12em] text-ink-500 font-medium mb-2">Allocation</h2>
       <div className="flex justify-center">
-        <svg ref={svgRef} viewBox={`0 0 ${VW} ${VH}`} className="w-full" style={{ maxHeight: "320px" }}>
-          {/* Slices — drawn by animation */}
+        <svg ref={svgRef} viewBox={`0 0 ${VW} ${VH}`} className="w-full" style={{ maxHeight: "340px" }}>
+          {/* Slices */}
           {sliceData.map((seg) => (
             <path key={seg.ticker} className="donut-slice"
               d={buildPath(cx, cy, outerR, innerR, seg.start, seg.start)}
               fill={seg.color} stroke="white" strokeWidth="2" />
           ))}
-          {/* Leader lines — faded in at end */}
+
+          {/* Percentage inside the ring band — only if slice > 8% */}
           {sliceData.map((seg) => (
-            <line key={`line-${seg.ticker}`} className="donut-line"
-              x1={seg.p1.x} y1={seg.p1.y} x2={seg.p2.x} y2={seg.p2.y}
-              stroke={seg.color} strokeWidth="1.2" style={{ opacity: 0 }} />
-          ))}
-          {/* Labels — faded in at end */}
-          {sliceData.map((seg) => (
-            <g key={`label-${seg.ticker}`} className="donut-label" style={{ opacity: 0 }}>
-              <text x={seg.lp.x} y={seg.lp.y - 6} textAnchor={seg.anchor}
-                fontSize="11" fontWeight="700"
-                fill={seg.color === "#101113" ? "#444" : seg.color === "#C8F000" ? "#7A9000" : seg.color}
-                fontFamily="system-ui, sans-serif">
-                {seg.ticker}
-              </text>
-              <text x={seg.lp.x} y={seg.lp.y + 7} textAnchor={seg.anchor}
-                fontSize="10" fill="#999" fontFamily="system-ui, sans-serif">
+            seg.sweep >= 25 ? (
+              <text key={`pct-${seg.ticker}`} className="donut-pct"
+                x={seg.pp.x} y={seg.pp.y}
+                textAnchor="middle" dominantBaseline="middle"
+                fontSize="10" fontWeight="600"
+                fill={["#101113","#1E3A8A","#034147"].includes(seg.color) ? "#fff" : "#fff"}
+                fontFamily="system-ui, sans-serif"
+                style={{ opacity: 0 }}>
                 {seg.weight.toFixed(0)}%
               </text>
-            </g>
+            ) : null
           ))}
+
+          {/* Ticker label just outside the ring */}
+          {sliceData.map((seg) => (
+            <text key={`ticker-${seg.ticker}`} className="donut-ticker"
+              x={seg.tp.x} y={seg.tp.y}
+              textAnchor={seg.tickerAnchor} dominantBaseline="middle"
+              fontSize="9.5" fontWeight="700"
+              fill={seg.color === "#101113" ? "#333" : seg.color === "#C8F000" ? "#7A9000" : seg.color}
+              fontFamily="system-ui, sans-serif"
+              style={{ opacity: 0 }}>
+              {seg.ticker}
+            </text>
+          ))}
+
           {/* Centre */}
-          <text x={cx} y={cy - 12} textAnchor="middle" fontSize="11" fill="#bbb" fontFamily="system-ui">total</text>
-          <text x={cx} y={cy + 12} textAnchor="middle" fontSize="20" fontWeight="700" fill="#034147" fontFamily="system-ui">{totalDisplay}</text>
+          <text x={cx} y={cy - 12} textAnchor="middle" fontSize="11" fill="#ccc" fontFamily="system-ui">total</text>
+          <text x={cx} y={cy + 10} textAnchor="middle" fontSize="22" fontWeight="700" fill="#034147" fontFamily="system-ui">{totalDisplay}</text>
         </svg>
       </div>
     </section>
