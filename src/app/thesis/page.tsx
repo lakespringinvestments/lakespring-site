@@ -138,11 +138,22 @@ export default function ThesisPage() {
               Lakespring Investments is an independent investment research platform built on a
               first-principles approach to portfolio construction. We hold concentrated positions
               in the transformative technologies reshaping the global economy — artificial
-              intelligence, energy, and digital assets — and systematically write options premium
-              against those holdings to generate consistent income while the long-term thesis
-              compounds. The portfolio reflects how I actively manage my own family&apos;s capital,
-              published in the open.
+              intelligence, energy, and the emerging layer of technologically-native hard money
+              and future payment rails — and systematically write options premium against those
+              holdings to generate consistent income while the long-term thesis compounds. The
+              portfolio reflects how I actively manage my own family&apos;s capital, published in
+              the open.
             </p>
+          </div>
+
+          {/* Thesis wallpaper */}
+          <div className="mt-10 mb-2 rounded-2xl overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/article-images/thesis_wallpaper.png"
+              alt="Lakespring investment themes — AI, autonomous vehicles, energy, compute, digital assets"
+              className="w-full h-auto block"
+            />
           </div>
 
           {/* ── Why This Exists ── */}
@@ -158,18 +169,9 @@ export default function ThesisPage() {
               hard that defines an entire generation of immigrant households — and yet they stayed
               on the wrong side of the wealth divide. Not because they lacked intelligence. Not
               because they lacked discipline. But because no one ever taught them how modern
-              wealth is actually built.
+              wealth is actually built. In other words, they knew how to save but not how to own.
             </p>
           </div>
-
-          {/* Pull quote */}
-          <blockquote className="my-14 md:my-16">
-            <p className="font-serif text-3xl md:text-4xl lg:text-[2.75rem] text-teal-600 leading-[1.15] italic font-medium">
-              They knew how to save.
-              <br />
-              They didn&apos;t know how to own.
-            </p>
-          </blockquote>
 
           <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed">
             <p>
@@ -181,10 +183,20 @@ export default function ThesisPage() {
               wages that fail to keep pace with the cost of the things those assets are buying.
             </p>
             <p>
-              <strong className="text-[#0a0a0a] font-bold">Same hours worked. Different outcomes.</strong>
+              Same hours worked, different outcomes.
             </p>
+
+          {/* K-shaped economy visual */}
+          <div className="my-8 rounded-2xl overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/article-images/k_shaped_economy_v7.png"
+              alt="The K-Shaped Economy — post-2008 divergence showing asset owners vs wage workers"
+              className="w-full h-auto block"
+            />
+          </div>
             <p>
-              I started Lakespring Investments because the financial advice my family was given —
+              I started Lakespring Investments because the financial philosophy my family held to —
               save, invest in real estate or GICs and index funds, retire at 65 — is calibrated
               for an economy that no longer exists. The next decade isn&apos;t going to reward the
               average. It&apos;s going to reward conviction in the companies and assets actively
@@ -195,8 +207,8 @@ export default function ThesisPage() {
         </div>
 
         {/* Transition */}
-        <div className="max-w-6xl mx-auto px-6 mt-20 md:mt-24 pb-20 md:pb-24">
-          <p className="font-serif text-2xl md:text-3xl text-teal-600 leading-snug italic">
+        <div className="max-w-6xl mx-auto px-6 mt-16 md:mt-20 pb-20 md:pb-24">
+          <p className="text-lg md:text-xl text-teal-600 leading-relaxed font-bold">
             What follows is the framework that turns that conviction into a
             portfolio — and the income engine that runs on top of it.
           </p>
@@ -237,8 +249,8 @@ export default function ThesisPage() {
               in the transformations themselves.
             </p>
             <p>
-              Among our current convictions: Bitcoin, Tesla, Palantir, Nvidia, Alphabet, Amazon,
-              and ASML — among others. Each position is chosen not purely on transformation
+              Among some of our core convictions: Bitcoin, Tesla, Palantir, Nvidia, Alphabet,
+              and Amazon — among others. Each position is chosen not purely on transformation
               narrative or projected ROI, but on three questions we take seriously: does the
               company have the execution power to actually deliver on what it&apos;s promising? Does
               it have structural moats — network effects, vertical integration, switching costs,
