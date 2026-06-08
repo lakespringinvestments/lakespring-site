@@ -146,19 +146,20 @@ export default function ThesisPage() {
             </p>
           </div>
 
-          {/* Thesis wallpaper */}
-          <div className="mt-10 mb-2 rounded-2xl overflow-hidden">
+          {/* Thesis wallpaper — 16/9 banner matching article cover style */}
+          <div className="mt-10 mb-2 w-full rounded-2xl overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/article-images/thesis_wallpaper.png"
               alt="Lakespring investment themes — AI, autonomous vehicles, energy, compute, digital assets"
-              className="w-full h-auto block"
+              className="w-full object-cover"
+              style={{ aspectRatio: "16/9", objectPosition: "center center" }}
             />
           </div>
 
           {/* ── Why This Exists ── */}
           <div className="mt-14 mb-6">
-            <h2 className="font-serif text-2xl md:text-3xl text-[#0a0a0a] font-bold tracking-tight">
+            <h2 className="font-sans text-2xl md:text-3xl font-semibold text-teal-600 leading-tight tracking-tight">
               Why this exists
             </h2>
           </div>
@@ -186,13 +187,14 @@ export default function ThesisPage() {
               Same hours worked, different outcomes.
             </p>
 
-          {/* K-shaped economy visual */}
-          <div className="my-8 rounded-2xl overflow-hidden">
+          {/* K-shaped economy visual — 16/9 banner */}
+          <div className="my-8 w-full rounded-2xl overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/article-images/k_shaped_economy_v7.png"
+              src="/article-images/k_shaped_economy.png"
               alt="The K-Shaped Economy — post-2008 divergence showing asset owners vs wage workers"
-              className="w-full h-auto block"
+              className="w-full object-cover"
+              style={{ aspectRatio: "16/9", objectPosition: "center center" }}
             />
           </div>
             <p>
@@ -207,8 +209,8 @@ export default function ThesisPage() {
         </div>
 
         {/* Transition */}
-        <div className="max-w-6xl mx-auto px-6 mt-16 md:mt-20 pb-20 md:pb-24">
-          <p className="text-lg md:text-xl text-teal-600 leading-relaxed font-bold">
+        <div className="max-w-6xl mx-auto px-6 pb-20 md:pb-24">
+          <p className="text-ink-700 text-lg md:text-xl leading-relaxed">
             What follows is the framework that turns that conviction into a
             portfolio — and the income engine that runs on top of it.
           </p>
