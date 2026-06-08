@@ -8,7 +8,7 @@ const FP_COLORS: Record<string, string> = {
   TSLA: "#CC0000", NVDA: "#76B900", PLTR: "#101113", AMZN: "#FF9900", GOOGL: "#A8B0B6",
 };
 const SD_COLORS: Record<string, string> = {
-  MRVL: "#0057B8", NBIS: "#C8F000", LLY: "#C0392B", ASML: "#1E3A8A", BE: "#00A86B", SMCI: "#C8002A",
+  MRVL: "#0057B8", NBIS: "#C8F000", LLY: "#C0392B", ASML: "#1E3A8A", BE: "#00A86B", SMCI: "#8A9BB0",
 };
 const FP_TICKERS = ["TSLA","NVDA","PLTR","AMZN","GOOGL"];
 const SD_TICKERS = ["MRVL","NBIS","LLY","ASML","BE","SMCI"];
