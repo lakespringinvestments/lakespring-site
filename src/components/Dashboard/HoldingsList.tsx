@@ -9,7 +9,7 @@ const TICKER_COLORS: Record<string, string> = {
   TSLA:  "#CC0000",
   NVDA:  "#76B900",
   PLTR:  "#101113",
-  AMZN:  "#8B5E3C",   // warm cardboard brown — matches transparent-bg Amazon logo
+  AMZN:  "#EFCEAD",   // light warm brown
   GOOGL: "#E8EAED",
   // SD tickers — use transparent so each logo PNG's own background shows
   MRVL: "transparent",
@@ -51,7 +51,7 @@ function pickColor(ticker: string) {
 }
 
 function pickTextColor(bg: string) {
-  const lightBgs = ["#76B900", "#E8EAED"];
+  const lightBgs = ["#76B900", "#E8EAED", "#EFCEAD"];
   return lightBgs.includes(bg) ? "#0a0a0a" : "#ffffff";
 }
 
