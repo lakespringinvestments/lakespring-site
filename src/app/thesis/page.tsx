@@ -1,9 +1,9 @@
 import Image from "next/image";
 
 export const metadata = {
-  title: "Strategy & Philosophy — Lakespring Investments",
+  title: "About Us & Our Strategy — Lakespring Investments",
   description:
-    "The personal story and the first-principles framework behind every position — concentrated conviction, continuous income.",
+    "An independent investment research platform built on first principles. Concentrated positions in transformative technology, paired with a disciplined options-income overlay.",
 };
 
 type Moat = {
@@ -31,7 +31,7 @@ const moats: Moat[] = [
     secondaryLogo: "/logos/spacex.png",
     color: "#CC0000",
     title: "The Musk Industrial Complex",
-    body: "Tesla and SpaceX represent the public-market and private-market sides of one unified thesis — vertical integration across compute, manufacturing, energy storage, autonomy, and orbital infrastructure. The real-world data and engineering velocity no competitor can replicate from scratch.",
+    body: "Tesla and SpaceX represent the public-market and private-market sides of one unified thesis — vertical integration across compute, manufacturing, energy storage, autonomy, and orbital infrastructure. The real-world data flywheel and engineering velocity no competitor can replicate from scratch.",
     moat: "Vertical integration across earth and orbit",
   },
   {
@@ -39,7 +39,7 @@ const moats: Moat[] = [
     logo: "/logos/nvidia.png",
     color: "#76B900",
     title: "AI Infrastructure",
-    body: "Picks-and-shovels infrastructure of the AI buildout. Execution cadence and a software ecosystem competitors have been failing to close for a decade. Their multi-billion-dollar investments across the ecosystem — model labs, robotics, sovereign AI, cloud providers — further entrench Nvidia as the gravitational center of the entire transformation.",
+    body: "Picks-and-shovels infrastructure of the AI buildout. An execution cadence and a software ecosystem that competitors have spent a decade failing to close. Their multi-billion-dollar investments across model labs, robotics, sovereign AI, and cloud further entrench Nvidia as the gravitational centre of the entire transformation.",
     moat: "Velocity, scale, and CUDA lock-in",
   },
   {
@@ -47,7 +47,7 @@ const moats: Moat[] = [
     logo: "/logos/palantir.png",
     color: "#101113",
     title: "AI Operating Layer",
-    body: "The deployment fabric for how governments and large enterprises will actually run AI against their own data — entrenched workflows competitors can't dislodge.",
+    body: "The deployment fabric for how governments and large enterprises will actually run AI against their own data — entrenched workflows that competitors struggle to dislodge. As AI moves from experimentation to institutional infrastructure, Palantir's position becomes more structural, not less.",
     moat: "Switching costs measured in years",
   },
 ];
@@ -110,12 +110,11 @@ function PremiumWheel() {
 export default function ThesisPage() {
   return (
     <>
-      {/* Hero */}
+      {/* ── Hero ── */}
       <section className="bg-transparent">
         <div className="max-w-6xl mx-auto px-6 pt-16 md:pt-20 pb-12 md:pb-14">
-          {/* Two-line title matching Stories & Perspectives treatment */}
           <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-[#0a0a0a] leading-[1.05] tracking-tight font-medium mb-10 md:mb-14">
-            <span className="block">Strategy</span>
+            <span className="block">About Us</span>
             <span className="block mt-1">
               <span
                 className="inline"
@@ -126,60 +125,77 @@ export default function ThesisPage() {
                   WebkitBoxDecorationBreak: "clone",
                 }}
               >
-                &amp; Philosophy
+                &amp; Our Strategy
               </span>
             </span>
           </h1>
-          <h2 className="font-serif text-2xl md:text-3xl lg:text-[2rem] text-teal-600 leading-[1.15] tracking-tight font-medium">
-            I&apos;m building my family&apos;s way onto the right side of the
-            wealth divide — in the open.
-          </h2>
         </div>
 
-        {/* Opening story */}
+        {/* ── Opening — what Lakespring is ── */}
         <div className="max-w-6xl mx-auto px-6">
           <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed">
             <p>
-              My family came to Canada with nothing. They worked hard for
-              decades and still stayed on the wrong side of the wealth divide
-              — not because they lacked intelligence or discipline, but
-              because no one ever taught them how modern wealth is actually
-              built.
+              Lakespring Investments is an independent investment research platform built on a
+              first-principles approach to portfolio construction. We hold concentrated positions
+              in the transformative technologies reshaping the global economy — artificial
+              intelligence, energy, and digital assets — and systematically write options premium
+              against those holdings to generate consistent income while the long-term thesis
+              compounds. The portfolio reflects how I actively manage my own family&apos;s capital,
+              published in the open.
             </p>
           </div>
 
-          {/* Pull quote — the emotional core */}
-          <blockquote className="my-14 md:my-20">
+          {/* ── Why This Exists ── */}
+          <div className="mt-14 mb-6">
+            <h2 className="font-serif text-2xl md:text-3xl text-[#0a0a0a] font-bold tracking-tight">
+              Why this exists
+            </h2>
+          </div>
+
+          <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed">
+            <p>
+              My family came to Canada with nothing. They worked hard for decades — the kind of
+              hard that defines an entire generation of immigrant households — and yet they stayed
+              on the wrong side of the wealth divide. Not because they lacked intelligence. Not
+              because they lacked discipline. But because no one ever taught them how modern
+              wealth is actually built.
+            </p>
+          </div>
+
+          {/* Pull quote */}
+          <blockquote className="my-14 md:my-16">
             <p className="font-serif text-3xl md:text-4xl lg:text-[2.75rem] text-teal-600 leading-[1.15] italic font-medium">
               They knew how to save.
               <br />
-              They never learned to own.
+              They didn&apos;t know how to own.
             </p>
           </blockquote>
 
-          {/* Continued story */}
           <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed">
             <p>
-              The economy has split into two tracks — the K-shaped economy —
-              and the gap between them is no longer about effort. It&apos;s
-              about asset ownership. The people who own the assets that
-              compound are pulling away from the people who only earn wages,
-              and the distance grows every year.
+              That distinction sounds small until you live through what we&apos;re living through
+              now. The economy has split into two tracks — what economists call the K-shaped
+              economy — and the gap between them is no longer about effort. It&apos;s about asset
+              ownership. One cohort compounds wealth through equity in transformative businesses,
+              scarce digital assets, and concentrated bets on the future. The other cohort earns
+              wages that fail to keep pace with the cost of the things those assets are buying.
             </p>
             <p>
-              Lakespring Investments is the public record of how I&apos;m
-              closing that gap for my own family: a concentrated portfolio in
-              the technologies redefining the next decade, paired with a
-              disciplined options-income overlay that pays us to wait while
-              the thesis compounds. I write it down in the open — partly to
-              hold myself accountable, partly in case the process is useful to
-              anyone trying to do the same.
+              <strong className="text-[#0a0a0a] font-bold">Same hours worked. Different outcomes.</strong>
+            </p>
+            <p>
+              I started Lakespring Investments because the financial advice my family was given —
+              save, invest in real estate or GICs and index funds, retire at 65 — is calibrated
+              for an economy that no longer exists. The next decade isn&apos;t going to reward the
+              average. It&apos;s going to reward conviction in the companies and assets actively
+              rewriting how the world works. I want my family on the right side of that divide,
+              and I&apos;m building Lakespring Investments as the public record of how I&apos;m doing it.
             </p>
           </div>
         </div>
 
-        {/* Transition into the framework */}
-        <div className="max-w-6xl mx-auto px-6 mt-20 md:mt-28 pb-20 md:pb-24">
+        {/* Transition */}
+        <div className="max-w-6xl mx-auto px-6 mt-20 md:mt-24 pb-20 md:pb-24">
           <p className="font-serif text-2xl md:text-3xl text-teal-600 leading-snug italic">
             What follows is the framework that turns that conviction into a
             portfolio — and the income engine that runs on top of it.
@@ -187,7 +203,7 @@ export default function ThesisPage() {
         </div>
       </section>
 
-      {/* Section 01 */}
+      {/* ── Section 01 — First Principles ── */}
       <section className="bg-transparent border-t border-cream-200/60">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
           <span className="inline-block bg-teal-600 text-white text-[11px] uppercase tracking-[0.18em] font-semibold px-3 py-1.5 rounded-md mb-5">
@@ -199,39 +215,44 @@ export default function ThesisPage() {
 
           <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
             <p>
-              Most portfolio construction starts with the market and works
-              inward — pick a benchmark, choose a tracking error budget, slot
-              positions into sectors. The result is a portfolio shaped by the
-              index it&apos;s trying to outperform.
+              Most portfolio construction starts with the market and works inward — pick a
+              benchmark, choose a tracking error budget, slot positions into sectors. The result
+              is a portfolio shaped by the index it&apos;s trying to outperform.
             </p>
             <p>
-              Lakespring Investments starts somewhere else. The question
-              isn&apos;t which stocks will beat the S&amp;P 500 over the next year.
-              It&apos;s:
+              Lakespring Investments starts somewhere else. The question isn&apos;t which stocks
+              will beat the S&amp;P 500 over the next year. It&apos;s:
             </p>
             <blockquote className="border-l-4 border-sage-500 pl-6 my-8 text-xl md:text-2xl text-teal-600 font-medium leading-snug">
-              What structural transformations are actually underway in the
-              global economy, and which businesses own the moats that will
-              define the outcome?
+              What structural transformations are actually underway in the global economy, and
+              which businesses own the moats that will define the outcome?
             </blockquote>
             <p>
-              That reframing changes what gets held. The First Principles
-              Portfolio is a concentrated basket built around businesses and
-              assets that aren&apos;t competing within an industry, but redefining
-              what the industry is.
+              That reframing changes what gets held. The First Principles Portfolio is a
+              concentrated basket built around businesses and assets that aren&apos;t competing
+              within an industry — they&apos;re redefining what the industry is.
             </p>
             <p>
-              These are not value plays. They&apos;re not yield plays. They&apos;re
-              ownership stakes in the transformations themselves.
+              These are not value plays. They&apos;re not yield plays. They&apos;re ownership stakes
+              in the transformations themselves.
             </p>
             <p>
-              Among the current convictions: digital scarcity, the physical
-              and orbital AI economy, the compute engine the AI era runs on,
-              and the operating layer for enterprise AI adoption. Four
-              positions, each with structural moats — network effects,
-              vertical integration, execution velocity, organizational
-              lock-in — that reinforce as the underlying transformations
-              accelerate.
+              Among our current convictions: Bitcoin, Tesla, Palantir, Nvidia, Alphabet, Amazon,
+              and ASML — among others. Each position is chosen not purely on transformation
+              narrative or projected ROI, but on three questions we take seriously: does the
+              company have the execution power to actually deliver on what it&apos;s promising? Does
+              it have structural moats — network effects, vertical integration, switching costs,
+              regulatory entrenchment — that compound as the transformation accelerates? And can
+              we say with confidence that this business will exist and matter a decade from now,
+              through all the volatility, capital destruction, and AI-driven disruption that will
+              define the buildout years?
+            </p>
+            <p>
+              The high-capex, high-volatility nature of this environment is a feature, not a bug.
+              Choppy markets and crowded narratives are precisely the conditions in which
+              conviction-based, long-horizon positions generate alpha. The positions that feel
+              uncomfortable to hold during the buildout years are usually the ones that matter
+              most when the buildout is complete.
             </p>
           </div>
 
@@ -274,14 +295,10 @@ export default function ThesisPage() {
                   {m.title}
                 </h3>
 
-                <p className="text-ink-700 leading-relaxed text-base flex-1">
-                  {m.body}
-                </p>
+                <p className="text-ink-700 leading-relaxed text-base flex-1">{m.body}</p>
 
                 <div className="mt-7 pt-5 border-t border-cream-200 flex items-baseline gap-4">
-                  <p className="text-[10px] uppercase tracking-[0.25em] text-ink-400">
-                    Moat
-                  </p>
+                  <p className="text-[10px] uppercase tracking-[0.25em] text-ink-400">Moat</p>
                   <p className="text-sm text-teal-600 font-medium">{m.moat}</p>
                 </div>
               </article>
@@ -293,18 +310,18 @@ export default function ThesisPage() {
               <strong className="text-teal-600 font-semibold">
                 Concentration is the point, not the risk.
               </strong>{" "}
-              Diversification across thirty positions is protection against not
-              knowing the thesis. When you know the thesis, you size into it.
+              Diversification across thirty positions is protection against not knowing the thesis.
+              When you know the thesis, you size into it.
             </p>
             <p className="mt-4 text-ink-500 leading-relaxed italic">
-              But concentration creates its own operational challenge — one
-              that premium collection is built to address.
+              But concentration creates its own operational challenge — one that premium
+              collection is built to address.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Section 02 */}
+      {/* ── Section 02 — The Wheel ── */}
       <section className="bg-transparent border-t border-cream-200/60">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
           <span className="inline-block bg-[#BA7517] text-white text-[11px] uppercase tracking-[0.18em] font-semibold px-3 py-1.5 rounded-md mb-5">
@@ -316,74 +333,63 @@ export default function ThesisPage() {
 
           <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
             <p>
-              A concentrated long-term portfolio has one operational
-              weakness: the thesis takes time, and capital sits idle while it
-              plays out. The premium wheel solves for that.
+              A concentrated long-term portfolio has one operational weakness: the thesis takes
+              time, and capital sits idle while it plays out. The premium wheel solves for that.
             </p>
             <p>
-              Our primary strategy is selling cash-secured puts.{" "}
+              Our primary instrument is the cash-secured put.{" "}
               <strong className="text-teal-600 font-semibold">
-                Almost all of the time, we never go full wheel.
+                We sell puts on positions we already want to own, at strike prices we&apos;d be
+                genuinely comfortable buying at.
               </strong>{" "}
-              On positions we already want to own, we sell puts at strike
-              prices we&apos;re willing to buy at — collecting premium for the
-              obligation. Most of the time, those puts expire worthless and
-              we simply collect the premium and write another one. That&apos;s
-              the default behaviour — premium collection without ever
-              touching the underlying.
+              We collect premium for that commitment. Most of the time, those puts expire
+              worthless and we write another. That&apos;s the default: premium collection without
+              ever touching the underlying.
             </p>
             <p>
-              Covered calls are a more difficult instrument to navigate with
-              asymmetric bets. When you hold a conviction position in a
-              transformative company, the upside can be violently nonlinear
-              — and you don&apos;t want a short call capping your participation
-              during the moments that matter most. We sell covered calls
-              only when a put gets assigned: we acquire shares at our
-              target price and sell calls at levels we&apos;d genuinely be
-              comfortable exiting at, collecting more premium until called
-              away. Cash returns to step one. The cycle restarts.
+              Depending on our reading of the macro environment, prevailing volatility, and
+              position-specific catalysts, we will sometimes deploy margin alongside cash-secured
+              capital to increase our premium-generating capacity. This is a deliberate,
+              thesis-informed decision — not speculation — and is sized relative to our
+              conviction in the underlying and our tolerance for assignment at the given strike.
+              Leverage amplifies both the income and the obligation, so we use it selectively
+              and always with a clear view of what we&apos;re committing to own if assigned.
             </p>
             <p>
-              The reason this structure works on these specific names is that
-              every leg of the cycle aligns with a decision we&apos;d already
-              make on conviction alone. We&apos;re willing to buy more at lower
-              prices. We&apos;re willing to trim into strength. The options
-              market simply pays us to formalize those commitments in
-              advance.
+              Covered calls are a more difficult instrument to navigate with asymmetric bets.
+              When you hold a conviction position in a transformative company, the upside can be
+              violently nonlinear — and you don&apos;t want a short call capping your participation
+              during the moments that matter most. We sell covered calls only when a put gets
+              assigned: we acquire shares at our target price and sell calls at levels we&apos;d
+              genuinely be comfortable exiting at, collecting more premium until called away.
+              Cash returns to step one. The cycle restarts.
             </p>
             <p>
-              <strong className="text-teal-600 font-semibold">
-                This strategy is unusually well-suited to our basket.
-              </strong>{" "}
-              The transformative tech names we hold carry structurally higher
-              volatility than the broader market — exactly because the alpha
-              they generate is asymmetric. Higher implied volatility means
-              fatter premiums on every option we sell, and our willingness
-              to commit to specific entry and exit prices on businesses we
-              already understand at depth turns that volatility into a
-              persistent income stream rather than a risk to be hedged.
+              The reason this structure works on these specific names is that every leg aligns
+              with a decision we&apos;d already make on conviction alone. We&apos;re willing to buy
+              more at lower prices. We&apos;re willing to trim into strength. The options market
+              simply pays us to formalise those commitments in advance.
             </p>
             <p>
-              The candidate pool extends beyond the core holdings. When premiums
-              on the First Principles names are compressed — typically
-              during low-volatility stretches when the thesis is uncontested
-              — we widen the put-selling programme to a select group of
-              secondary names that directly benefit from the same
-              transformations. These are companies we&apos;re independently
-              comfortable holding and swing trading, kept on a deliberately
-              short list. They&apos;re not satellite positions or trade ideas;
-              they&apos;re thesis-aligned vehicles for premium collection when the
-              core names aren&apos;t paying enough to commit capital. We call
-              this the{" "}
+              The candidate pool extends beyond the core holdings. When premiums on the First
+              Principles names are compressed — typically during low-volatility stretches when
+              the thesis is uncontested — we widen the put-selling programme to a select group
+              of secondary names we call the{" "}
               <strong className="text-teal-600 font-semibold">
                 Second Derivatives Portfolio
               </strong>
-              .
+              . These are businesses that either directly benefit from the same structural
+              transformations driving our core positions, or carry elevated implied volatility
+              because they represent higher-risk, higher-reward bets within the same
+              transformation themes. The higher IV translates directly into fatter premiums.
+              On names in this bucket where we don&apos;t see a price we&apos;d want to hold long term,
+              we&apos;ll also run opportunistic swing trades — capturing shorter-cycle moves without
+              making the position a permanent part of the portfolio.
             </p>
             <p className="italic text-ink-500">
-              The premium isn&apos;t speculative income. It&apos;s compensation for
-              committing to price levels we&apos;d act on anyway — on a small
-              basket of businesses we already understand at depth.
+              The premium isn&apos;t speculative income. It&apos;s compensation for committing to price
+              levels we&apos;d act on anyway — on a small basket of businesses we already understand
+              at depth.
             </p>
           </div>
 
@@ -401,9 +407,8 @@ export default function ThesisPage() {
                   Premium collection without assignment
                 </h4>
                 <p className="text-ink-700 leading-relaxed">
-                  Most of the time, puts expire worthless. We collect the
-                  premium and write another. The wheel never needs to
-                  complete.
+                  Most of the time, puts expire worthless. We collect the premium and write
+                  another. The wheel never needs to complete.
                 </p>
               </div>
               <div className="border-l-4 border-sage-500 pl-5 py-2">
@@ -414,9 +419,8 @@ export default function ThesisPage() {
                   Full wheel activates if assigned
                 </h4>
                 <p className="text-ink-700 leading-relaxed">
-                  If a put is assigned, we acquire shares at our target price
-                  and sell covered calls against them — collecting premium
-                  until called away.
+                  If a put is assigned, we acquire shares at our target price and sell covered
+                  calls against them — collecting premium until called away.
                 </p>
               </div>
               <div className="bg-white rounded-xl p-5 border border-cream-200">
@@ -434,7 +438,7 @@ export default function ThesisPage() {
         </div>
       </section>
 
-      {/* Section 03 */}
+      {/* ── Section 03 — Income While You Wait ── */}
       <section className="bg-transparent border-t border-cream-200/60">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
           <span className="inline-block bg-sage-500 text-white text-[11px] uppercase tracking-[0.18em] font-semibold px-3 py-1.5 rounded-md mb-5">
@@ -448,48 +452,55 @@ export default function ThesisPage() {
 
           <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
             <p>
-              Concentrated thesis investing carries a cost most investors
-              underestimate:{" "}
-              <strong className="text-teal-600 font-semibold">time</strong>. A
-              position can take years to fully reprice as the underlying
-              transformation moves from contrarian thesis to consensus. That
-              waiting period is where most investors lose conviction — not
-              because the thesis broke, but because nothing visible was
-              happening.
+              Premium collection is a powerful strategy. Consistent weekly income, compounding
+              dry powder, and the psychological discipline of being paid to wait — all of it is
+              real. But it is the supporting act, not the headline.
             </p>
             <p>
-              The premium wheel changes the experience of waiting. Income
-              lands consistently in the background while the structural
-              thesis compounds in the foreground. The thesis doesn&apos;t need
-              to be right next quarter for the strategy to be working — and
-              that detachment from short-term outcomes is what makes the
-              long hold possible.
+              <strong className="text-[#0a0a0a] font-bold">
+                The real win is holding the right positions long enough for the transformation to
+                be obvious to everyone else.
+              </strong>{" "}
+              The alpha in this portfolio is not generated by options. It is generated by sitting
+              in businesses that are actively rewriting the rules of the global economy, through
+              the years when doing so feels uncomfortable, while everyone else is arguing about
+              quarterly earnings.
             </p>
             <p>
-              That consistent income also creates optionality. Premium that
-              lands every week — independent of where the broader market
-              closes — is dry powder we can deploy on our own terms. When a
-              core name dips on news that doesn&apos;t change the thesis, we
-              add. When a secondary opportunity opens up inside the same
-              structural transformation, we have the cash to take it.
-              Premium collection turns market volatility from something to
-              endure into something to capitalize on.
+              This distinction matters operationally. Options premium should never become the
+              reason we sell a position we believe in. Writing covered calls that cap our
+              upside on a name experiencing a breakout moment, or selling puts so aggressively
+              that an assignment forces us to dilute capital at the wrong time — these are the
+              failure modes that turn a wealth-building strategy into a yield-chasing one. The
+              income is the mechanism that makes the long hold sustainable. It is not the point.
+            </p>
+            <p>
+              The premium wheel changes the experience of waiting. Income lands consistently in
+              the background while the structural thesis compounds in the foreground. The thesis
+              doesn&apos;t need to be right next quarter for the strategy to be working — and that
+              detachment from short-term outcomes is what makes the decade-long hold possible.
+            </p>
+            <p>
+              That consistent income also creates optionality. Premium that lands every week —
+              independent of where the broader market closes — is dry powder we can deploy on
+              our own terms. When a core name dips on news that doesn&apos;t change the thesis, we
+              add. When a secondary opportunity opens up inside the same structural
+              transformation, we have the cash to take it. Premium collection turns market
+              volatility from something to endure into something to capitalise on.
             </p>
             <p>
               More fundamentally,{" "}
               <strong className="text-teal-600 font-semibold">
-                premium collection puts your assets and your cash to work
-                for you — not the other way around
+                premium collection puts your assets and your cash to work for you — not the
+                other way around
               </strong>
-              . The default mode of money is to sit. The default mode of a
-              portfolio is to wait. Selling premium against positions you
-              already want to own turns idle capital into a recurring
-              income stream, while the underlying thesis compounds in the
-              background.
+              . The default mode of money is to sit. The default mode of a portfolio is to wait.
+              Selling premium against positions you already want to own turns idle capital into
+              a recurring income stream, while the underlying thesis compounds in the background.
             </p>
             <p>
-              The goal is to be paid to wait for the thesis to be obvious to
-              everyone else.
+              The goal is to be paid to wait for the thesis to be obvious to everyone else.
+              But never forget: it is the holding, not the collecting, that builds wealth.
             </p>
             <p className="font-serif text-xl md:text-2xl text-teal-600 font-medium tracking-tight pt-4">
               This is the Lakespring Investments playbook.
