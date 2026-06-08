@@ -155,8 +155,7 @@ export default function ThesisPage() {
               className="w-full object-cover"
               style={{
                 aspectRatio: "16/9",
-                objectPosition: "center 30%",
-                filter: "hue-rotate(155deg) saturate(0.85) brightness(0.85)",
+                objectPosition: "center 15%",
               }}
             />
           </div>
@@ -174,7 +173,10 @@ export default function ThesisPage() {
               hard that defines an entire generation of immigrant households — and yet they stayed
               on the wrong side of the wealth divide. Not because they lacked intelligence. Not
               because they lacked discipline. But because no one ever taught them how modern
-              wealth is actually built. In other words, they knew how to save but not how to own.
+              wealth is actually built.
+            </p>
+            <p>
+              In other words, they knew how to save but not how to own.
             </p>
           </div>
 
