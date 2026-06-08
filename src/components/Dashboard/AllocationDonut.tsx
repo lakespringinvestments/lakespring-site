@@ -74,7 +74,7 @@ export default function AllocationDonut({ portfolio }: { portfolio: Portfolio })
     // Label sits beyond the line end
     const labelR = outerR + 28;
     const lp = polarToCartesian(cx, cy, labelR, midAngle);
-    const anchor = lp.x < cx - 3 ? "end" : lp.x > cx + 3 ? "start" : "middle";
+    const anchor = (lp.x < cx - 3 ? "end" : lp.x > cx + 3 ? "start" : "middle") as "end" | "start" | "middle";
     const color = pickColor(seg.ticker, i);
 
     const result = { seg, path, color, p1, p2, lp, anchor };
