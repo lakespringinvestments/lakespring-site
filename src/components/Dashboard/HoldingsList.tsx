@@ -198,12 +198,12 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                     style={{ background: bg }}
                   >
                     {logoSrc ? (
-                      // SD logos with own backgrounds: fill the tile
-                      // FP logos with transparent/solid bg: contain
+                      // SD logos have their own backgrounds — fill tile with plain img
+                      // to avoid Next.js Image sizing interference
                       ["MRVL","NBIS","LLY","ASML","BE","TSM"].includes(h.ticker) ? (
-                        <Image src={logoSrc} alt={h.ticker}
-                          width={40} height={40}
-                          className="w-full h-full object-cover"
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={logoSrc} alt={h.ticker}
+                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                         />
                       ) : (
                         <Image src={logoSrc} alt={h.ticker}
