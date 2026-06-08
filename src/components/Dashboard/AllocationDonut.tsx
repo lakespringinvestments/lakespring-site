@@ -1,8 +1,9 @@
 "use client";
 
 import type { Portfolio } from "../../../types/portfolio";
+import type { PortfolioView } from "./types";
 
-const TICKER_COLORS: Record<string, string> = {
+const FP_COLORS: Record<string, string> = {
   TSLA:  "#CC0000",
   NVDA:  "#76B900",
   PLTR:  "#101113",
@@ -10,11 +11,24 @@ const TICKER_COLORS: Record<string, string> = {
   GOOGL: "#A8B0B6",
 };
 
-const FALLBACK_RAMP = ["#034147", "#1D9E75", "#5DCAA5", "#347278", "#9FE1CB"];
-const EXCLUDED = new Set(["BTC", "SOL", "ASML"]);
+const SD_COLORS: Record<string, string> = {
+  MRVL:  "#0057B8",
+  NBIS:  "#00857A",
+  LLY:   "#CC0099",
+  MU:    "#0071CE",
+  ASML:  "#034147",
+  BE:    "#00A86B",
+  TSM:   "#E8003D",
+};
 
-function pickColor(ticker: string, idx: number) {
-  return TICKER_COLORS[ticker] ?? FALLBACK_RAMP[idx % FALLBACK_RAMP.length];
+const FALLBACK_RAMP = ["#034147","#1D9E75","#5DCAA5","#347278","#9FE1CB","#A8B0B6"];
+
+const FP_TICKERS  = ["TSLA","NVDA","PLTR","AMZN","GOOGL"];
+const SD_TICKERS  = ["MRVL","NBIS","LLY","MU","ASML","BE","TSM"];
+
+function pickColor(ticker: string, view: PortfolioView, idx: number) {
+  const map = view === "first" ? FP_COLORS : SD_COLORS;
+  return map[ticker] ?? FALLBACK_RAMP[idx % FALLBACK_RAMP.length];
 }
 
 function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
@@ -22,36 +36,46 @@ function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
   return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
 }
 
-export default function AllocationDonut({ portfolio }: { portfolio: Portfolio }) {
-  // Generous viewBox so labels never get cut — ring centred inside
+interface Props {
+  portfolio: Portfolio;
+  view: PortfolioView;
+}
+
+export default function AllocationDonut({ portfolio, view }: Props) {
   const VW = 300, VH = 300;
   const cx = VW / 2, cy = VH / 2;
   const outerR = 108, innerR = 66;
 
-  const filtered = portfolio.holdings.filter((h) => !EXCLUDED.has(h.ticker));
-  const totalWeight = filtered.reduce((sum, h) => sum + h.weight, 0);
-  const normalised = filtered.map((h) => ({
-    ...h,
-    weight: totalWeight > 0 ? (h.weight / totalWeight) * 100 : 0,
-  }));
+  const tickers = view === "first" ? FP_TICKERS : SD_TICKERS;
 
-  const sorted = [...normalised].sort((a, b) => b.weight - a.weight);
-  const top = sorted.slice(0, 5);
-  const otherWeight = sorted.slice(5).reduce((s, h) => s + h.weight, 0);
-  const rawSegs = otherWeight > 0
-    ? [...top, { ticker: "Other", name: "Other", weight: otherWeight, price: 0, dayChangePct: 0 }]
-    : top;
+  // Build segments from holdings that match the current view
+  const relevant = portfolio.holdings.filter(h => tickers.includes(h.ticker));
+  const totalWeight = relevant.reduce((s, h) => s + h.weight, 0);
 
-  const segTotal = rawSegs.reduce((s, seg) => s + seg.weight, 0);
-  const segments = rawSegs.map((seg, i) => ({
+  // If no live data for SD tickers, show equal-weight placeholder
+  const segments = relevant.length > 0
+    ? relevant.map((h, i) => ({
+        ticker: h.ticker,
+        weight: totalWeight > 0 ? (h.weight / totalWeight) * 100 : 100 / relevant.length,
+        color: pickColor(h.ticker, view, i),
+      }))
+    : tickers.map((t, i) => ({
+        ticker: t,
+        weight: 100 / tickers.length,
+        color: pickColor(t, view, i),
+      }));
+
+  // Normalise to 100
+  const segTotal = segments.reduce((s, seg) => s + seg.weight, 0);
+  const normed = segments.map((seg, i) => ({
     ...seg,
-    weight: i === rawSegs.length - 1
-      ? 100 - rawSegs.slice(0, -1).reduce((s, s2) => s + Math.round((s2.weight / segTotal) * 1000) / 10, 0)
-      : Math.round((seg.weight / segTotal) * 1000) / 10,
+    weight: i === segments.length - 1
+      ? 100 - segments.slice(0,-1).reduce((s,s2) => s + Math.round((s2.weight/segTotal)*1000)/10, 0)
+      : Math.round((seg.weight/segTotal)*1000)/10,
   }));
 
   let startAngle = 0;
-  const slices = segments.map((seg, i) => {
+  const slices = normed.map((seg) => {
     const angle = (seg.weight / 100) * 360;
     const endAngle = startAngle + angle;
     const midAngle = startAngle + angle / 2;
@@ -70,23 +94,18 @@ export default function AllocationDonut({ portfolio }: { portfolio: Portfolio })
       "Z",
     ].join(" ");
 
-    // Leader line from ring edge outward
     const p1 = polarToCartesian(cx, cy, outerR + 5, midAngle);
     const p2 = polarToCartesian(cx, cy, outerR + 18, midAngle);
-    // Label sits beyond the line end
-    const labelR = outerR + 30;
-    const lp = polarToCartesian(cx, cy, labelR, midAngle);
-    const anchor = (lp.x < cx - 3 ? "end" : lp.x > cx + 3 ? "start" : "middle") as "end" | "start" | "middle";
-    const color = pickColor(seg.ticker, i);
+    const lp = polarToCartesian(cx, cy, outerR + 30, midAngle);
+    const anchor = (lp.x < cx - 3 ? "end" : lp.x > cx + 3 ? "start" : "middle") as "end"|"start"|"middle";
 
-    const result = { seg, path, color, p1, p2, lp, anchor };
+    const result = { seg, path, p1, p2, lp, anchor };
     startAngle = endAngle;
     return result;
   });
 
   const totalDisplay = portfolio.totalValue > 0
-    ? "$" + (portfolio.totalValue / 1000).toFixed(0) + "K"
-    : "—";
+    ? "$" + (portfolio.totalValue / 1000).toFixed(0) + "K" : "—";
 
   return (
     <section className="bg-white rounded-2xl border border-cream-200 p-6">
@@ -94,45 +113,23 @@ export default function AllocationDonut({ portfolio }: { portfolio: Portfolio })
         Allocation
       </h2>
       <div className="flex justify-center">
-        <svg
-          viewBox={`0 0 ${VW} ${VH}`}
-          className="w-full"
-          style={{ maxHeight: "360px" }}
-          aria-label="Portfolio allocation donut chart"
-        >
-          {slices.map(({ seg, path, color, p1, p2, lp, anchor }) => (
+        <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" style={{ maxHeight: "320px" }}>
+          {slices.map(({ seg, path, p1, p2, lp, anchor }) => (
             <g key={seg.ticker}>
-              <path d={path} fill={color} stroke="white" strokeWidth="2" />
-              {/* Leader line */}
-              <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={color} strokeWidth="1.2" />
-              {/* Ticker label */}
-              <text
-                x={lp.x}
-                y={lp.y - 6}
-                textAnchor={anchor}
-                dominantBaseline="auto"
-                fontSize="11"
-                fontWeight="700"
-                fill={color === "#101113" ? "#444" : color}
-                fontFamily="system-ui, sans-serif"
-              >
+              <path d={path} fill={seg.color} stroke="white" strokeWidth="2" />
+              <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={seg.color} strokeWidth="1.2" />
+              <text x={lp.x} y={lp.y - 6} textAnchor={anchor} dominantBaseline="auto"
+                fontSize="11" fontWeight="700"
+                fill={seg.color === "#101113" ? "#444" : seg.color}
+                fontFamily="system-ui, sans-serif">
                 {seg.ticker}
               </text>
-              {/* Percentage */}
-              <text
-                x={lp.x}
-                y={lp.y + 7}
-                textAnchor={anchor}
-                dominantBaseline="auto"
-                fontSize="10"
-                fill="#888"
-                fontFamily="system-ui, sans-serif"
-              >
+              <text x={lp.x} y={lp.y + 7} textAnchor={anchor} dominantBaseline="auto"
+                fontSize="10" fill="#999" fontFamily="system-ui, sans-serif">
                 {seg.weight.toFixed(0)}%
               </text>
             </g>
           ))}
-          {/* Centre text */}
           <text x={cx} y={cy - 12} textAnchor="middle" fontSize="11" fill="#bbb" fontFamily="system-ui">total</text>
           <text x={cx} y={cy + 12} textAnchor="middle" fontSize="20" fontWeight="700" fill="#034147" fontFamily="system-ui">{totalDisplay}</text>
         </svg>

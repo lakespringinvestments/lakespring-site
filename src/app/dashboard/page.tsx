@@ -3,7 +3,6 @@ import { getAllTrades } from "@/lib/trades";
 import PortfolioHero from "@/components/Dashboard/PortfolioHero";
 import PremiumChart from "@/components/Dashboard/PremiumChart";
 import DashboardClient from "@/components/Dashboard/DashboardClient";
-import HoldingsList from "@/components/Dashboard/HoldingsList";
 
 export const revalidate = 300;
 
@@ -16,18 +15,11 @@ export default async function DashboardPage() {
   let portfolio;
   let allTrades: Awaited<ReturnType<typeof getAllTrades>> = [];
 
-  try {
-    portfolio = await getPortfolio();
-  } catch (e) {
-    console.error("getPortfolio failed:", e);
-    portfolio = null;
-  }
+  try { portfolio = await getPortfolio(); }
+  catch (e) { console.error("getPortfolio failed:", e); portfolio = null; }
 
-  try {
-    allTrades = await getAllTrades();
-  } catch (e) {
-    console.error("getAllTrades failed:", e);
-  }
+  try { allTrades = await getAllTrades(); }
+  catch (e) { console.error("getAllTrades failed:", e); }
 
   if (!portfolio) {
     return (
@@ -47,7 +39,7 @@ export default async function DashboardPage() {
 
   const weeklyMap: Record<string, number> = {};
   for (const trade of allTrades) {
-    if (!["CSP", "CC"].includes(trade.optionType?.toUpperCase() ?? "")) continue;
+    if (!["CSP","CC"].includes(trade.optionType?.toUpperCase() ?? "")) continue;
     const val = trade.totalPremiumUsd ?? 0;
     if (val <= 0) continue;
     const date = trade.closeDate || trade.openDate;
@@ -63,7 +55,7 @@ export default async function DashboardPage() {
   }
 
   const weeklyPremiums = Object.entries(weeklyMap)
-    .sort(([a], [b]) => a.localeCompare(b))
+    .sort(([a],[b]) => a.localeCompare(b))
     .map(([date, amount]) => ({ date, amount }));
 
   return (
@@ -72,15 +64,15 @@ export default async function DashboardPage() {
         <PortfolioHero portfolio={portfolio} />
         <PremiumChart weeklyData={weeklyPremiums} premiumYTD={portfolio.premiumYTD} />
       </div>
-      <DashboardClient portfolio={portfolio} allTrades={allTrades} />
-      <div className="mt-5">
-        <HoldingsList portfolio={portfolio} tradesByTicker={tradesByTicker} />
-      </div>
+      <DashboardClient
+        portfolio={portfolio}
+        allTrades={allTrades}
+        tradesByTicker={tradesByTicker}
+      />
       <p className="text-xs text-ink-400 mt-6 text-right">
         Updated{" "}
         {new Date(portfolio.lastUpdated).toLocaleString("en-US", {
-          dateStyle: "medium",
-          timeStyle: "short",
+          dateStyle: "medium", timeStyle: "short",
         })}
       </p>
     </div>

@@ -22,8 +22,16 @@ const TICKER_LOGOS: Record<string, string> = {
   GOOGL: "/logos/google.png",
 };
 
-const EXCLUDED = new Set(["BTC", "SOL", "ASML"]);
+const EXCLUDED = new Set(["BTC", "SOL"]);
 const OPTIONS_TYPES = new Set(["CSP", "CC"]);
+const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL"]);
+const SD_TICKERS  = new Set(["MRVL","NBIS","LLY","MU","ASML","BE","TSM"]);
+
+// SD tickers that may not be in portfolio.holdings — show as placeholders
+const SD_NAMES: Record<string, string> = {
+  MRVL: "Marvell", NBIS: "Nebius Group", LLY: "Eli Lilly",
+  MU: "Micron", ASML: "ASML", BE: "Bloom Energy", TSM: "TSMC",
+};
 
 function pickColor(ticker: string) {
   return TICKER_COLORS[ticker] ?? "#034147";
@@ -109,18 +117,48 @@ function premiumDisplay(trade: Trade): string {
   return val ? "$" + val.toLocaleString() : "—";
 }
 
-// Columns: Date | Type | Strike | Contracts | Capital req. | Option price | Premium | Expiry | Status
-const COLS = ["Date", "Type", "Strike", "Contracts", "Capital req.", "Opt. price", "Premium", "Expiry", "Status"];
-const GRID = "90px 95px 70px 70px 105px 75px 75px 100px 80px";
+function tradeYield(trade: Trade): string {
+  // Yield = premium / capital required (strike * contracts * 100)
+  const total = premiumTotal(trade);
+  if (total != null && trade.strike && trade.contracts) {
+    const cap = Math.abs(trade.strike * trade.contracts * 100);
+    if (cap > 0) return ((total / cap) * 100).toFixed(2) + "%";
+  }
+  return "—";
+}
+
+// Columns: Date | Type | Strike | Contracts | Capital req. | Opt. price | Premium | Yield | Expiry | Status
+const COLS = ["Date", "Type", "Strike", "Contracts", "Capital req.", "Opt. price", "Premium", "Yield", "Expiry", "Status"];
+const GRID = "85px 90px 65px 65px 100px 70px 70px 60px 95px 75px";
+
+import type { PortfolioView } from "./types";
 
 interface HoldingsListProps {
   portfolio: Portfolio;
   tradesByTicker: Record<string, Trade[]>;
+  view: PortfolioView;
 }
 
-export default function HoldingsList({ portfolio, tradesByTicker }: HoldingsListProps) {
+export default function HoldingsList({ portfolio, tradesByTicker, view }: HoldingsListProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
-  const holdings = portfolio.holdings.filter(h => !EXCLUDED.has(h.ticker));
+
+  // Filter holdings by portfolio view
+  const activeTickers = view === "first" ? FP_TICKERS : SD_TICKERS;
+  const liveHoldings = portfolio.holdings.filter(h =>
+    activeTickers.has(h.ticker) && !EXCLUDED.has(h.ticker)
+  );
+
+  // For SD: include placeholder rows for tickers not yet in portfolio
+  const holdings = view === "first"
+    ? liveHoldings
+    : [...new Set([...SD_TICKERS])].map(ticker => {
+        const live = liveHoldings.find(h => h.ticker === ticker);
+        return live ?? {
+          ticker, name: SD_NAMES[ticker] ?? ticker,
+          price: 0, weight: 0, dayChangePct: 0,
+        };
+      });
+
   const toggle = (ticker: string) => setExpanded(prev => prev === ticker ? null : ticker);
 
   return (
@@ -140,20 +178,19 @@ export default function HoldingsList({ portfolio, tradesByTicker }: HoldingsList
             <div key={h.ticker}>
               <button onClick={() => toggle(h.ticker)} className="w-full py-3 text-left" aria-expanded={isOpen}>
                 <div className="flex items-center gap-3">
-                  {/* Logo tile — Amazon uses object-cover so its own PNG background fills the tile */}
+                  {/* Logo tile */}
                   <div
                     className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center"
-                    style={{
-                      background: h.ticker === "AMZN" ? "transparent" : bg,
-                    }}
+                    style={{ background: h.ticker === "AMZN" ? "transparent" : bg }}
                   >
                     {logoSrc ? (
                       <Image
                         src={logoSrc}
                         alt={h.ticker}
-                        width={h.ticker === "AMZN" ? 40 : logoSize(h.ticker)}
-                        height={h.ticker === "AMZN" ? 40 : logoSize(h.ticker)}
-                        className={h.ticker === "AMZN" ? "w-full h-full object-cover" : "object-contain"}
+                        width={h.ticker === "AMZN" ? 32 : logoSize(h.ticker)}
+                        height={h.ticker === "AMZN" ? 32 : logoSize(h.ticker)}
+                        className={h.ticker === "AMZN" ? "rounded-lg" : "object-contain"}
+                        style={h.ticker === "AMZN" ? { objectFit: "cover", width: "100%", height: "100%" } : {}}
                       />
                     ) : (
                       <span className="text-[11px] font-medium" style={{ color: fg }}>
@@ -240,6 +277,9 @@ export default function HoldingsList({ portfolio, tradesByTicker }: HoldingsList
                           </span>
                           <span className="text-center text-ink-700 tabular-nums">
                             {premiumDisplay(trade)}
+                          </span>
+                          <span className="text-center tabular-nums font-medium" style={{ color: "#1D9E75" }}>
+                            {tradeYield(trade)}
                           </span>
                           <span className="text-center text-ink-500 tabular-nums">
                             {formatDate(trade.closeDate)}

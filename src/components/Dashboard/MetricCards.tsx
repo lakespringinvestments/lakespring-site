@@ -57,15 +57,16 @@ export default function MetricCards({ portfolio, allTrades, view, setView }: Met
     if (t.strike && t.contracts) return sum + Math.abs(t.strike * t.contracts * 100);
     return sum;
   }, 0);
-  const yieldPct = capitalDeployed > 0
-    ? ((totalPremiums / capitalDeployed) * 100).toFixed(1) + "%" : "—";
+  // Annualized yield: (avg weekly premium / capital deployed) * 52 weeks
+  const annualizedYield = capitalDeployed > 0 && avgWeekly > 0
+    ? ((avgWeekly * 52) / capitalDeployed * 100).toFixed(1) + "%" : "—";
 
   const openCount = optionsTrades.filter((t) => t.status?.toLowerCase() === "open").length;
 
   const cards = [
     { label: "YTD premiums",       value: fmt(totalPremiums || portfolio.premiumYTD), sub: "USD collected" },
     { label: "Avg weekly premium", value: avgWeekly > 0 ? fmt(avgWeekly) : fmt(Math.round(portfolio.premiumYTD / 22)), sub: `Rolling ${weeks.size || 22} weeks` },
-    { label: "Yield on premiums",  value: yieldPct, sub: "vs margin / capital used" },
+    { label: "Annualized yield",   value: annualizedYield, sub: "avg weekly × 52 / capital" },
     { label: "Open positions",     value: (openCount || portfolio.openPositions).toString(), sub: "Active contracts" },
   ];
 
