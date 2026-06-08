@@ -37,7 +37,7 @@ function logoSize(ticker: string): number {
   if (ticker === "TSLA") return 38;
   if (ticker === "NVDA") return 36;
   if (ticker === "PLTR") return 36;
-  if (ticker === "AMZN") return 40;   // fill tile
+  if (ticker === "AMZN") return 28;   // 30% smaller
   if (ticker === "GOOGL") return 28;
   return 36;
 }

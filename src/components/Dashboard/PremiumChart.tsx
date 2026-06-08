@@ -98,13 +98,20 @@ export default function PremiumChart({ weeklyData, premiumYTD }: PremiumChartPro
       ctx.closePath();
       ctx.fill();
 
-      // X label — show if enough space
-      if (barW > 24) {
-        ctx.fillStyle = "rgba(100,100,100,0.7)";
-        ctx.font = "9px system-ui";
-        ctx.textAlign = "center";
+      // X label (date)
+      ctx.fillStyle = "rgba(100,100,100,0.7)";
+      ctx.font = "9px system-ui";
+      ctx.textAlign = "center";
+      if (barW > 20) {
         ctx.fillText(formatWeekLabel(d.date), x + barW / 2, H - 6);
       }
+
+      // Data label above bar
+      const labelText = "$" + (d.amount >= 1000 ? (d.amount / 1000).toFixed(1) + "K" : d.amount.toLocaleString());
+      ctx.fillStyle = i === barCount - 1 ? "#1D9E75" : "#034147";
+      ctx.font = "bold 9.5px system-ui";
+      ctx.textAlign = "center";
+      ctx.fillText(labelText, x + barW / 2, y - 6);
     });
   }, [filtered]);
 
