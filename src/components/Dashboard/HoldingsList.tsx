@@ -20,17 +20,24 @@ const TICKER_LOGOS: Record<string, string> = {
   PLTR:  "/logos/palantir.png",
   AMZN:  "/logos/amazon.png",
   GOOGL: "/logos/google.png",
+  // Second Derivatives
+  MRVL: "/logos/marvell.png",
+  NBIS: "/logos/nebius.png",
+  LLY:  "/logos/lilly.png",
+  ASML: "/logos/asml.png",
+  BE:   "/logos/bloom_energy.png",
+  TSM:  "/logos/tsmc.png",
 };
 
 const EXCLUDED = new Set(["BTC", "SOL"]);
 const OPTIONS_TYPES = new Set(["CSP", "CC"]);
 const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL"]);
-const SD_TICKERS  = new Set(["MRVL","NBIS","LLY","MU","ASML","BE","TSM"]);
+const SD_TICKERS  = new Set(["MRVL","NBIS","LLY","ASML","BE","TSM"]);
 
 // SD tickers that may not be in portfolio.holdings — show as placeholders
 const SD_NAMES: Record<string, string> = {
   MRVL: "Marvell", NBIS: "Nebius Group", LLY: "Eli Lilly",
-  MU: "Micron", ASML: "ASML", BE: "Bloom Energy", TSM: "TSMC",
+  ASML: "ASML", BE: "Bloom Energy", TSM: "TSMC",
 };
 
 function pickColor(ticker: string) {
@@ -184,14 +191,19 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                     style={{ background: h.ticker === "AMZN" ? "transparent" : bg }}
                   >
                     {logoSrc ? (
-                      <Image
-                        src={logoSrc}
-                        alt={h.ticker}
-                        width={h.ticker === "AMZN" ? 32 : logoSize(h.ticker)}
-                        height={h.ticker === "AMZN" ? 32 : logoSize(h.ticker)}
-                        className={h.ticker === "AMZN" ? "rounded-lg" : "object-contain"}
-                        style={h.ticker === "AMZN" ? { objectFit: "cover", width: "100%", height: "100%" } : {}}
-                      />
+                      h.ticker === "AMZN" ? (
+                        // Amazon: use a slightly smaller crop of its own PNG background
+                        <Image src={logoSrc} alt={h.ticker}
+                          width={40} height={40}
+                          className="w-full h-full"
+                          style={{ objectFit: "cover", objectPosition: "center", transform: "scale(0.72)", borderRadius: "8px" }}
+                        />
+                      ) : (
+                        <Image src={logoSrc} alt={h.ticker}
+                          width={logoSize(h.ticker)} height={logoSize(h.ticker)}
+                          className="object-contain"
+                        />
+                      )
                     ) : (
                       <span className="text-[11px] font-medium" style={{ color: fg }}>
                         {h.ticker.slice(0, 4)}
