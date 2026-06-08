@@ -9,9 +9,15 @@ const TICKER_COLORS: Record<string, string> = {
   TSLA:  "#CC0000",
   NVDA:  "#76B900",
   PLTR:  "#101113",
-  // Amazon: we set background to match the logo PNG's own orange exactly
-  AMZN:  "#FF9900",
+  AMZN:  "#8B5E3C",   // warm cardboard brown — matches transparent-bg Amazon logo
   GOOGL: "#E8EAED",
+  // SD tickers — use transparent so each logo PNG's own background shows
+  MRVL: "transparent",
+  NBIS: "transparent",
+  LLY:  "transparent",
+  ASML: "transparent",
+  BE:   "transparent",
+  TSM:  "transparent",
 };
 
 const TICKER_LOGOS: Record<string, string> = {
@@ -45,14 +51,15 @@ function pickColor(ticker: string) {
 }
 
 function pickTextColor(bg: string) {
-  return ["#76B900", "#FF9900", "#E8EAED"].includes(bg) ? "#0a0a0a" : "#ffffff";
+  const lightBgs = ["#76B900", "#E8EAED"];
+  return lightBgs.includes(bg) ? "#0a0a0a" : "#ffffff";
 }
 
 function logoSize(ticker: string): number {
   if (ticker === "TSLA") return 38;
   if (ticker === "NVDA") return 36;
   if (ticker === "PLTR") return 36;
-  if (ticker === "AMZN") return 28;   // 30% smaller
+  if (ticker === "AMZN") return 30;   // transparent bg PNG — slightly smaller
   if (ticker === "GOOGL") return 28;
   return 36;
 }
@@ -188,15 +195,15 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                   {/* Logo tile */}
                   <div
                     className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center"
-                    style={{ background: h.ticker === "AMZN" ? "transparent" : bg }}
+                    style={{ background: bg }}
                   >
                     {logoSrc ? (
-                      h.ticker === "AMZN" ? (
-                        // Amazon: use a slightly smaller crop of its own PNG background
+                      // SD logos with own backgrounds: fill the tile
+                      // FP logos with transparent/solid bg: contain
+                      ["MRVL","NBIS","LLY","ASML","BE","TSM"].includes(h.ticker) ? (
                         <Image src={logoSrc} alt={h.ticker}
                           width={40} height={40}
-                          className="w-full h-full"
-                          style={{ objectFit: "cover", objectPosition: "center", transform: "scale(0.72)", borderRadius: "8px" }}
+                          className="w-full h-full object-cover"
                         />
                       ) : (
                         <Image src={logoSrc} alt={h.ticker}
