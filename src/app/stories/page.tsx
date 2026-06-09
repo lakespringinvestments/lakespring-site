@@ -63,10 +63,9 @@ export default function HomePage() {
     (a) => a.byline?.toLowerCase() === "holdings deep-dive"
   );
 
-  // Latest carousel — everything else, capped at 3 most recent
+  // Latest carousel — everything except Holdings deep-dives, paginated
   const latestArticles = allArticles
-    .filter((a) => a.byline?.toLowerCase() !== "holdings deep-dive")
-    .slice(0, 3);
+    .filter((a) => a.byline?.toLowerCase() !== "holdings deep-dive");
 
   const featuredIndex = pinnedArticles.findIndex(
     (a) => a.slug === FEATURED_SLUG || a.featured
