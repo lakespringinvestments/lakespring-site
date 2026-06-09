@@ -3,13 +3,9 @@ title: "Palantir: Beyond Warfare Intelligence"
 date: "2026-06-09"
 byline: "Holdings deep-dive"
 author: "Brian L."
-excerpt: "The market calls it a war stock. That framing is too small — and it is costing investors a clear view of one of the most defensible software businesses ever built."
+excerpt: "The market calls it a war stock. That framing is too small — and it is costing investors a clear view of one of the most defensible software businesses ever built. Palantir's military contracts are the origin story. The commercial enterprise is the actual thesis."
 coverImage: "/article-images/palantir-operating-layer.png"
 coverPosition: "center 20%"
----
-
-*The market calls it a war stock. That framing is too small — and it is costing investors a clear view of one of the most defensible software businesses ever built. Palantir's military contracts are the origin story. The commercial enterprise is the actual thesis.*
-
 ---
 
 Everyone wanted to talk about Iran.
