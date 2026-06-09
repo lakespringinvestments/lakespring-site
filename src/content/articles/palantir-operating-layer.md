@@ -1,6 +1,6 @@
 ---
 title: "Palantir: Beyond Warfare Intelligence"
-date: "2026-06-09"
+date: "2026-06-07"
 byline: "Holdings deep-dive"
 author: "Brian L."
 excerpt: "The market calls it a war stock. That framing is too small — and it is costing investors a clear view of one of the most defensible software businesses ever built. Palantir's military contracts are the origin story. The commercial enterprise is the actual thesis."

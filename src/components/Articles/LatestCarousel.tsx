@@ -23,16 +23,28 @@ const FALLBACK_TILES = [
 
 export default function LatestCarousel({ articles }: { articles: ArticleMeta[] }) {
   const [index, setIndex] = useState(0);
+  const [animating, setAnimating] = useState(false);
+  const [direction, setDirection] = useState<"left" | "right">("right");
 
   // Total number of pages (3 tiles per page)
   const pageCount = Math.ceil(articles.length / 3);
   const canPrev = index > 0;
   const canNext = index < pageCount - 1;
 
-  const prev = () => setIndex((i) => Math.max(0, i - 1));
-  const next = () => setIndex((i) => Math.min(pageCount - 1, i + 1));
+  const goTo = (newIndex: number, dir: "left" | "right") => {
+    if (animating) return;
+    setDirection(dir);
+    setAnimating(true);
+    setTimeout(() => {
+      setIndex(newIndex);
+      setAnimating(false);
+    }, 280);
+  };
 
-  // Slice the two visible articles
+  const prev = () => canPrev && goTo(index - 1, "left");
+  const next = () => canNext && goTo(index + 1, "right");
+
+  // Slice the visible articles
   const visible = articles.slice(index * 3, index * 3 + 3);
 
   if (articles.length === 0) return null;
@@ -52,7 +64,7 @@ export default function LatestCarousel({ articles }: { articles: ArticleMeta[] }
               {Array.from({ length: pageCount }).map((_, i) => (
                 <button
                   key={i}
-                  onClick={() => setIndex(i)}
+                  onClick={() => goTo(i, i > index ? "right" : "left")}
                   aria-label={`Go to page ${i + 1}`}
                   className={`rounded-full transition-all duration-200 ${
                     i === index
@@ -96,8 +108,17 @@ export default function LatestCarousel({ articles }: { articles: ArticleMeta[] }
           </div>
         </div>
 
-        {/* Tiles — always 2 columns on md+, stack on mobile */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
+        {/* Tiles with slide transition */}
+        <div
+          className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6"
+          style={{
+            transition: "opacity 0.28s ease, transform 0.28s ease",
+            opacity: animating ? 0 : 1,
+            transform: animating
+              ? `translateX(${direction === "right" ? "-24px" : "24px"})`
+              : "translateX(0)",
+          }}
+        >
           {visible.map((article, i) => {
             const hasImage = Boolean(article.coverImage);
             const fallback = FALLBACK_TILES[(index * 3 + i) % FALLBACK_TILES.length];
