@@ -244,7 +244,7 @@ export default function ThesisPage() {
 
           {/* Blockquote — outside space-y-6 so margins aren't collapsed */}
           <div className="my-12 md:my-16">
-            <blockquote className="border-l-4 border-sage-500 pl-6 max-w-xl text-2xl md:text-3xl text-teal-600 font-medium leading-snug">
+            <blockquote className="border-l-4 border-sage-500 pl-6 max-w-sm text-2xl md:text-3xl text-teal-600 font-medium leading-snug typing-blockquote">
               What structural transformations are actually underway in the global economy today,
               and where do I see the world in 5–10 years on the innovation front?
             </blockquote>
@@ -266,26 +266,29 @@ export default function ThesisPage() {
             </p>
           </div>
 
-          {/* Three questions as callout cards */}
+          {/* Three questions as callout cards — graduated greens */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
             {[
               {
                 num: "01",
                 label: "Execution power",
                 body: "Does the company have the engineering velocity, capital, and leadership to actually deliver on what it's promising?",
+                bg: "#1D9E75",
               },
               {
                 num: "02",
                 label: "Structural moat",
                 body: "Does it have compounding advantages — network effects, vertical integration, switching costs, or regulatory entrenchment — that widen as the transformation accelerates?",
+                bg: "#0D6B5E",
               },
               {
                 num: "03",
                 label: "Decade durability",
                 body: "Can we say with confidence this business will exist and matter ten years from now, through all the volatility and disruption of the AI buildout?",
+                bg: "#034147",
               },
             ].map((q) => (
-              <div key={q.num} className="rounded-xl p-5" style={{ background: "#034147" }}>
+              <div key={q.num} className="rounded-xl p-5" style={{ background: q.bg }}>
                 <p className="text-[10px] uppercase tracking-[0.2em] font-semibold mb-2" style={{ color: "rgba(255,255,255,0.5)" }}>{q.num}</p>
                 <p className="text-base font-semibold mb-2 text-white">{q.label}</p>
                 <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{q.body}</p>
