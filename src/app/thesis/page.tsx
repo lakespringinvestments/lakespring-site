@@ -1,4 +1,5 @@
 import Image from "next/image";
+import TypewriterQuote from "@/components/TypewriterQuote";
 
 export const metadata = {
   title: "About Us & Our Strategy — Lakespring Investments",
@@ -242,12 +243,12 @@ export default function ThesisPage() {
             </p>
           </div>
 
-          {/* Blockquote — outside space-y-6 so margins aren't collapsed */}
+          {/* Blockquote — typewriter animation, outside space-y-6 so margins aren't collapsed */}
           <div className="my-12 md:my-16">
-            <blockquote className="border-l-4 border-sage-500 pl-6 max-w-sm text-2xl md:text-3xl text-teal-600 font-medium leading-snug typing-blockquote">
-              What structural transformations are actually underway in the global economy today,
-              and where do I see the world in 5–10 years on the innovation front?
-            </blockquote>
+            <TypewriterQuote
+              text="What structural transformations are actually underway in the global economy today, and where do I see the world in 5–10 years on the innovation front?"
+              speed={25}
+            />
           </div>
 
           <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
