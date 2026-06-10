@@ -240,10 +240,17 @@ export default function ThesisPage() {
               Lakespring Investments starts somewhere else. The question isn&apos;t which stocks
               will beat the S&amp;P 500 over the next year. It&apos;s:
             </p>
-            <blockquote className="border-l-4 border-sage-500 pl-6 mt-14 mb-14 text-2xl md:text-4xl text-teal-600 font-medium leading-snug">
+          </div>
+
+          {/* Blockquote — outside space-y-6 so margins aren't collapsed */}
+          <div className="my-12 md:my-16">
+            <blockquote className="border-l-4 border-sage-500 pl-6 max-w-xl text-2xl md:text-3xl text-teal-600 font-medium leading-snug">
               What structural transformations are actually underway in the global economy today,
               and where do I see the world in 5–10 years on the innovation front?
             </blockquote>
+          </div>
+
+          <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
             <p>
               That reframing changes what gets held. The First Principles Portfolio is a
               concentrated basket built around businesses and assets that aren&apos;t competing
