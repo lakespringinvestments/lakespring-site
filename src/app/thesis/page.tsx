@@ -240,7 +240,7 @@ export default function ThesisPage() {
               Lakespring Investments starts somewhere else. The question isn&apos;t which stocks
               will beat the S&amp;P 500 over the next year. It&apos;s:
             </p>
-            <blockquote className="border-l-4 border-sage-500 pl-6 my-10 md:my-12 text-2xl md:text-4xl text-teal-600 font-medium leading-snug">
+            <blockquote className="border-l-4 border-sage-500 pl-6 mt-14 mb-14 text-2xl md:text-4xl text-teal-600 font-medium leading-snug">
               What structural transformations are actually underway in the global economy today,
               and where do I see the world in 5–10 years on the innovation front?
             </blockquote>
@@ -278,10 +278,10 @@ export default function ThesisPage() {
                 body: "Can we say with confidence this business will exist and matter ten years from now, through all the volatility and disruption of the AI buildout?",
               },
             ].map((q) => (
-              <div key={q.num} className="bg-white rounded-xl border border-cream-200 border-l-4 border-l-teal-600 p-5">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-teal-600 font-semibold mb-2">{q.num}</p>
-                <p className="text-base font-semibold text-ink-900 mb-2">{q.label}</p>
-                <p className="text-sm text-ink-600 leading-relaxed">{q.body}</p>
+              <div key={q.num} className="rounded-xl p-5" style={{ background: "#034147" }}>
+                <p className="text-[10px] uppercase tracking-[0.2em] font-semibold mb-2" style={{ color: "rgba(255,255,255,0.5)" }}>{q.num}</p>
+                <p className="text-base font-semibold mb-2 text-white">{q.label}</p>
+                <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{q.body}</p>
               </div>
             ))}
           </div>
@@ -495,7 +495,7 @@ export default function ThesisPage() {
             <p className="text-ink-600 text-base leading-relaxed pt-2">
               Holding <em>and</em> collecting builds wealth — but holding comes first.
             </p>
-            <p className="font-serif text-2xl md:text-3xl text-teal-600 font-medium tracking-tight pt-2">
+            <p className="text-teal-600 text-lg font-semibold pt-2">
               This is the Lakespring Investments playbook.
             </p>
           </div>
