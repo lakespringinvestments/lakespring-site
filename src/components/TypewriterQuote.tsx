@@ -10,7 +10,7 @@ interface TypewriterQuoteProps {
 export default function TypewriterQuote({ text, speed = 28 }: TypewriterQuoteProps) {
   const [displayed, setDisplayed] = useState("");
   const [started, setStarted] = useState(false);
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLQuoteElement>(null);
 
   // Start animation when element scrolls into view
   useEffect(() => {
