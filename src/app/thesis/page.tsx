@@ -255,15 +255,38 @@ export default function ThesisPage() {
             </p>
             <p>
               Some of our core convictions include Bitcoin, Tesla, Palantir, Nvidia, Alphabet,
-              and Amazon. Each position is chosen not purely on transformation
-              narrative or projected ROI, but on three questions we take seriously: does the
-              company have the execution power to actually deliver on what it&apos;s promising? Does
-              it have structural moats — network effects, vertical integration, switching costs,
-              regulatory entrenchment — that compound as the transformation accelerates? And can
-              we say with confidence that this business will exist and matter a decade from now,
-              through all the volatility, capital destruction, and AI-driven disruption that will
-              define the buildout years?
+              and Amazon. Each position earns its place against three questions:
             </p>
+          </div>
+
+          {/* Three questions as callout cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+            {[
+              {
+                num: "01",
+                label: "Execution power",
+                body: "Does the company have the engineering velocity, capital, and leadership to actually deliver on what it's promising?",
+              },
+              {
+                num: "02",
+                label: "Structural moat",
+                body: "Does it have compounding advantages — network effects, vertical integration, switching costs, or regulatory entrenchment — that widen as the transformation accelerates?",
+              },
+              {
+                num: "03",
+                label: "Decade durability",
+                body: "Can we say with confidence this business will exist and matter ten years from now, through all the volatility and disruption of the AI buildout?",
+              },
+            ].map((q) => (
+              <div key={q.num} className="bg-white rounded-xl border border-cream-200 border-l-4 border-l-teal-600 p-5">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-teal-600 font-semibold mb-2">{q.num}</p>
+                <p className="text-base font-semibold text-ink-900 mb-2">{q.label}</p>
+                <p className="text-sm text-ink-600 leading-relaxed">{q.body}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-6 text-ink-700 text-lg leading-relaxed mt-8">
             <p>
               The high-capex, high-volatility nature of this environment is a feature, not a bug.
               Choppy markets and crowded narratives are precisely the conditions in which
@@ -359,54 +382,32 @@ export default function ThesisPage() {
                 We sell puts on positions we already want to own, at strike prices we&apos;d be
                 genuinely comfortable buying at.
               </strong>{" "}
-              We collect premium for that commitment. Most of the time, those puts expire
-              worthless and we write another. That&apos;s the default: premium collection without
-              ever touching the underlying.
+              We collect premium for that commitment. Most of the time those puts expire
+              worthless and we write another — premium collection without ever touching the
+              underlying. When macro conditions or position-specific catalysts warrant it, we
+              deploy margin alongside cash to increase premium capacity. This is a thesis-informed
+              decision, always sized relative to our conviction and tolerance for assignment.
             </p>
             <p>
-              Depending on our reading of the macro environment, prevailing volatility, and
-              position-specific catalysts, we will sometimes deploy margin alongside cash-secured
-              capital to increase our premium-generating capacity. This is a deliberate,
-              thesis-informed decision — not speculation — and is sized relative to our
-              conviction in the underlying and our tolerance for assignment at the given strike.
-              Leverage amplifies both the income and the obligation, so we use it selectively
-              and always with a clear view of what we&apos;re committing to own if assigned.
+              Covered calls are a more difficult instrument with asymmetric bets. When a
+              conviction position can move violently to the upside, you don&apos;t want a short call
+              capping your participation at the moment that matters most. We sell covered calls
+              only when a put gets assigned — we acquire shares at our target price, sell calls
+              at levels we&apos;d genuinely be comfortable exiting at, and collect more premium until
+              called away. Cash returns to step one. The cycle restarts.
             </p>
             <p>
-              Covered calls are a more difficult instrument to navigate with asymmetric bets.
-              When you hold a conviction position in a transformative company, the upside can be
-              violently nonlinear — and you don&apos;t want a short call capping your participation
-              during the moments that matter most. We sell covered calls only when a put gets
-              assigned: we acquire shares at our target price and sell calls at levels we&apos;d
-              genuinely be comfortable exiting at, collecting more premium until called away.
-              Cash returns to step one. The cycle restarts.
-            </p>
-            <p>
-              The reason this structure works on these specific names is that every leg aligns
-              with a decision we&apos;d already make on conviction alone. We&apos;re willing to buy
-              more at lower prices. We&apos;re willing to trim into strength. The options market
-              simply pays us to formalise those commitments in advance.
-            </p>
-            <p>
-              The candidate pool extends beyond the core holdings. When premiums on the First
-              Principles names are compressed — typically during low-volatility stretches when
-              the thesis is uncontested — we widen the put-selling programme to a select group
-              of secondary names we call the{" "}
-              <strong className="text-teal-600 font-semibold">
-                Second Derivatives Portfolio
-              </strong>
-              . These are businesses that either directly benefit from the same structural
-              transformations driving our core positions, or carry elevated implied volatility
-              because they represent higher-risk, higher-reward bets within the same
-              transformation themes. The higher IV translates directly into fatter premiums.
-              On names in this bucket where we don&apos;t see a price we&apos;d want to hold long term,
-              we&apos;ll also run opportunistic swing trades — capturing shorter-cycle moves without
-              making the position a permanent part of the portfolio.
+              When premiums on First Principles names are compressed, we widen the programme
+              to the{" "}
+              <strong className="text-teal-600 font-semibold">Second Derivatives Portfolio</strong>
+              {" "}— names that either directly benefit from the same transformations or carry
+              elevated IV because they represent higher-risk bets in the same themes. On names
+              we wouldn&apos;t hold long term, we&apos;ll run opportunistic swing trades rather than
+              accumulating a permanent position.
             </p>
             <p className="italic text-ink-500">
               The premium isn&apos;t speculative income. It&apos;s compensation for committing to price
-              levels we&apos;d act on anyway — on a small basket of businesses we already understand
-              at depth.
+              levels we&apos;d act on anyway.
             </p>
           </div>
 
@@ -469,58 +470,34 @@ export default function ThesisPage() {
 
           <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
             <p>
-              Premium collection is a powerful strategy. Consistent weekly income, compounding
-              dry powder, and the psychological discipline of being paid to wait — all of it is
-              real. But it is the supporting act, not the headline.
-            </p>
-            <p>
+              Premium collection is a powerful strategy — but it is the supporting act, not the
+              headline.{" "}
               <strong className="text-teal-600 font-bold">
                 The real win is holding the right positions long enough for the transformation to
                 be obvious to everyone else.
               </strong>{" "}
               The alpha in this portfolio is not generated by options. It is generated by sitting
               in businesses that are actively rewriting the rules of the global economy, through
-              the years when doing so feels uncomfortable, while everyone else is arguing about
-              quarterly earnings.
+              the years when doing so feels uncomfortable.
             </p>
             <p>
-              This distinction matters operationally. Options premium should never become the
-              reason we sell a position we believe in. Writing covered calls that cap our
-              upside on a name experiencing a breakout moment, or selling puts so aggressively
-              that an assignment forces us to dilute capital at the wrong time — these are the
-              failure modes that turn a wealth-building strategy into a yield-chasing one. The
-              income is the mechanism that makes the long hold sustainable. It is not the point.
+              This distinction matters operationally. Premium should never become the reason we
+              sell a position we believe in. Writing covered calls that cap our upside during a
+              breakout, or selling puts so aggressively that an assignment dilutes capital at the
+              wrong time — these are the failure modes that turn a wealth-building strategy into
+              a yield-chasing one. The income makes the long hold sustainable. It is not the
+              point of the hold.
             </p>
             <p>
-              The premium wheel changes the experience of waiting. Income lands consistently in
-              the background while the structural thesis compounds in the foreground. The thesis
-              doesn&apos;t need to be right next quarter for the strategy to be working — and that
-              detachment from short-term outcomes is what makes the decade-long hold possible.
-            </p>
-            <p>
-              That consistent income also creates optionality. Premium that lands every week —
-              independent of where the broader market closes — is dry powder we can deploy on
-              our own terms. When a core name dips on news that doesn&apos;t change the thesis, we
-              add. When a secondary opportunity opens up inside the same structural
-              transformation, we have the cash to take it. Premium collection turns market
-              volatility from something to endure into something to capitalise on.
-            </p>
-            <p>
-              More fundamentally,{" "}
-              <strong className="text-teal-600 font-semibold">
-                premium collection puts your assets and your cash to work for you — not the
-                other way around
-              </strong>
-              . The default mode of money is to sit. The default mode of a portfolio is to wait.
-              Selling premium against positions you already want to own turns idle capital into
-              a recurring income stream, while the underlying thesis compounds in the background.
-            </p>
-            <p>
-              The goal is to be paid to wait for the thesis to be obvious to everyone else.
-              But never forget: it is the holding, not the collecting, that builds wealth.
+              That said, consistent weekly income — independent of where the market closes — is
+              dry powder we deploy on our own terms. When a core name dips on news that
+              doesn&apos;t change the thesis, we add. Premium collection turns volatility from
+              something to endure into something to act on.
             </p>
             <p className="font-serif text-xl md:text-2xl text-teal-600 font-medium tracking-tight pt-4">
-              This is the Lakespring Investments playbook.
+              It is the holding, not the collecting, that builds wealth.
+              <br />
+              <span className="text-ink-500 text-lg font-normal not-italic">This is the Lakespring Investments playbook.</span>
             </p>
           </div>
         </div>
