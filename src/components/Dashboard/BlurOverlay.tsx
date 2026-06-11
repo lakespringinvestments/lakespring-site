@@ -6,15 +6,8 @@ interface BlurOverlayProps {
   className?: string;
 }
 
-// Simple client-side membership check using localStorage
-// In future this will be replaced by real auth/Stripe check
-function useIsMember(): boolean {
-  if (typeof window === "undefined") return false;
-  return localStorage.getItem("lakespring_member") === "true";
-}
-
 export default function BlurOverlay({ children, className = "" }: BlurOverlayProps) {
-  const [member] = useState(() => {
+  const [member] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem("lakespring_member") === "true";
   });
@@ -24,10 +17,7 @@ export default function BlurOverlay({ children, className = "" }: BlurOverlayPro
   return (
     <span
       className={`select-none pointer-events-none ${className}`}
-      style={{
-        filter: "blur(6px)",
-        userSelect: "none",
-      }}
+      style={{ filter: "blur(6px)", userSelect: "none" as const }}
       aria-hidden="true"
     >
       {children}
