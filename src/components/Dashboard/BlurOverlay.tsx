@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
+import type { ReactNode } from "react";
 
 interface BlurOverlayProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 
