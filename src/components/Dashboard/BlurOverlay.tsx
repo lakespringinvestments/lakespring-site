@@ -1,13 +1,10 @@
 "use client";
-import { useState } from "react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
-interface BlurOverlayProps {
+export default function BlurOverlay({ children, className = "" }: {
   children: ReactNode;
   className?: string;
-}
-
-export default function BlurOverlay({ children, className = "" }: BlurOverlayProps) {
+}) {
   const [member] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem("lakespring_member") === "true";
@@ -18,7 +15,7 @@ export default function BlurOverlay({ children, className = "" }: BlurOverlayPro
   return (
     <span
       className={`select-none pointer-events-none ${className}`}
-      style={{ filter: "blur(6px)", userSelect: "none" as const }}
+      style={{ filter: "blur(6px)" }}
       aria-hidden="true"
     >
       {children}

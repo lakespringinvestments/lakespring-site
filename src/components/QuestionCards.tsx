@@ -37,7 +37,7 @@ export default function QuestionCards() {
           // Stagger each card 180ms apart
           questions.forEach((_, i) => {
             setTimeout(() => {
-              setVisible((prev) => {
+              setVisible((prev: boolean[]) => {
                 const next = [...prev];
                 next[i] = true;
                 return next;
