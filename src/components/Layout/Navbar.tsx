@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 const NAV_LINKS = [
   { href: "/dashboard", label: "Portfolio Dashboard" },
   { href: "/thesis", label: "About Us & Our Strategy" },
-  { href: "/", label: "Stories & Perspectives" },
+  { href: "/stories", label: "Stories & Perspectives" },
   { href: "/trades", label: "Trade Ledger" },
 ];
 
@@ -34,7 +34,7 @@ export default function Navbar() {
       <header className="bg-teal-600 border-b border-teal-700 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link
-            href="/dashboard"
+            href="/"
             className="flex items-center gap-2 group relative z-[60]"
             onClick={() => setOpen(false)}
           >
