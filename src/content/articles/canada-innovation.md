@@ -5,7 +5,8 @@ byline: "Perspective"
 author: "Brian L."
 excerpt: "Canada is first in uranium, first in potash, holds 20% of the world's freshwater, and sits on the third-largest oil reserves on the planet. It should be one of the wealthiest nations ever built. Instead, it just ran a decade-long experiment in taxing the productive, importing low-skill labour at scale, and driving out the capital and talent that actually create prosperity. The results are in."
 coverImage: "/article-images/canada-decline.png"
-coverPosition: "center 35%"
+coverPosition: "center 30%"
+coverScale: "1.15"
 latest: true
 ---
 
