@@ -18,6 +18,8 @@ export type ArticleMeta = {
   coverScale?: string;
   /** When true, the tile on the homepage uses a color block instead of the cover image */
   hideTileImage?: boolean;
+  /** When true, article is excluded from all listings */
+  hidden?: boolean;
 };
 
 export type Article = ArticleMeta & {
@@ -35,6 +37,7 @@ export function getAllArticles(): ArticleMeta[] {
       slug,
       title: data.title ?? slug,
       date: data.date ?? "",
+      hidden: data.hidden ?? false,
       excerpt: data.excerpt ?? "",
       coverImage: data.coverImage ?? undefined,
       byline: data.byline ?? undefined,
@@ -46,7 +49,7 @@ export function getAllArticles(): ArticleMeta[] {
       hideTileImage: data.hideTileImage ?? false,
     };
   });
-  return articles.sort((a, b) => (a.date < b.date ? 1 : -1));
+  return articles.filter((a) => !a.hidden).sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
 export function getArticleBySlug(slug: string): Article | null {

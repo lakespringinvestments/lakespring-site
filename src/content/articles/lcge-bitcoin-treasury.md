@@ -1,5 +1,5 @@
 ---
-title: "LCGE for BTC: Does It Work?"
+title: "Creating a BTC Holding Company for LCGE Eligibility in Canada: Does It Work?"
 date: "2026-04-20"
 byline: "Wealth Stories"
 author: "Brian L."
@@ -44,13 +44,13 @@ I was completely convinced.
 
 ## The $600 Reality Check
 
-I booked a consultation with Rotfleisch & Samulovitch, a Toronto-based tax law firm that specialises in cryptocurrency taxation. The consultation fee was $600 for one hour with Jack Wang, one of their senior lawyers. I figured the fee was a small price to pay if the strategy could save my family a few hundred times that amount.
+I booked a consultation with Rotfleisch & Samulovitch, a Toronto-based tax law firm that specialises in cryptocurrency taxation. The consultation fee was $600 for one hour with one of their senior crypto tax lawyers. I figured the fee was a small price to pay if the strategy could save my family a few hundred times that amount.
 
 I walked him through the plan I had built. The Section 85 rollover. The QSBC qualification through lending. The partnership angle with my mother. The Section 86 freeze. The family trust multiplication. The Malaysia emigration with zero departure tax. The fallback of selling QSBC shares in Canada if I stayed.
 
 The conversation was shorter than I expected.
 
-Wang explained that the Income Tax Act dedicates approximately one-third of its contents to specific anti-avoidance rules — provisions designed explicitly to prevent the kinds of multi-step structures I had mapped out. And beyond those specific rules, there is the General Anti-Avoidance Rule, known as GAAR — a broad provision that gives the CRA the authority to deny tax benefits from transactions that, while technically compliant with the letter of individual provisions, are determined to be an abuse of the Act read as a whole. In his view, GAAR is an unfair tool that deters taxpayers from aggressive tax planning — but it exists, it is enforced, and it is the reason that elaborate multi-step strategies with the primary purpose of avoiding tax are far riskier than any success-rate estimate would suggest.
+The lawyer explained that the Income Tax Act dedicates approximately one-third of its contents to specific anti-avoidance rules — provisions designed explicitly to prevent the kinds of multi-step structures I had mapped out. And beyond those specific rules, there is the General Anti-Avoidance Rule, known as GAAR — a broad provision that gives the CRA the authority to deny tax benefits from transactions that, while technically compliant with the letter of individual provisions, are determined to be an abuse of the Act read as a whole. In his view, GAAR is an unfair tool that deters taxpayers from aggressive tax planning — but it exists, it is enforced, and it is the reason that elaborate multi-step strategies with the primary purpose of avoiding tax are far riskier than any success-rate estimate would suggest.
 
 After reviewing the full plan, his advice came down to two options.
 
@@ -60,7 +60,7 @@ After reviewing the full plan, his advice came down to two options.
 
 That was it. Two options. Not twelve. Not a 40-page playbook with phased timelines and 93% success rates and platform comparisons and family trust multiplication strategies. Two straightforward paths, both operating clearly within the framework that the anti-avoidance rules permit.
 
-Wang mentioned something that stayed with me: this was essentially a first for his practice — not the question itself, but the level of elaborate planning a client had arrived with, assembled through conversations with an AI. He noted that most of his clients, when they understand the actual rules, find the roughly 25% capital gains tax rate acceptable. Many prefer holding their crypto directly without imposing a corporation as a middle layer, because the simplicity and flexibility of personal ownership has real value that a spreadsheet does not capture.
+The lawyer mentioned something that stayed with me: this was essentially a first for their practice — not the question itself, but the level of elaborate planning a client had arrived with, assembled through conversations with an AI. Most clients, when they understand the actual rules, find the roughly 25% capital gains tax rate acceptable. Many prefer holding their crypto directly without imposing a corporation as a middle layer, because the simplicity and flexibility of personal ownership has real value that a spreadsheet does not capture.
 
 ---
 
