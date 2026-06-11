@@ -1,6 +1,6 @@
 ---
-title: "Creating a BTC Holding Company for LCGE Eligibility in Canada: Does It Work?"
-date: "2026-04-20"
+title: "LCGE for a BTC Holding Company: Does It Work?"
+date: "2026-04-10"
 byline: "Wealth Stories"
 author: "Brian L."
 excerpt: "I spent a week building a tax-free Bitcoin strategy with Grok's help, formed a company called BitStrat Financial — at least in my head — and then paid a real tax lawyer $600 to tell me why most of it wouldn't survive a CRA audit."
