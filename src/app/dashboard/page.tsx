@@ -3,6 +3,7 @@ import { getAllTrades } from "@/lib/trades";
 import PortfolioHero from "@/components/Dashboard/PortfolioHero";
 import PremiumChart from "@/components/Dashboard/PremiumChart";
 import DashboardClient from "@/components/Dashboard/DashboardClient";
+import MemberGate from "@/components/Dashboard/MemberGate";
 
 export const revalidate = 300;
 
@@ -59,16 +60,18 @@ export default async function DashboardPage() {
     .map(([date, amount]) => ({ date, amount }));
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10">
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-5 mb-5">
-        <PortfolioHero portfolio={portfolio} />
-        <PremiumChart weeklyData={weeklyPremiums} premiumYTD={portfolio.premiumYTD} />
-      </div>
-      <DashboardClient
-        portfolio={portfolio}
-        allTrades={allTrades}
-        tradesByTicker={tradesByTicker}
-      />
+    <>
+      <MemberGate />
+      <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-5 mb-5">
+          <PortfolioHero portfolio={portfolio} />
+          <PremiumChart weeklyData={weeklyPremiums} premiumYTD={portfolio.premiumYTD} />
+        </div>
+        <DashboardClient
+          portfolio={portfolio}
+          allTrades={allTrades}
+          tradesByTicker={tradesByTicker}
+        />
       <p className="text-xs text-ink-400 mt-6 text-right">
         Updated{" "}
         {new Date(portfolio.lastUpdated).toLocaleString("en-US", {
@@ -76,5 +79,6 @@ export default async function DashboardPage() {
         })}
       </p>
     </div>
+    </>
   );
 }

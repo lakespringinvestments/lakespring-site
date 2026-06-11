@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import type { ArticleMeta } from "@/lib/articles";
 
 function formatDate(iso: string) {
@@ -25,19 +25,8 @@ export default function LatestCarousel({ articles }: { articles: ArticleMeta[] }
   const [index, setIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [direction, setDirection] = useState<"left" | "right">("right");
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Reset to page 0 when articles list changes
-  useEffect(() => {
-    setIndex(0);
-    setAnimating(false);
-  }, [articles.length]);
-
-  // Cleanup timer on unmount to prevent stuck animating state
-  useEffect(() => {
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
-  }, []);
-
+  // Total number of pages (3 tiles per page)
   const pageCount = Math.ceil(articles.length / 3);
   const canPrev = index > 0;
   const canNext = index < pageCount - 1;
@@ -46,8 +35,7 @@ export default function LatestCarousel({ articles }: { articles: ArticleMeta[] }
     if (animating) return;
     setDirection(dir);
     setAnimating(true);
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => {
+    setTimeout(() => {
       setIndex(newIndex);
       setAnimating(false);
     }, 280);
@@ -56,6 +44,7 @@ export default function LatestCarousel({ articles }: { articles: ArticleMeta[] }
   const prev = () => canPrev && goTo(index - 1, "left");
   const next = () => canNext && goTo(index + 1, "right");
 
+  // Slice the visible articles
   const visible = articles.slice(index * 3, index * 3 + 3);
 
   if (articles.length === 0) return null;

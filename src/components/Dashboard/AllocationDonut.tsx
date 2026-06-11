@@ -1,8 +1,16 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Portfolio } from "../../../types/portfolio";
 import type { PortfolioView } from "./types";
+
+function useMember() {
+  const [member, setMember] = useState(false);
+  useEffect(() => {
+    setMember(localStorage.getItem("lakespring_member") === "true");
+  }, []);
+  return member;
+}
 
 const FP_COLORS: Record<string, string> = {
   TSLA: "#CC0000", NVDA: "#76B900", PLTR: "#101113", AMZN: "#FF9900", GOOGL: "#A8B0B6",
@@ -39,6 +47,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const animRef = useRef<number | null>(null);
   const prevView = useRef<PortfolioView | null>(null);
+  const member = useMember();
 
   // Larger viewBox — ring fills more space since no leader lines needed
   const VW = 320, VH = 320, cx = 160, cy = 160;
@@ -157,9 +166,9 @@ export default function AllocationDonut({ portfolio, view }: Props) {
                 x={seg.pp.x} y={seg.pp.y}
                 textAnchor="middle" dominantBaseline="middle"
                 fontSize="10" fontWeight="600"
-                fill={["#101113","#1E3A8A","#034147"].includes(seg.color) ? "#fff" : "#fff"}
+                fill="#fff"
                 fontFamily="system-ui, sans-serif"
-                style={{ opacity: 0 }}>
+                style={{ opacity: 0, filter: member ? "none" : "blur(4px)" }}>
                 {seg.weight.toFixed(0)}%
               </text>
             ) : null
@@ -180,7 +189,8 @@ export default function AllocationDonut({ portfolio, view }: Props) {
 
           {/* Centre */}
           <text x={cx} y={cy - 12} textAnchor="middle" fontSize="11" fill="#ccc" fontFamily="system-ui">total</text>
-          <text x={cx} y={cy + 10} textAnchor="middle" fontSize="22" fontWeight="700" fill="#034147" fontFamily="system-ui">{totalDisplay}</text>
+          <text x={cx} y={cy + 10} textAnchor="middle" fontSize="22" fontWeight="700" fill="#034147" fontFamily="system-ui"
+            style={{ filter: member ? "none" : "blur(6px)" }}>{totalDisplay}</text>
         </svg>
       </div>
     </section>

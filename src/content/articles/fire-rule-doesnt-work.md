@@ -1,5 +1,5 @@
 ---
-title: "Why the 4% FIRE Rule Doesn't Work Anymore"
+title: "FIRE: The 4% Rule Should be \"Retired\""
 date: "2026-04-10"
 byline: "Perspective"
 author: "Brian L."

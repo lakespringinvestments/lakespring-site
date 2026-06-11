@@ -1,4 +1,5 @@
 import type { Portfolio } from "../../../types/portfolio";
+import BlurOverlay from "./BlurOverlay";
 
 function formatCurrency(n: number): string {
   return n.toLocaleString("en-US", {
@@ -45,7 +46,7 @@ export default function PortfolioHero({ portfolio }: { portfolio: Portfolio }) {
           Portfolio value
         </p>
         <p className="text-3xl font-semibold text-white tracking-tight leading-none">
-          {formatCurrency(portfolio.totalValue)}
+          <BlurOverlay>{formatCurrency(portfolio.totalValue)}</BlurOverlay>
         </p>
         <p className="text-xs text-white/40 mt-1">
           USD · {new Date(portfolio.lastUpdated).toLocaleDateString("en-US", {
@@ -78,11 +79,11 @@ export default function PortfolioHero({ portfolio }: { portfolio: Portfolio }) {
           Premiums YTD
         </p>
         <p className="text-xl font-semibold text-[#5DCAA5] leading-none">
-          {formatCurrency(portfolio.premiumYTD)}
+          <BlurOverlay>{formatCurrency(portfolio.premiumYTD)}</BlurOverlay>
         </p>
         {avgWeekly > 0 && (
           <p className="text-xs text-white/40 mt-1">
-            Avg {formatCurrency(avgWeekly)} / week
+            Avg <BlurOverlay>{formatCurrency(avgWeekly)}</BlurOverlay> / week
           </p>
         )}
       </div>
