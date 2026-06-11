@@ -1,5 +1,5 @@
 ---
-title: "Creating a BTC Holding Company for LCGE Eligibility in Canada: Does It Work?"
+title: "LCGE for BTC: Does It Work?"
 date: "2026-04-20"
 byline: "Wealth Stories"
 author: "Brian L."

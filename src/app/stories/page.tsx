@@ -210,7 +210,7 @@ function FeaturedTile({
               {article.title}
             </h2>
             {article.excerpt && (
-              <p className="mt-3 text-sm text-cream-100/75 leading-relaxed line-clamp-2 max-w-xl">
+              <p className="mt-3 text-sm text-cream-100/75 leading-relaxed line-clamp-1 max-w-xl">
                 {article.excerpt}
               </p>
             )}
@@ -232,7 +232,7 @@ function FeaturedTile({
             {article.title}
           </h2>
           {article.excerpt && (
-            <p className="mt-3 text-sm text-cream-100/70 leading-relaxed line-clamp-2 max-w-xl">
+            <p className="mt-3 text-sm text-cream-100/70 leading-relaxed line-clamp-1 max-w-xl">
               {article.excerpt}
             </p>
           )}
@@ -289,8 +289,13 @@ function ArticleTile({
             <h2 className="font-serif text-xl md:text-2xl text-cream-50 leading-[1.1] tracking-tight font-medium">
               {article.title}
             </h2>
+            {article.excerpt && (
+              <p className="mt-2 text-xs text-cream-100/70 leading-relaxed line-clamp-1">
+                {article.excerpt}
+              </p>
+            )}
             {article.date && (
-              <p className="mt-3 text-[11px] uppercase tracking-wide text-cream-100/70">
+              <p className="mt-2 text-[11px] uppercase tracking-wide text-cream-100/70">
                 {formatDate(article.date)}
               </p>
             )}
@@ -307,7 +312,7 @@ function ArticleTile({
             {article.title}
           </h2>
           {article.excerpt && (
-            <p className={`mt-3 text-sm ${fallback.excerpt} leading-relaxed line-clamp-2`}>
+            <p className={`mt-3 text-sm ${fallback.excerpt} leading-relaxed line-clamp-1`}>
               {article.excerpt}
             </p>
           )}
