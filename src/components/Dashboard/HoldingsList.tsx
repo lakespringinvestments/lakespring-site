@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Portfolio } from "../../../types/portfolio";
 import type { Trade } from "@/lib/trades";
 
@@ -155,6 +155,8 @@ interface HoldingsListProps {
 
 export default function HoldingsList({ portfolio, tradesByTicker, view }: HoldingsListProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [member, setMember] = useState(false);
+  useEffect(() => { setMember(localStorage.getItem("lakespring_member") === "true"); }, []);
 
   // Filter holdings by portfolio view
   const activeTickers = view === "first" ? FP_TICKERS : SD_TICKERS;
@@ -235,7 +237,8 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                         <span className="text-ink-600 font-medium">{h.weight.toFixed(0)}%</span> of portfolio
                       </span>
                       {totalPremiums > 0 && (
-                        <span className="text-[11px] text-sage-600 font-medium">
+                        <span className="text-[11px] text-sage-600 font-medium"
+                          style={{ filter: member ? "none" : "blur(5px)" }}>
                           +${totalPremiums.toLocaleString(undefined, { maximumFractionDigits: 0 })} premiums
                         </span>
                       )}
@@ -287,22 +290,27 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                           <span className="text-center font-medium" style={{ color: "#034147" }}>
                             {friendlyType(trade.optionType)}
                           </span>
-                          <span className="text-center text-ink-700 tabular-nums">
+                          <span className="text-center text-ink-700 tabular-nums"
+                            style={{ filter: member ? "none" : "blur(5px)" }}>
                             {trade.strike ? `$${trade.strike.toLocaleString()}` : "—"}
                           </span>
-                          <span className="text-center text-ink-700 tabular-nums">
+                          <span className="text-center text-ink-700 tabular-nums"
+                            style={{ filter: member ? "none" : "blur(5px)" }}>
                             {trade.contracts ? `${trade.contracts} ct` : "—"}
                           </span>
-                          <span className="text-center text-ink-700 tabular-nums">
+                          <span className="text-center text-ink-700 tabular-nums"
+                            style={{ filter: member ? "none" : "blur(5px)" }}>
                             {capitalRequired(trade)}
                           </span>
-                          <span className="text-center text-ink-700 tabular-nums">
+                          <span className="text-center text-ink-700 tabular-nums"
+                            style={{ filter: member ? "none" : "blur(5px)" }}>
                             {optionPrice(trade)}
                           </span>
-                          <span className="text-center text-ink-700 tabular-nums">
+                          <span className="text-center text-ink-700 tabular-nums"
+                            style={{ filter: member ? "none" : "blur(5px)" }}>
                             {premiumDisplay(trade)}
                           </span>
-                          <span className="text-center tabular-nums font-medium" style={{ color: "#1D9E75" }}>
+                          <span className="text-center tabular-nums font-medium" style={{ color: "#1D9E75", filter: member ? "none" : "blur(5px)" }}>
                             {tradeYield(trade)}
                           </span>
                           <span className="text-center text-ink-500 tabular-nums">

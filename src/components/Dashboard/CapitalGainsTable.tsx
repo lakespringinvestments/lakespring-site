@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import type { Portfolio } from "../../../types/portfolio";
 import type { PortfolioView } from "./types";
 
@@ -30,6 +31,8 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
   const bookCosts = view === "first" ? FP_BOOK_COSTS : SD_BOOK_COSTS;
   const title = view === "first" ? "First Principles — Capital Gains" : "Second Derivatives — Capital Gains";
   const COLS = ["Ticker", "Book cost", "Mkt value", "Capital gain", "ROI"];
+  const [member, setMember] = useState(false);
+  useEffect(() => { setMember(localStorage.getItem("lakespring_member") === "true"); }, []);
 
   const rows = tickers.map((ticker) => {
     const holding = portfolio.holdings.find(h => h.ticker === ticker);
@@ -59,16 +62,17 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
               style={{ background: "rgba(3,65,71,0.08)", color: "#034147" }}>
               {ticker}
             </span>
-            <span className="text-ink-700 tabular-nums">{fmt(bookCost)}</span>
-            <span className="tabular-nums" style={{ color: mktValue > 0 ? "#0a0a0a" : "#888" }}>
+            <span className="text-ink-700 tabular-nums"
+              style={{ filter: member ? "none" : "blur(5px)" }}>{fmt(bookCost)}</span>
+            <span className="tabular-nums" style={{ color: mktValue > 0 ? "#0a0a0a" : "#888", filter: member ? "none" : "blur(5px)" }}>
               {mktValue > 0 ? fmt(mktValue) : "—"}
             </span>
             <span className="tabular-nums font-medium"
-              style={{ color: capitalGain === null ? "#888" : capitalGain >= 0 ? "#1D9E75" : "#E24B4A" }}>
+              style={{ color: capitalGain === null ? "#888" : capitalGain >= 0 ? "#1D9E75" : "#E24B4A", filter: member ? "none" : "blur(5px)" }}>
               {capitalGain !== null ? (capitalGain >= 0 ? "+" : "") + fmt(Math.abs(capitalGain)) : "No position"}
             </span>
             <span className="tabular-nums font-medium"
-              style={{ color: roi === null ? "#888" : roi >= 0 ? "#1D9E75" : "#E24B4A" }}>
+              style={{ color: roi === null ? "#888" : roi >= 0 ? "#1D9E75" : "#E24B4A", filter: member ? "none" : "blur(5px)" }}>
               {roi !== null ? (roi >= 0 ? "+" : "") + roi.toFixed(1) + "%" : "—"}
             </span>
           </div>
