@@ -247,7 +247,7 @@ export default function ThesisPage() {
           {/* Blockquote — typewriter animation, outside space-y-6 so margins aren't collapsed */}
           <div className="my-12 md:my-16">
             <TypewriterQuote
-              text="What structural transformations are actually underway in the global economy today, and where do I see the world in 5–10 years on the innovation front?"
+              text="What structural transformations are actually underway in the global economy today, and where do I see the world in 5–10 years?"
               speed={25}
             />
           </div>
