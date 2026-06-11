@@ -126,7 +126,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
       {/* ── Header ── */}
       <header className="max-w-6xl mx-auto px-6 pt-16 md:pt-20 pb-10 md:pb-12">
         <Link
-          href="/stories"
+          href="/"
           className="text-xs uppercase tracking-wide text-ink-400 hover:text-teal-600 mb-8 inline-block transition-colors"
         >
           ← Stories &amp; Perspectives
@@ -171,15 +171,17 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
 
       {/* ── Cover image ── */}
       {article.coverImage && (
-        <div className="max-w-6xl mx-auto px-6 mb-12">
+        <div className="max-w-6xl mx-auto px-6 mb-12 overflow-hidden rounded-2xl">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={article.coverImage}
             alt={article.title}
-            className="w-full rounded-2xl object-cover"
+            className="w-full object-cover"
             style={{
               aspectRatio: "16/9",
               objectPosition: article.coverPosition ?? "center center",
+              transform: article.coverScale ? `scale(${article.coverScale})` : undefined,
+              transformOrigin: article.coverPosition ?? "center center",
             }}
           />
         </div>
