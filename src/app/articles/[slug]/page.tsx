@@ -58,15 +58,15 @@ function parseSegments(content: string): Segment[] {
   return segments;
 }
 
-// Shared markdown components — untouched from working baseline
+// Shared markdown components
 const mdComponents: React.ComponentProps<typeof ReactMarkdown>["components"] = {
   img({ src, alt }) {
     if (!src) return null;
     return (
-      <figure className="not-prose my-8">
-        <div className="relative w-full rounded-xl overflow-hidden">
+      <figure className="not-prose my-8 flex flex-col items-center">
+        <div className="w-full max-w-2xl rounded-xl overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src} alt={alt ?? ""} className="w-full h-auto block" />
+          <img src={src} alt={alt ?? ""} className="w-full h-auto block mx-auto" />
         </div>
         {alt && (
           <figcaption className="text-xs text-ink-400 text-center mt-1.5 italic">
@@ -176,8 +176,9 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
           <img
             src={article.coverImage}
             alt={article.title}
-            className="w-full h-auto block"
+            className="w-full object-cover"
             style={{
+              aspectRatio: "16/9",
               objectPosition: article.coverPosition ?? "center center",
               transform: article.coverScale ? `scale(${article.coverScale})` : undefined,
               transformOrigin: article.coverPosition ?? "center center",
