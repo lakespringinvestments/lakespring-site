@@ -136,7 +136,7 @@ export default function LatestCarousel({ articles }: { articles: ArticleMeta[] }
                       alt={article.title}
                       fill
                       sizes="(min-width: 768px) 33vw, 100vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      className={`${article.coverPosition ? "object-cover" : "object-contain bg-[#0d1f2d]"} transition-transform duration-500 group-hover:scale-[1.03]`}
                       style={{
                         objectPosition: article.coverPosition ?? "center center",
                         ...(article.coverScale
