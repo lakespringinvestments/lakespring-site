@@ -1,5 +1,5 @@
 ---
-title: "Canada: Driving out Prosperity"
+title: "Canada's Lost Decade"
 date: "2026-03-15"
 byline: "Perspective"
 author: "Brian L."
