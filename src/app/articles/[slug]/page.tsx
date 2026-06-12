@@ -121,11 +121,6 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
 
   const segments = parseSegments(article.content);
 
-  // Detect if cover image is square/portrait (not a wide cinematic shot)
-  // Square images get centered with max-width; wide images stay full-width
-  const isSquareCover = article.coverImage?.includes("canada-decline") ||
-    article.coverSquare === true;
-
   return (
     <article className="bg-transparent">
       {/* ── Header ── */}
@@ -176,36 +171,19 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
 
       {/* ── Cover image ── */}
       {article.coverImage && (
-        <div className="max-w-6xl mx-auto px-6 mb-12">
-          {isSquareCover ? (
-            /* Square/portrait images: centered, constrained, not stretched */
-            <div className="flex justify-center">
-              <div className="w-full max-w-lg rounded-2xl overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={article.coverImage}
-                  alt={article.title}
-                  className="w-full h-auto block"
-                />
-              </div>
-            </div>
-          ) : (
-            /* Wide/cinematic images: full-width 16:9 */
-            <div className="rounded-2xl overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={article.coverImage}
-                alt={article.title}
-                className="w-full object-cover"
-                style={{
-                  aspectRatio: "16/9",
-                  objectPosition: article.coverPosition ?? "center center",
-                  transform: article.coverScale ? `scale(${article.coverScale})` : undefined,
-                  transformOrigin: article.coverPosition ?? "center center",
-                }}
-              />
-            </div>
-          )}
+        <div className="max-w-6xl mx-auto px-6 mb-12 overflow-hidden rounded-2xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={article.coverImage}
+            alt={article.title}
+            className="w-full object-cover"
+            style={{
+              aspectRatio: "16/9",
+              objectPosition: article.coverPosition ?? "center center",
+              transform: article.coverScale ? `scale(${article.coverScale})` : undefined,
+              transformOrigin: article.coverPosition ?? "center center",
+            }}
+          />
         </div>
       )}
 
