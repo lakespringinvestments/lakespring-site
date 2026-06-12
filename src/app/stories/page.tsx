@@ -79,13 +79,6 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <section className="bg-transparent">
         <div className="max-w-6xl mx-auto px-6 pt-16 md:pt-20 pb-12 md:pb-14">
-          {/*
-            Two-line title:
-            Line 1 — "Stories" plain black serif
-            Line 2 — "& Perspectives" with sage/teal highlight behind it
-            The highlight uses a linear background that only spans the text
-            width, padded slightly, sitting like a marker stroke.
-          */}
           <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-[#0a0a0a] leading-[1.05] tracking-tight font-medium">
             <span className="block">Stories</span>
             <span className="block mt-1">
@@ -105,7 +98,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Latest carousel (only rendered when articles are tagged latest: true) ── */}
+      {/* ── Latest carousel ── */}
       {latestArticles.length > 0 && (
         <LatestCarousel articles={latestArticles} />
       )}
@@ -273,7 +266,7 @@ function ArticleTile({
             alt={article.title}
             fill
             sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            className={`${article.coverPosition ? "object-cover" : "object-contain bg-[#0d1f2d]"} transition-transform duration-500 group-hover:scale-[1.03]`}
             style={{
               objectPosition: article.coverPosition ?? "center center",
               ...(article.coverScale ? { transform: `scale(${article.coverScale})`, transformOrigin: "center center" } : {}),
