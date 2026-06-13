@@ -63,17 +63,17 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   const relevant = portfolio.holdings.filter(h => tickers.includes(h.ticker));
   const totalWeight = relevant.reduce((s, h) => s + h.weight, 0);
 
-  const rawSegs = relevant.length > 0
-    ? relevant.map((h) => ({
-        ticker: h.ticker,
-        weight: totalWeight > 0 ? (h.weight / totalWeight) * 100 : 100 / relevant.length,
-        color: colors[h.ticker] ?? "#A8B0B6",
-      }))
-    : tickers.map((t, i) => ({
-        ticker: t,
-        weight: 100 / tickers.length,
-        color: colors[t] ?? "#A8B0B6",
-      }));
+  // Include all tickers — use holdings data when available, placeholder for missing
+  const rawSegs = tickers.map((t) => {
+    const holding = relevant.find(h => h.ticker === t);
+    return {
+      ticker: t,
+      weight: holding && totalWeight > 0
+        ? (holding.weight / totalWeight) * 100
+        : relevant.length > 0 ? 1 : 100 / tickers.length,
+      color: colors[t] ?? "#A8B0B6",
+    };
+  });
 
   const segTotal = rawSegs.reduce((s, seg) => s + seg.weight, 0);
   const segments = rawSegs.map((seg, i) => ({
