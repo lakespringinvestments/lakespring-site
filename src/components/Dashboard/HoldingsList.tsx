@@ -40,7 +40,10 @@ const OPTIONS_TYPES = new Set(["CSP", "CC"]);
 const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY"]);
 const SD_TICKERS  = new Set(["MRVL","NBIS","ASML","BE","SMCI"]);
 
-// SD tickers that may not be in portfolio.holdings — show as placeholders
+// Tickers that may not be in portfolio.holdings — show as placeholders
+const FP_NAMES: Record<string, string> = {
+  TSLA: "Tesla", NVDA: "Nvidia", PLTR: "Palantir", AMZN: "Amazon", GOOGL: "Alphabet", LLY: "Eli Lilly",
+};
 const SD_NAMES: Record<string, string> = {
   MRVL: "Marvell", NBIS: "Nebius Group",
   ASML: "ASML", BE: "Bloom Energy", SMCI: "Super Micro Computer",
@@ -166,7 +169,13 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
 
   // For SD: include placeholder rows for tickers not yet in portfolio
   const holdings = view === "first"
-    ? liveHoldings
+    ? [...new Set([...FP_TICKERS])].map(ticker => {
+        const live = liveHoldings.find(h => h.ticker === ticker);
+        return live ?? {
+          ticker, name: FP_NAMES[ticker] ?? ticker,
+          price: 0, weight: 0, dayChangePct: 0,
+        };
+      })
     : [...new Set([...SD_TICKERS])].map(ticker => {
         const live = liveHoldings.find(h => h.ticker === ticker);
         return live ?? {
