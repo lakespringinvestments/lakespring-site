@@ -37,12 +37,12 @@ const TICKER_LOGOS: Record<string, string> = {
 
 const EXCLUDED = new Set(["BTC", "SOL"]);
 const OPTIONS_TYPES = new Set(["CSP", "CC"]);
-const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL"]);
-const SD_TICKERS  = new Set(["MRVL","NBIS","LLY","ASML","BE","SMCI"]);
+const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY"]);
+const SD_TICKERS  = new Set(["MRVL","NBIS","ASML","BE","SMCI"]);
 
 // SD tickers that may not be in portfolio.holdings — show as placeholders
 const SD_NAMES: Record<string, string> = {
-  MRVL: "Marvell", NBIS: "Nebius Group", LLY: "Eli Lilly",
+  MRVL: "Marvell", NBIS: "Nebius Group",
   ASML: "ASML", BE: "Bloom Energy", SMCI: "Super Micro Computer",
 };
 
