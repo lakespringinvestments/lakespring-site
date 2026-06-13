@@ -7,10 +7,6 @@ coverImage: "/article-images/fsi-exemption-building-wealth-abroad.png"
 coverPosition: "50% 40%"
 ---
 
-*For a Canadian relocating to Kuala Lumpur, the FSI exemption isn't just a tax consideration — it's a structural question about where wealth compounds.*
-
----
-
 I am planning to relocate to Kuala Lumpur, Malaysia, on a Malaysia My Second Home (MM2H) visa. The reasons are political, social, cultural, and financial — but for the purposes of this article, I want to focus on the financial mechanics, because they are striking enough to stand on their own. The short version: after paying my deemed disposition tax to the CRA upon departure from Canada, every dollar of foreign-sourced income I earn, every capital gain I realise, and every remittance I bring into Malaysia is tax-free — at least until 2036. That is not a loophole. It is a provision written into Malaysian tax law, extended explicitly by Budget 2026, and available to any qualifying tax resident.
 
 The contrast with Canada — where I currently pay a combined marginal rate exceeding 53% in Ontario — is not subtle. It is a structural divergence in how two countries think about attracting capital, rewarding asset ownership, and competing for productive residents in a globally mobile economy.

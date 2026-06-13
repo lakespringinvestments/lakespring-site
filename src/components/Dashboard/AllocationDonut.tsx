@@ -13,7 +13,7 @@ function useMember() {
 }
 
 const FP_COLORS: Record<string, string> = {
-  TSLA: "#CC0000", NVDA: "#76B900", PLTR: "#101113", AMZN: "#FF9900", GOOGL: "#A8B0B6", LLY: "#C0392B",
+  TSLA: "#CC0000", NVDA: "#76B900", PLTR: "#101113", AMZN: "#FF9900", GOOGL: "#A8B0B6", LLY: "#1A3C7A",
 };
 const SD_COLORS: Record<string, string> = {
   MRVL: "#0057B8", NBIS: "#C8F000", ASML: "#1E3A8A", BE: "#00A86B", SMCI: "#8A9BB0",
