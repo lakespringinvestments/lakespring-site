@@ -7,10 +7,6 @@ coverImage: "/article-images/amazon.png"
 coverPosition: "center 30%"
 ---
 
-*Amazon is not a retailer that happens to run a cloud business. It is the full-stack infrastructure of modern commerce — from custom silicon to satellite internet — and the market is still debating whether it can justify the CapEx. The answer is already in the numbers.*
-
----
-
 The standard way to analyse Amazon is by segment: retail, AWS, advertising, subscriptions, other bets. The segments are useful for accounting. They are misleading for understanding what the company actually is.
 
 Amazon is the infrastructure through which a meaningful and growing share of all global commerce is initiated, processed, fulfilled, and delivered — and increasingly, the infrastructure through which the enterprises enabling that commerce build and run their own software. What makes this difficult to value using traditional frameworks is that every business unit inside Amazon reinforces each other. The retail operation builds the logistics network and generates the purchase-intent data that powers a $60 billion advertising business. That advertising margin funds AWS expansion. AWS provides the compute that trains and deploys the AI models now automating the logistics, the customer experience, and the software development itself. The result is a compounding loop where improvements in any one layer cascade through the entire system — and where the cumulative effect is a cost structure, a data advantage, and a distribution footprint that no competitor can replicate by building any single piece of it.
