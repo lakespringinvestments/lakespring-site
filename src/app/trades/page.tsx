@@ -1,8 +1,10 @@
 // src/app/trades/page.tsx
-// update-139: Remove hero section, dark ledger is full page
+// update-143: Force dynamic rendering, no caching
 import { getAllTrades } from "@/lib/trades";
 import TradeLedgerClient from "@/components/TradeLedger/TradeLedgerClient";
 import EmailSignup from "@/components/EmailSignup";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Trade Ledger — Lakespring Investments",

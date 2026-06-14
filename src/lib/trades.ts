@@ -1,5 +1,5 @@
 // src/lib/trades.ts
-// update-140: Premium from col M, position netting for win rate
+// update-143: Premium from col M, position netting for win rate
 // Fetches trade data from the Lakespring Google Sheet (Trades tab).
 // Sheet ID is permanent regardless of filename changes.
 // Requires GOOGLE_SHEETS_API_KEY environment variable set in Vercel.
@@ -85,7 +85,7 @@ export async function getTradesForTicker(ticker: string): Promise<Trade[]> {
   try {
     const range = encodeURIComponent(`${TAB_NAME}!A2:AH500`);
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${apiKey}`;
-    const res = await fetch(url, { next: { revalidate: 300 } });
+    const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) {
       console.error("Google Sheets fetch failed:", res.status);
       return [];
@@ -115,7 +115,7 @@ export async function getAllTrades(): Promise<Trade[]> {
   try {
     const range = encodeURIComponent(`${TAB_NAME}!A2:AH500`);
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${apiKey}`;
-    const res = await fetch(url, { next: { revalidate: 300 } });
+    const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) return [];
     const json = await res.json();
     const rows: string[][] = json.values ?? [];
