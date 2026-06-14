@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-138: Summary cards, puts/calls breakdown, even column spacing, CSP→Puts
+// update-140: Position netting for win rate, drop redundant Premium col, col M for all values
 "use client";
 
 import { useState, useMemo } from "react";
@@ -55,6 +55,35 @@ function isPut(t: Trade): boolean {
 function isCall(t: Trade): boolean {
   const ot = t.optionType.toLowerCase();
   return ot === "calls" || ot === "cc" || ot === "call";
+}
+
+/**
+ * Group adjacent same-ticker, same-close-date trades into positions.
+ * Returns array of net P&L values per position for win rate calculation.
+ * e.g. a roll (BTC at -$3,500 + STO at +$4,830) sharing a close date
+ * becomes one position with net P&L of +$1,330.
+ */
+function groupPositions(trades: Trade[]): number[] {
+  const positions: number[] = [];
+  let i = 0;
+  while (i < trades.length) {
+    const ticker = trades[i].ticker;
+    const closeDate = trades[i].closeDate;
+    let net = trades[i].gainLossUsd ?? 0;
+    let j = i + 1;
+    // Absorb adjacent trades with same ticker + same close date
+    while (
+      j < trades.length &&
+      trades[j].ticker === ticker &&
+      trades[j].closeDate === closeDate
+    ) {
+      net += trades[j].gainLossUsd ?? 0;
+      j++;
+    }
+    positions.push(net);
+    i = j;
+  }
+  return positions;
 }
 
 /* ── Chevron icon ── */
@@ -130,30 +159,34 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
 
   /* summary stats */
   const stats = useMemo(() => {
-    const totalClosed = visibleTrades.length;
+    const totalLegs = visibleTrades.length;
     const putsCount = visibleTrades.filter(isPut).length;
     const callsCount = visibleTrades.filter(isCall).length;
-    const putsPct = totalClosed > 0 ? Math.round((putsCount / totalClosed) * 100) : 0;
-    const callsPct = totalClosed > 0 ? Math.round((callsCount / totalClosed) * 100) : 0;
+    const putsPct = totalLegs > 0 ? Math.round((putsCount / totalLegs) * 100) : 0;
+    const callsPct = totalLegs > 0 ? Math.round((callsCount / totalLegs) * 100) : 0;
 
+    // Premium collected = sum of positive col M values (STO income)
     const premiumCollected = visibleTrades.reduce(
-      (sum, t) => sum + (t.totalPremiumUsd ?? 0),
+      (sum, t) => {
+        const val = t.gainLossUsd ?? 0;
+        return val > 0 ? sum + val : sum;
+      },
       0
     );
 
-    // P&L includes premium + capital gains (col M)
+    // Realized P&L = sum of ALL col M (nets BTC + STO legs naturally)
     const realizedPnl = visibleTrades.reduce(
       (sum, t) => sum + (t.gainLossUsd ?? 0),
       0
     );
 
-    // Win = gainLossUsd > 0 (trade was profitable overall)
-    const winners = visibleTrades.filter(
-      (t) => (t.gainLossUsd ?? 0) > 0
-    ).length;
-    const winRate = totalClosed > 0 ? Math.round((winners / totalClosed) * 100) : 0;
+    // Win rate: group adjacent same-ticker same-close-date legs into positions
+    const positions = groupPositions(visibleTrades);
+    const positionCount = positions.length;
+    const winners = positions.filter((net) => net > 0).length;
+    const winRate = positionCount > 0 ? Math.round((winners / positionCount) * 100) : 0;
 
-    return { totalClosed, putsCount, callsCount, putsPct, callsPct, premiumCollected, realizedPnl, winRate };
+    return { totalLegs, putsCount, callsCount, putsPct, callsPct, premiumCollected, realizedPnl, positionCount, winRate };
   }, [visibleTrades]);
 
   return (
@@ -194,12 +227,12 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-        {/* Total Closed */}
+        {/* Total Trades */}
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">
-            Total closed
+            Total trades
           </p>
-          <p className="text-2xl text-white font-semibold mb-2">{stats.totalClosed}</p>
+          <p className="text-2xl text-white font-semibold mb-2">{stats.totalLegs}</p>
           <div className="flex items-center gap-3 text-xs text-cream-100/60">
             <span>{stats.putsCount} puts ({stats.putsPct}%)</span>
             <span className="text-white/20">|</span>
@@ -239,16 +272,15 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
             Win rate
           </p>
           <p className="text-2xl text-white font-semibold">{stats.winRate}%</p>
-          <p className="text-[10px] text-cream-100/40 mt-1">Trades with P&L &gt; $0</p>
+          <p className="text-[10px] text-cream-100/40 mt-1">{stats.positionCount} positions netted</p>
         </div>
       </div>
 
       {/* Ledger table */}
       <div className="overflow-x-auto -mx-6 px-6">
-        <table className="w-full min-w-[860px] table-fixed">
+        <table className="w-full min-w-[760px] table-fixed">
           <colgroup>
             <col className="w-[36px]" />
-            <col />
             <col />
             <col />
             <col />
@@ -265,7 +297,6 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
               <th className="pb-4 font-medium">Strike</th>
               <th className="pb-4 font-medium">Opened</th>
               <th className="pb-4 font-medium">Closed</th>
-              <th className="pb-4 font-medium">Premium</th>
               <th className="pb-4 font-medium">P&L</th>
               <th className="pb-4 font-medium">Status</th>
             </tr>
@@ -273,7 +304,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
           {visibleTrades.length === 0 ? (
             <tbody className="font-sans text-sm">
               <tr>
-                <td colSpan={9} className="py-12 text-center text-sage-300/60">
+                <td colSpan={8} className="py-12 text-center text-sage-300/60">
                   {ticker === "ALL"
                     ? "No closed trades available yet."
                     : `No closed trades for ${ticker}.`}
@@ -316,9 +347,6 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                     <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">
                       {formatDate(t.closeDate)}
                     </td>
-                    <td className="py-4 text-center text-white tabular-nums font-medium align-middle">
-                      {formatCurrency(t.totalPremiumUsd)}
-                    </td>
                     <td
                       className={`py-4 text-center tabular-nums font-medium align-middle ${
                         pnl !== null && pnl >= 0 ? "text-sage-300" : "text-red-400"
@@ -355,7 +383,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                   {isOpen && hasRationale && (
                     <tr className="bg-white/[0.02]">
                       <td></td>
-                      <td colSpan={8} className="pb-5 pt-1 pr-6">
+                      <td colSpan={7} className="pb-5 pt-1 pr-6">
                         <div className="text-cream-100/70 text-sm leading-relaxed pl-0.5">
                           <span className="text-[10px] uppercase tracking-[0.15em] text-sage-300/60 block mb-1.5">
                             Rationale

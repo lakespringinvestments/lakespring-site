@@ -1,5 +1,5 @@
 // src/lib/trades.ts
-// update-139: Fix premium calc (drop ×100), remove hero section
+// update-140: Premium from col M, position netting for win rate
 // Fetches trade data from the Lakespring Google Sheet (Trades tab).
 // Sheet ID is permanent regardless of filename changes.
 // Requires GOOGLE_SHEETS_API_KEY environment variable set in Vercel.
@@ -48,10 +48,7 @@ function normalizeOptionType(raw: string): string {
 }
 
 function rowToTrade(row: string[]): Trade {
-  const ppc = parseNum(row[9]);
-  const qty = parseNum(row[10]);
-  // Premium = Premium/Contract × Contracts (sheet stores full dollar amount per contract)
-  const totalPremium = ppc !== null && qty !== null ? ppc * qty : null;
+  const gainLoss = parseNum(row[12]); // col M = Gain/Loss USD (total dollar amount per leg)
 
   return {
     account:            row[0]  ?? "",
@@ -62,14 +59,14 @@ function rowToTrade(row: string[]): Trade {
     ticker:             (row[5] ?? "").trim().toUpperCase(),
     description:        row[7]  ?? "",
     strike:             parseNum(row[8]),
-    premiumPerContract: ppc,
-    contracts:          qty,
-    totalPremiumUsd:    totalPremium,
-    gainLossUsd:        parseNum(row[12]),   // col M — includes premium + capital gains
-    returnPct:          parseNum(row[16]),    // col Q = index 16
+    premiumPerContract: parseNum(row[9]),
+    contracts:          parseNum(row[10]),
+    totalPremiumUsd:    gainLoss,           // col M — same source, used for display
+    gainLossUsd:        gainLoss,           // col M — used for P&L calcs
+    returnPct:          parseNum(row[16]),   // col Q = index 16
     direction:          row[18] ?? "",
     optionType:         normalizeOptionType(row[19] ?? ""),
-    rationale:          row[32] ?? "",        // col AG = index 32
+    rationale:          row[32] ?? "",       // col AG = index 32
   };
 }
 
