@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-141: Assigned trades not counted as realized losses, always wins
+// update-142: Remove 30-day lag for reconciliation, filter out SHARES rows
 "use client";
 
 import { useState, useMemo } from "react";
@@ -130,7 +130,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
     return Array.from(set).sort();
   }, [trades]);
 
-  /* filter + 30-day lag for non-members */
+  /* filter trades */
   const visibleTrades = useMemo(() => {
     let filtered = trades;
 
@@ -138,6 +138,13 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       filtered = filtered.filter((t) => t.ticker === ticker);
     }
 
+    // Exclude share accumulation rows (not options trades)
+    filtered = filtered.filter((t) => {
+      const ot = t.optionType.toLowerCase();
+      return ot !== "shares" && ot !== "";
+    });
+
+    // Only show closed/settled trades
     filtered = filtered.filter((t) => {
       const s = t.status.toLowerCase();
       return (
@@ -148,12 +155,13 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       );
     });
 
-    if (!member) {
-      filtered = filtered.filter((t) => {
-        const dateToCheck = t.closeDate || t.openDate;
-        return !isWithin30Days(dateToCheck);
-      });
-    }
+    // TODO: restore 30-day public delay once data is reconciled
+    // if (!member) {
+    //   filtered = filtered.filter((t) => {
+    //     const dateToCheck = t.closeDate || t.openDate;
+    //     return !isWithin30Days(dateToCheck);
+    //   });
+    // }
 
     return filtered;
   }, [trades, ticker, member]);
@@ -231,12 +239,6 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
             </option>
           ))}
         </select>
-
-        {!member && (
-          <span className="text-[10px] uppercase tracking-[0.15em] text-amber-400/80 ml-auto">
-            30-day public delay active
-          </span>
-        )}
       </div>
 
       {/* Summary cards */}
