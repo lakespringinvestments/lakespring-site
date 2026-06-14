@@ -112,6 +112,11 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
     function easeOutCubic(t: number) { return 1 - Math.pow(1 - t, 3); }
 
     function drawFrame(now: number) {
+      const c = canvasRef.current;
+      if (!c) return;
+      const ctx = c.getContext("2d");
+      if (!ctx) return;
+
       const raw = Math.min((now - startTime) / DURATION, 1);
       const progress = easeOutCubic(raw);
 
