@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-137: Interactive trade ledger with ticker filter, expandable rationale, member gate
+// update-137: Fix ticker filter junk values, fix nested tbody column alignment
 "use client";
 
 import { useState, useMemo } from "react";
@@ -74,11 +74,18 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
   const [member] = useState<boolean>(isMember);
 
-  /* unique tickers for filter */
+  /* unique tickers for filter — exclude junk rows from sheet */
+  const TICKER_BLOCKLIST = new Set(["TICKER", "N/A", ""]);
+  const isValidTicker = (s: string) =>
+    s.length > 0 &&
+    s.length <= 6 &&
+    !TICKER_BLOCKLIST.has(s) &&
+    /^[A-Z]{1,6}$/.test(s);
+
   const tickers = useMemo(() => {
     const set = new Set<string>();
     trades.forEach((t) => {
-      if (t.ticker) set.add(t.ticker);
+      if (isValidTicker(t.ticker)) set.add(t.ticker);
     });
     return Array.from(set).sort();
   }, [trades]);
@@ -221,8 +228,8 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
               <th className="pb-4 font-medium">Status</th>
             </tr>
           </thead>
-          <tbody className="font-sans text-sm">
-            {visibleTrades.length === 0 && (
+          {visibleTrades.length === 0 ? (
+            <tbody className="font-sans text-sm">
               <tr>
                 <td colSpan={9} className="py-12 text-center text-sage-300/60">
                   {ticker === "ALL"
@@ -230,14 +237,15 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                     : `No closed trades for ${ticker}.`}
                 </td>
               </tr>
-            )}
-            {visibleTrades.map((t, i) => {
+            </tbody>
+          ) : (
+            visibleTrades.map((t, i) => {
               const isOpen = expandedIdx === i;
               const hasRationale = !!t.rationale.trim();
               const pnl = t.gainLossUsd;
 
               return (
-                <tbody key={i}>
+                <tbody key={i} className="font-sans text-sm">
                   <tr
                     className={`border-t border-white/10 transition-colors ${
                       hasRationale
@@ -315,8 +323,8 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                   )}
                 </tbody>
               );
-            })}
-          </tbody>
+            })
+          )}
         </table>
       </div>
     </>

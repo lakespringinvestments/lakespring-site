@@ -1,5 +1,5 @@
 // src/app/trades/page.tsx
-// update-138: Live trade ledger pulling from Google Sheet
+// update-136: Live trade ledger pulling from Google Sheet
 import { getAllTrades } from "@/lib/trades";
 import TradeLedgerClient from "@/components/TradeLedger/TradeLedgerClient";
 import EmailSignup from "@/components/EmailSignup";

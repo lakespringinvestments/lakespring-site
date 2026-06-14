@@ -1,5 +1,5 @@
 // src/lib/trades.ts
-// update-136: Live trade ledger data layer
+// update-137: Filter non-trade rows (headers, cash entries, N/A) at data layer
 // Fetches trade data from the Lakespring Google Sheet (Trades tab).
 // Sheet ID is permanent regardless of filename changes.
 // Requires GOOGLE_SHEETS_API_KEY environment variable set in Vercel.
@@ -60,6 +60,11 @@ function rowToTrade(row: string[]): Trade {
   };
 }
 
+const TICKER_BLOCKLIST = new Set(["TICKER", "N/A", ""]);
+function isValidTicker(s: string): boolean {
+  return s.length > 0 && s.length <= 6 && !TICKER_BLOCKLIST.has(s) && /^[A-Z]{1,6}$/.test(s);
+}
+
 export async function getTradesForTicker(ticker: string): Promise<Trade[]> {
   const apiKey = process.env.GOOGLE_SHEETS_API_KEY;
   if (!apiKey) {
@@ -106,8 +111,10 @@ export async function getAllTrades(): Promise<Trade[]> {
     const rows: string[][] = json.values ?? [];
 
     // No slice limit — return all trades, sorted most recent first
+    // Filter out non-trade rows (headers, cash entries, N/A)
     return rows
       .map(rowToTrade)
+      .filter((t) => isValidTicker(t.ticker))
       .sort((a, b) => {
         const da = a.closeDate || a.openDate;
         const db = b.closeDate || b.openDate;
