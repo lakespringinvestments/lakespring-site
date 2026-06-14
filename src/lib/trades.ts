@@ -1,5 +1,5 @@
 // src/lib/trades.ts
-// update-138: Separate premium calc from P&L, rename CSP → Puts
+// update-139: Fix premium calc (drop ×100), remove hero section
 // Fetches trade data from the Lakespring Google Sheet (Trades tab).
 // Sheet ID is permanent regardless of filename changes.
 // Requires GOOGLE_SHEETS_API_KEY environment variable set in Vercel.
@@ -50,8 +50,8 @@ function normalizeOptionType(raw: string): string {
 function rowToTrade(row: string[]): Trade {
   const ppc = parseNum(row[9]);
   const qty = parseNum(row[10]);
-  // Premium = Premium/Contract × Contracts × 100 (option multiplier)
-  const totalPremium = ppc !== null && qty !== null ? ppc * qty * 100 : null;
+  // Premium = Premium/Contract × Contracts (sheet stores full dollar amount per contract)
+  const totalPremium = ppc !== null && qty !== null ? ppc * qty : null;
 
   return {
     account:            row[0]  ?? "",
