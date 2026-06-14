@@ -79,7 +79,11 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
     }));
   }
 
+  const animRef = useRef<number | null>(null);
+
   useEffect(() => {
+    if (animRef.current) cancelAnimationFrame(animRef.current);
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -96,70 +100,102 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
     const chartW = W - padL - padR;
     const chartH = H - padT - padB;
 
-    ctx.clearRect(0, 0, W, H);
-
     const amounts = bars.map(d => d.amount);
     const maxVal = Math.max(...amounts, 1) * 1.15;
-
-    // Grid lines
-    ctx.strokeStyle = "rgba(0,0,0,0.06)";
-    ctx.lineWidth = 0.5;
-    for (let i = 0; i <= 4; i++) {
-      const y = padT + (chartH / 4) * i;
-      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + chartW, y); ctx.stroke();
-      const val = maxVal - (maxVal / 4) * i;
-      ctx.fillStyle = "rgba(100,100,100,0.7)";
-      ctx.font = "10px system-ui";
-      ctx.textAlign = "right";
-      ctx.fillText("$" + (val >= 1000 ? (val/1000).toFixed(0)+"K" : Math.round(val).toString()), padL - 4, y + 3.5);
-    }
-
     const barCount = bars.length;
     const barGap = Math.max(2, Math.min(6, chartW / barCount * 0.15));
     const barW = Math.max(8, (chartW - barGap * (barCount - 1)) / barCount);
 
-    bars.forEach((d, i) => {
-      const x = padL + i * (barW + barGap);
-      const barH = d.amount > 0 ? (d.amount / maxVal) * chartH : 0;
-      const y = padT + chartH - barH;
+    const DURATION = 700;
+    const startTime = performance.now();
 
-      if (d.isFuture || d.amount === 0) {
-        // Empty future bar — light dashed outline
-        ctx.strokeStyle = "rgba(0,0,0,0.08)";
-        ctx.lineWidth = 1;
-        ctx.setLineDash([3,3]);
-        ctx.strokeRect(x, padT + chartH - 4, barW, 4);
-        ctx.setLineDash([]);
-      } else {
-        ctx.fillStyle = i === barCount - 1 ? "#1D9E75" : "#034147";
-        const r = Math.min(4, barW / 2);
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.lineTo(x + barW - r, y);
-        ctx.quadraticCurveTo(x + barW, y, x + barW, y + r);
-        ctx.lineTo(x + barW, y + barH);
-        ctx.lineTo(x, y + barH);
-        ctx.lineTo(x, y + r);
-        ctx.quadraticCurveTo(x, y, x + r, y);
-        ctx.closePath();
-        ctx.fill();
+    function easeOutCubic(t: number) { return 1 - Math.pow(1 - t, 3); }
 
-        // Data label above bar
-        const labelText = "$" + (d.amount >= 1000 ? (d.amount/1000).toFixed(1)+"K" : d.amount.toLocaleString());
-        ctx.fillStyle = i === barCount - 1 ? "#1D9E75" : "#034147";
-        ctx.font = "bold 9px system-ui";
-        ctx.textAlign = "center";
-        ctx.fillText(labelText, x + barW / 2, y - 5);
-      }
+    function drawFrame(now: number) {
+      const raw = Math.min((now - startTime) / DURATION, 1);
+      const progress = easeOutCubic(raw);
 
-      // X label
-      if (barW > 16) {
+      ctx.clearRect(0, 0, W, H);
+
+      // Grid lines (always full)
+      ctx.strokeStyle = "rgba(0,0,0,0.06)";
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i <= 4; i++) {
+        const y = padT + (chartH / 4) * i;
+        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + chartW, y); ctx.stroke();
+        const val = maxVal - (maxVal / 4) * i;
         ctx.fillStyle = "rgba(100,100,100,0.7)";
-        ctx.font = "9px system-ui";
-        ctx.textAlign = "center";
-        ctx.fillText(d.label, x + barW / 2, H - 6);
+        ctx.font = "10px system-ui";
+        ctx.textAlign = "right";
+        ctx.fillText("$" + (val >= 1000 ? (val/1000).toFixed(0)+"K" : Math.round(val).toString()), padL - 4, y + 3.5);
       }
-    });
+
+      // Bars — roll out left to right with staggered height animation
+      bars.forEach((d, i) => {
+        const x = padL + i * (barW + barGap);
+
+        // Stagger: each bar starts slightly after the previous one
+        const barDelay = (i / barCount) * 0.3;
+        const barProgress = Math.max(0, Math.min(1, (progress - barDelay) / (1 - barDelay)));
+
+        if (d.isFuture || d.amount === 0) {
+          if (barProgress > 0) {
+            ctx.strokeStyle = "rgba(0,0,0,0.08)";
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3,3]);
+            ctx.strokeRect(x, padT + chartH - 4, barW, 4);
+            ctx.setLineDash([]);
+          }
+        } else {
+          const fullBarH = (d.amount / maxVal) * chartH;
+          const barH = fullBarH * barProgress;
+          const y = padT + chartH - barH;
+
+          if (barH > 0) {
+            ctx.fillStyle = i === barCount - 1 ? "#1D9E75" : "#034147";
+            const r = Math.min(4, barW / 2);
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + barW - r, y);
+            ctx.quadraticCurveTo(x + barW, y, x + barW, y + r);
+            ctx.lineTo(x + barW, y + barH);
+            ctx.lineTo(x, y + barH);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            ctx.fill();
+          }
+
+          // Data label — fade in during final 20%
+          if (barProgress > 0.8) {
+            const labelAlpha = (barProgress - 0.8) / 0.2;
+            const labelText = "$" + (d.amount >= 1000 ? (d.amount/1000).toFixed(1)+"K" : d.amount.toLocaleString());
+            ctx.globalAlpha = labelAlpha;
+            ctx.fillStyle = i === barCount - 1 ? "#1D9E75" : "#034147";
+            ctx.font = "bold 9px system-ui";
+            ctx.textAlign = "center";
+            const fullY = padT + chartH - fullBarH;
+            ctx.fillText(labelText, x + barW / 2, fullY - 5);
+            ctx.globalAlpha = 1;
+          }
+        }
+
+        // X label
+        if (barW > 16 && barProgress > 0) {
+          ctx.fillStyle = "rgba(100,100,100,0.7)";
+          ctx.font = "9px system-ui";
+          ctx.textAlign = "center";
+          ctx.fillText(d.label, x + barW / 2, H - 6);
+        }
+      });
+
+      if (raw < 1) {
+        animRef.current = requestAnimationFrame(drawFrame);
+      }
+    }
+
+    animRef.current = requestAnimationFrame(drawFrame);
+    return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
   }, [bars]);
 
   const totalShown = bars.reduce((s, d) => s + d.amount, 0);
