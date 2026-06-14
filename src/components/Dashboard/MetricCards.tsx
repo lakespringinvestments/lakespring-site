@@ -3,7 +3,6 @@
 import type { Portfolio } from "../../../types/portfolio";
 import type { Trade } from "@/lib/trades";
 import type { PortfolioView } from "./types";
-import BlurOverlay from "./BlurOverlay";
 
 interface MetricCardsProps {
   portfolio: Portfolio;
@@ -94,7 +93,7 @@ export default function MetricCards({ portfolio, allTrades, view, setView }: Met
             <p className="text-[10px] uppercase tracking-[0.15em] mb-2" style={{ color: "rgba(255,255,255,0.5)" }}>
               {c.label}
             </p>
-            <p className="text-xl font-semibold text-white leading-none"><BlurOverlay>{c.value}</BlurOverlay></p>
+            <p className="text-xl font-semibold text-white leading-none">{c.value}</p>
             <p className="text-[11px] mt-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>{c.sub}</p>
           </div>
         ))}

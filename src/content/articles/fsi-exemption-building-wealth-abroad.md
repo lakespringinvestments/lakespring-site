@@ -1,6 +1,6 @@
 ---
 title: "FSI Exemption: Building Wealth Abroad"
-date: "2026-05-20"
+date: "2026-08-14"
 byline: "Wealth Stories"
 excerpt: "For a Canadian relocating to Kuala Lumpur, the FSI exemption isn't just a tax consideration — it's a structural question about where wealth compounds."
 coverImage: "/article-images/fsi-exemption-building-wealth-abroad.png"

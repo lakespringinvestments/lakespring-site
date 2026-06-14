@@ -64,10 +64,7 @@ function formatWeekLabel(date: string): string {
 export default function PremiumChart({ weeklyData }: PremiumChartProps) {
   const [activeFilter, setActiveFilter] = useState<Filter>("3M");
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [member, setMember] = useState(false);
-  useEffect(() => {
-    setMember(localStorage.getItem("lakespring_member") === "true");
-  }, []);
+
 
   // Build bar data based on filter
   type BarPoint = { label: string; amount: number; isFuture?: boolean };
@@ -176,7 +173,7 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
           </p>
           {totalShown > 0 && (
             <p className="text-sm font-medium text-teal-600"
-              style={{ filter: member ? "none" : "blur(5px)" }}>
+              style={{}}>
               ${totalShown.toLocaleString(undefined, { maximumFractionDigits: 0 })} shown
             </p>
           )}
@@ -195,7 +192,7 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
         </div>
       </div>
       <div className="flex-1 relative min-h-[140px]"
-        style={{ filter: member ? "none" : "blur(6px)", pointerEvents: member ? "auto" : "none" }}>
+        style={{}}>
         {bars.length === 0 ? (
           <div className="absolute inset-0 flex items-center justify-center">
             <p className="text-xs text-ink-400">No premium data for this period</p>

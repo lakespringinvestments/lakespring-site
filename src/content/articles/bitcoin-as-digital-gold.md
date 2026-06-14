@@ -1,6 +1,6 @@
 ---
 title: "Bitcoin as Digital Gold"
-date: "2026-06-10"
+date: "2026-06-03"
 byline: "Holdings deep-dive"
 author: "Brian L."
 excerpt: "Gold held the title of the world's premier store of value for five thousand years. Bitcoin has held it for fifteen. The upgrade is happening faster than most people realize — and the institutions, governments, and payment infrastructure building on top of it are only just getting started."

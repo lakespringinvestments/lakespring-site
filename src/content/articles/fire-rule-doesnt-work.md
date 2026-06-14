@@ -1,6 +1,6 @@
 ---
 title: "FIRE: The 4% Rule Should be \"Retired\""
-date: "2026-04-20"
+date: "2026-07-24"
 byline: "Perspective"
 author: "Brian L."
 excerpt: "The FIRE movement gets the philosophy right and the arithmetic wrong. The discipline it demands is rare and admirable — but the rule at its centre was built for a world that no longer exists, and the people following it deserve to know why."
