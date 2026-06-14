@@ -106,10 +106,10 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
     const barGap = Math.max(2, Math.min(6, chartW / barCount * 0.15));
     const barW = Math.max(8, (chartW - barGap * (barCount - 1)) / barCount);
 
-    const DURATION = 1500;
+    const DURATION = 1900;
     const startTime = performance.now();
 
-    function easeOutCubic(t: number) { return 1 - Math.pow(1 - t, 3); }
+    function easeOutQuart(t: number) { return 1 - Math.pow(1 - t, 4); }
 
     function drawFrame(now: number) {
       const c = canvasRef.current;
@@ -118,7 +118,7 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
       if (!ctx) return;
 
       const raw = Math.min((now - startTime) / DURATION, 1);
-      const progress = easeOutCubic(raw);
+      const progress = raw;
 
       ctx.clearRect(0, 0, W, H);
 
@@ -135,18 +135,20 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
         ctx.fillText("$" + (val >= 1000 ? (val/1000).toFixed(0)+"K" : Math.round(val).toString()), padL - 4, y + 3.5);
       }
 
-      // Bars — one at a time, left to right
-      const barDuration = 1 / barCount;
+      // Bars — wavy roll-out left to right with 80% overlap
+      const overlapFrac = 0.8;
+      const windowPerBar = 1 / (barCount * (1 - overlapFrac) + overlapFrac);
+
       bars.forEach((d, i) => {
         const x = padL + i * (barW + barGap);
 
-        // Each bar gets its own sequential time window
-        const barStart = i * barDuration;
-        const barEnd = barStart + barDuration;
-        const barProgress = Math.max(0, Math.min(1, (progress - barStart) / (barEnd - barStart)));
+        const barStart = i * windowPerBar * (1 - overlapFrac);
+        const barEnd = barStart + windowPerBar;
+        const localT = Math.max(0, Math.min(1, (progress - barStart) / (barEnd - barStart)));
+        const easedT = easeOutQuart(localT);
 
         if (d.isFuture || d.amount === 0) {
-          if (barProgress > 0) {
+          if (localT > 0) {
             ctx.strokeStyle = "rgba(0,0,0,0.08)";
             ctx.lineWidth = 1;
             ctx.setLineDash([3,3]);
@@ -155,8 +157,7 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
           }
         } else {
           const fullBarH = (d.amount / maxVal) * chartH;
-          const easedBar = easeOutCubic(barProgress);
-          const barH = fullBarH * easedBar;
+          const barH = fullBarH * easedT;
           const y = padT + chartH - barH;
 
           if (barH > 0) {
@@ -174,19 +175,22 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
             ctx.fill();
           }
 
-          // Data label — appears once bar is fully grown
-          if (barProgress >= 1) {
-            const labelText = "$" + (d.amount >= 1000 ? (d.amount/1000).toFixed(1)+"K" : d.amount.toLocaleString());
+          // Count-up data label
+          if (localT > 0.1) {
+            const alpha = Math.min(1, (localT - 0.1) / 0.3);
+            const countVal = Math.round(d.amount * easedT);
+            const labelText = "$" + (countVal >= 1000 ? (countVal/1000).toFixed(1)+"K" : countVal.toLocaleString());
+            ctx.globalAlpha = alpha;
             ctx.fillStyle = i === barCount - 1 ? "#1D9E75" : "#034147";
             ctx.font = "bold 9px system-ui";
             ctx.textAlign = "center";
-            const fullY = padT + chartH - fullBarH;
-            ctx.fillText(labelText, x + barW / 2, fullY - 5);
+            ctx.fillText(labelText, x + barW / 2, y - 5);
+            ctx.globalAlpha = 1;
           }
         }
 
         // X label — appears with bar
-        if (barW > 16 && barProgress > 0) {
+        if (barW > 16 && localT > 0) {
           ctx.fillStyle = "rgba(100,100,100,0.7)";
           ctx.font = "9px system-ui";
           ctx.textAlign = "center";
