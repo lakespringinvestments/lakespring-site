@@ -1,5 +1,5 @@
 // src/lib/trades.ts
-// update-143: Premium from col M, position netting for win rate
+// update-144: Fix Sheet ID to correct Google Sheet
 // Fetches trade data from the Lakespring Google Sheet (Trades tab).
 // Sheet ID is permanent regardless of filename changes.
 // Requires GOOGLE_SHEETS_API_KEY environment variable set in Vercel.
@@ -23,7 +23,7 @@ export type Trade = {
   rationale: string;
 };
 
-const SHEET_ID = "1kMeiB3u-itRqdSXUj7lGWQgpOxwWyEd61spMOHJ07mM";
+const SHEET_ID = "1pSCIgrecbgT7q9kNNHNqQitFnLK94MVWT3xKT25SG0w";
 const TAB_NAME = "Trades";
 
 function parseNum(val: string): number | null {
