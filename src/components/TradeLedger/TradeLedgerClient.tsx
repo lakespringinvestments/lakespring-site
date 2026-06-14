@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-137: Fix ticker filter junk values, fix nested tbody column alignment
+// update-138: Summary cards, puts/calls breakdown, even column spacing, CSP→Puts
 "use client";
 
 import { useState, useMemo } from "react";
@@ -45,6 +45,16 @@ function isWithin30Days(dateStr: string): boolean {
   const diffMs = now.getTime() - d.getTime();
   const diffDays = diffMs / (1000 * 60 * 60 * 24);
   return diffDays <= 30;
+}
+
+function isPut(t: Trade): boolean {
+  const ot = t.optionType.toLowerCase();
+  return ot === "puts" || ot === "csp" || ot === "put";
+}
+
+function isCall(t: Trade): boolean {
+  const ot = t.optionType.toLowerCase();
+  return ot === "calls" || ot === "cc" || ot === "call";
 }
 
 /* ── Chevron icon ── */
@@ -94,12 +104,10 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
   const visibleTrades = useMemo(() => {
     let filtered = trades;
 
-    // Ticker filter
     if (ticker !== "ALL") {
       filtered = filtered.filter((t) => t.ticker === ticker);
     }
 
-    // Only show closed trades (status contains "Closed", "Expired", "Assigned", "Rolled")
     filtered = filtered.filter((t) => {
       const s = t.status.toLowerCase();
       return (
@@ -110,7 +118,6 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       );
     });
 
-    // 30-day lag for non-members
     if (!member) {
       filtered = filtered.filter((t) => {
         const dateToCheck = t.closeDate || t.openDate;
@@ -124,19 +131,29 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
   /* summary stats */
   const stats = useMemo(() => {
     const totalClosed = visibleTrades.length;
+    const putsCount = visibleTrades.filter(isPut).length;
+    const callsCount = visibleTrades.filter(isCall).length;
+    const putsPct = totalClosed > 0 ? Math.round((putsCount / totalClosed) * 100) : 0;
+    const callsPct = totalClosed > 0 ? Math.round((callsCount / totalClosed) * 100) : 0;
+
     const premiumCollected = visibleTrades.reduce(
       (sum, t) => sum + (t.totalPremiumUsd ?? 0),
       0
     );
+
+    // P&L includes premium + capital gains (col M)
     const realizedPnl = visibleTrades.reduce(
       (sum, t) => sum + (t.gainLossUsd ?? 0),
       0
     );
+
+    // Win = gainLossUsd > 0 (trade was profitable overall)
     const winners = visibleTrades.filter(
       (t) => (t.gainLossUsd ?? 0) > 0
     ).length;
     const winRate = totalClosed > 0 ? Math.round((winners / totalClosed) * 100) : 0;
-    return { totalClosed, premiumCollected, realizedPnl, winRate };
+
+    return { totalClosed, putsCount, callsCount, putsPct, callsPct, premiumCollected, realizedPnl, winRate };
   }, [visibleTrades]);
 
   return (
@@ -175,24 +192,34 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
         )}
       </div>
 
-      {/* Summary strip */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 pb-8 border-b border-white/15">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-1">
+      {/* Summary cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+        {/* Total Closed */}
+        <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">
             Total closed
           </p>
-          <p className="text-2xl text-white font-semibold">{stats.totalClosed}</p>
+          <p className="text-2xl text-white font-semibold mb-2">{stats.totalClosed}</p>
+          <div className="flex items-center gap-3 text-xs text-cream-100/60">
+            <span>{stats.putsCount} puts ({stats.putsPct}%)</span>
+            <span className="text-white/20">|</span>
+            <span>{stats.callsCount} calls ({stats.callsPct}%)</span>
+          </div>
         </div>
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-1">
+
+        {/* Premium Collected */}
+        <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">
             Premium collected
           </p>
           <p className="text-2xl text-white font-semibold">
             {formatCurrency(stats.premiumCollected)}
           </p>
         </div>
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-1">
+
+        {/* Realized P&L */}
+        <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">
             Realized P&L
           </p>
           <p
@@ -203,28 +230,43 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
             {stats.realizedPnl >= 0 ? "+" : ""}
             {formatCurrency(stats.realizedPnl)}
           </p>
+          <p className="text-[10px] text-cream-100/40 mt-1">Incl. premium &amp; capital gains</p>
         </div>
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-1">
+
+        {/* Win Rate */}
+        <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">
             Win rate
           </p>
           <p className="text-2xl text-white font-semibold">{stats.winRate}%</p>
+          <p className="text-[10px] text-cream-100/40 mt-1">Trades with P&L &gt; $0</p>
         </div>
       </div>
 
       {/* Ledger table */}
       <div className="overflow-x-auto -mx-6 px-6">
-        <table className="w-full min-w-[860px]">
+        <table className="w-full min-w-[860px] table-fixed">
+          <colgroup>
+            <col className="w-[36px]" />
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+          </colgroup>
           <thead>
-            <tr className="text-[10px] uppercase tracking-[0.2em] text-sage-300 text-left">
-              <th className="pb-4 pr-3 font-medium w-8"></th>
-              <th className="pb-4 pr-4 font-medium">Ticker</th>
-              <th className="pb-4 pr-4 font-medium">Type</th>
-              <th className="pb-4 pr-4 font-medium text-right">Strike</th>
-              <th className="pb-4 pr-4 font-medium">Opened</th>
-              <th className="pb-4 pr-4 font-medium">Closed</th>
-              <th className="pb-4 pr-4 font-medium text-right">Premium</th>
-              <th className="pb-4 pr-4 font-medium text-right">P&L</th>
+            <tr className="text-[10px] uppercase tracking-[0.2em] text-sage-300 text-center">
+              <th className="pb-4 font-medium"></th>
+              <th className="pb-4 font-medium">Ticker</th>
+              <th className="pb-4 font-medium">Type</th>
+              <th className="pb-4 font-medium">Strike</th>
+              <th className="pb-4 font-medium">Opened</th>
+              <th className="pb-4 font-medium">Closed</th>
+              <th className="pb-4 font-medium">Premium</th>
+              <th className="pb-4 font-medium">P&L</th>
               <th className="pb-4 font-medium">Status</th>
             </tr>
           </thead>
@@ -256,27 +298,29 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                       if (hasRationale) setExpandedIdx(isOpen ? null : i);
                     }}
                   >
-                    <td className="py-4 pr-3 text-sage-300/50">
+                    <td className="py-4 text-center text-sage-300/50 align-middle">
                       {hasRationale && <ChevronIcon open={isOpen} />}
                     </td>
-                    <td className="py-4 pr-4 text-white font-semibold tracking-wide">
+                    <td className="py-4 text-center text-white font-semibold tracking-wide align-middle">
                       {t.ticker}
                     </td>
-                    <td className="py-4 pr-4 text-cream-100">{t.optionType || t.direction || "—"}</td>
-                    <td className="py-4 pr-4 text-cream-100 text-right tabular-nums">
+                    <td className="py-4 text-center text-cream-100 align-middle">
+                      {t.optionType || t.direction || "—"}
+                    </td>
+                    <td className="py-4 text-center text-cream-100 tabular-nums align-middle">
                       {t.strike ? formatCurrency(t.strike) : "—"}
                     </td>
-                    <td className="py-4 pr-4 text-cream-100/80 tabular-nums whitespace-nowrap">
+                    <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">
                       {formatDate(t.openDate)}
                     </td>
-                    <td className="py-4 pr-4 text-cream-100/80 tabular-nums whitespace-nowrap">
+                    <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">
                       {formatDate(t.closeDate)}
                     </td>
-                    <td className="py-4 pr-4 text-white text-right tabular-nums font-medium">
+                    <td className="py-4 text-center text-white tabular-nums font-medium align-middle">
                       {formatCurrency(t.totalPremiumUsd)}
                     </td>
                     <td
-                      className={`py-4 pr-4 text-right tabular-nums font-medium ${
+                      className={`py-4 text-center tabular-nums font-medium align-middle ${
                         pnl !== null && pnl >= 0 ? "text-sage-300" : "text-red-400"
                       }`}
                     >
@@ -289,7 +333,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                         </span>
                       )}
                     </td>
-                    <td className="py-4">
+                    <td className="py-4 text-center align-middle">
                       <span
                         className={`text-xs px-2.5 py-1 rounded-full ${
                           t.status.toLowerCase().includes("expired")

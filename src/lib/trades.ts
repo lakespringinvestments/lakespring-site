@@ -1,5 +1,5 @@
 // src/lib/trades.ts
-// update-137: Filter non-trade rows (headers, cash entries, N/A) at data layer
+// update-138: Separate premium calc from P&L, rename CSP → Puts
 // Fetches trade data from the Lakespring Google Sheet (Trades tab).
 // Sheet ID is permanent regardless of filename changes.
 // Requires GOOGLE_SHEETS_API_KEY environment variable set in Vercel.
@@ -18,7 +18,7 @@ export type Trade = {
   totalPremiumUsd: number | null;
   gainLossUsd: number | null;
   returnPct: number | null;
-  optionType: string; // CSP, CC, SHARES, etc.
+  optionType: string; // Puts, Calls, SHARES, etc.
   direction: string;
   rationale: string;
 };
@@ -39,7 +39,20 @@ function parseDate(val: string): string {
   return val.trim();
 }
 
+/** Map raw option type from sheet to display label */
+function normalizeOptionType(raw: string): string {
+  const upper = raw.trim().toUpperCase();
+  if (upper === "CSP") return "Puts";
+  if (upper === "CC") return "Calls";
+  return raw.trim() || "";
+}
+
 function rowToTrade(row: string[]): Trade {
+  const ppc = parseNum(row[9]);
+  const qty = parseNum(row[10]);
+  // Premium = Premium/Contract × Contracts × 100 (option multiplier)
+  const totalPremium = ppc !== null && qty !== null ? ppc * qty * 100 : null;
+
   return {
     account:            row[0]  ?? "",
     strategyType:       row[1]  ?? "",
@@ -49,13 +62,13 @@ function rowToTrade(row: string[]): Trade {
     ticker:             (row[5] ?? "").trim().toUpperCase(),
     description:        row[7]  ?? "",
     strike:             parseNum(row[8]),
-    premiumPerContract: parseNum(row[9]),
-    contracts:          parseNum(row[10]),
-    totalPremiumUsd:    parseNum(row[12]),
-    gainLossUsd:        parseNum(row[12]),   // col M = index 12
+    premiumPerContract: ppc,
+    contracts:          qty,
+    totalPremiumUsd:    totalPremium,
+    gainLossUsd:        parseNum(row[12]),   // col M — includes premium + capital gains
     returnPct:          parseNum(row[16]),    // col Q = index 16
     direction:          row[18] ?? "",
-    optionType:         row[19] ?? "",
+    optionType:         normalizeOptionType(row[19] ?? ""),
     rationale:          row[32] ?? "",        // col AG = index 32
   };
 }
