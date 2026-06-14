@@ -106,7 +106,7 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
     const barGap = Math.max(2, Math.min(6, chartW / barCount * 0.15));
     const barW = Math.max(8, (chartW - barGap * (barCount - 1)) / barCount);
 
-    const DURATION = 450;
+    const DURATION = 600;
     const startTime = performance.now();
 
     function easeOutCubic(t: number) { return 1 - Math.pow(1 - t, 3); }
