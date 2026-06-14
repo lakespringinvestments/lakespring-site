@@ -106,7 +106,7 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
     const barGap = Math.max(2, Math.min(6, chartW / barCount * 0.15));
     const barW = Math.max(8, (chartW - barGap * (barCount - 1)) / barCount);
 
-    const DURATION = 700;
+    const DURATION = 450;
     const startTime = performance.now();
 
     function easeOutCubic(t: number) { return 1 - Math.pow(1 - t, 3); }
@@ -135,13 +135,15 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
         ctx.fillText("$" + (val >= 1000 ? (val/1000).toFixed(0)+"K" : Math.round(val).toString()), padL - 4, y + 3.5);
       }
 
-      // Bars — roll out left to right with staggered height animation
+      // Bars — one at a time, left to right
+      const barDuration = 1 / barCount;
       bars.forEach((d, i) => {
         const x = padL + i * (barW + barGap);
 
-        // Stagger: each bar starts slightly after the previous one
-        const barDelay = (i / barCount) * 0.3;
-        const barProgress = Math.max(0, Math.min(1, (progress - barDelay) / (1 - barDelay)));
+        // Each bar gets its own sequential time window
+        const barStart = i * barDuration;
+        const barEnd = barStart + barDuration;
+        const barProgress = Math.max(0, Math.min(1, (progress - barStart) / (barEnd - barStart)));
 
         if (d.isFuture || d.amount === 0) {
           if (barProgress > 0) {
@@ -153,7 +155,8 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
           }
         } else {
           const fullBarH = (d.amount / maxVal) * chartH;
-          const barH = fullBarH * barProgress;
+          const easedBar = easeOutCubic(barProgress);
+          const barH = fullBarH * easedBar;
           const y = padT + chartH - barH;
 
           if (barH > 0) {
@@ -171,21 +174,18 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
             ctx.fill();
           }
 
-          // Data label — fade in during final 20%
-          if (barProgress > 0.8) {
-            const labelAlpha = (barProgress - 0.8) / 0.2;
+          // Data label — appears once bar is fully grown
+          if (barProgress >= 1) {
             const labelText = "$" + (d.amount >= 1000 ? (d.amount/1000).toFixed(1)+"K" : d.amount.toLocaleString());
-            ctx.globalAlpha = labelAlpha;
             ctx.fillStyle = i === barCount - 1 ? "#1D9E75" : "#034147";
             ctx.font = "bold 9px system-ui";
             ctx.textAlign = "center";
             const fullY = padT + chartH - fullBarH;
             ctx.fillText(labelText, x + barW / 2, fullY - 5);
-            ctx.globalAlpha = 1;
           }
         }
 
-        // X label
+        // X label — appears with bar
         if (barW > 16 && barProgress > 0) {
           ctx.fillStyle = "rgba(100,100,100,0.7)";
           ctx.font = "9px system-ui";
