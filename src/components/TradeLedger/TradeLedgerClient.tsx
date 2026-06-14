@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-140: Position netting for win rate, drop redundant Premium col, col M for all values
+// update-141: Assigned trades not counted as realized losses, always wins
 "use client";
 
 import { useState, useMemo } from "react";
@@ -58,26 +58,27 @@ function isCall(t: Trade): boolean {
 }
 
 /**
- * Group adjacent same-ticker, same-close-date trades into positions.
- * Returns array of net P&L values per position for win rate calculation.
- * e.g. a roll (BTC at -$3,500 + STO at +$4,830) sharing a close date
- * becomes one position with net P&L of +$1,330.
+ * Group adjacent same-ticker trades into positions for win rate.
+ * Pairs legs that share a close date OR where one's close date matches
+ * the other's open date (roll pattern: BTC old + STO new on same day).
  */
 function groupPositions(trades: Trade[]): number[] {
   const positions: number[] = [];
   let i = 0;
   while (i < trades.length) {
     const ticker = trades[i].ticker;
-    const closeDate = trades[i].closeDate;
     let net = trades[i].gainLossUsd ?? 0;
     let j = i + 1;
-    // Absorb adjacent trades with same ticker + same close date
-    while (
-      j < trades.length &&
-      trades[j].ticker === ticker &&
-      trades[j].closeDate === closeDate
-    ) {
-      net += trades[j].gainLossUsd ?? 0;
+    // Absorb adjacent same-ticker trades linked by date
+    while (j < trades.length && trades[j].ticker === ticker) {
+      const prev = trades[j - 1];
+      const curr = trades[j];
+      const linked =
+        prev.closeDate === curr.closeDate ||
+        prev.closeDate === curr.openDate ||
+        prev.openDate === curr.closeDate;
+      if (!linked) break;
+      net += curr.gainLossUsd ?? 0;
       j++;
     }
     positions.push(net);
@@ -174,16 +175,29 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       0
     );
 
-    // Realized P&L = sum of ALL col M (nets BTC + STO legs naturally)
+    // Realized P&L = sum of col M, but assigned trades cap at $0 min
+    // (assignment is a share acquisition/sale, not a realized option loss —
+    //  the premium was collected, any underlying movement is unrealized)
     const realizedPnl = visibleTrades.reduce(
-      (sum, t) => sum + (t.gainLossUsd ?? 0),
+      (sum, t) => {
+        const val = t.gainLossUsd ?? 0;
+        const isAssigned = t.status.toLowerCase().includes("assigned");
+        return sum + (isAssigned ? Math.max(val, 0) : val);
+      },
       0
     );
 
     // Win rate: group adjacent same-ticker same-close-date legs into positions
-    const positions = groupPositions(visibleTrades);
-    const positionCount = positions.length;
-    const winners = positions.filter((net) => net > 0).length;
+    // Assigned trades are always wins (premium was collected)
+    const nonAssigned = visibleTrades.filter(
+      (t) => !t.status.toLowerCase().includes("assigned")
+    );
+    const positions = groupPositions(nonAssigned);
+    const assignedCount = visibleTrades.filter(
+      (t) => t.status.toLowerCase().includes("assigned")
+    ).length;
+    const positionCount = positions.length + assignedCount;
+    const winners = positions.filter((net) => net > 0).length + assignedCount;
     const winRate = positionCount > 0 ? Math.round((winners / positionCount) * 100) : 0;
 
     return { totalLegs, putsCount, callsCount, putsPct, callsPct, premiumCollected, realizedPnl, positionCount, winRate };
