@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-146: Show 2026 trades only, fix dropdown legibility on Windows
+// update-147: Replace Premium Collected with Net Options Income (nets BTC debits)
 "use client";
 
 import { useState, useMemo } from "react";
@@ -180,19 +180,8 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
     const putsPct = totalLegs > 0 ? Math.round((putsCount / totalLegs) * 100) : 0;
     const callsPct = totalLegs > 0 ? Math.round((callsCount / totalLegs) * 100) : 0;
 
-    // Premium collected = sum of positive col M values (STO income)
-    const premiumCollected = visibleTrades.reduce(
-      (sum, t) => {
-        const val = t.gainLossUsd ?? 0;
-        return val > 0 ? sum + val : sum;
-      },
-      0
-    );
-
-    // Realized P&L = sum of col M, but assigned trades cap at $0 min
-    // (assignment is a share acquisition/sale, not a realized option loss —
-    //  the premium was collected, any underlying movement is unrealized)
-    const realizedPnl = visibleTrades.reduce(
+    // Net options income = sum of col M, assigned trades capped at $0 min
+    const netOptionsIncome = visibleTrades.reduce(
       (sum, t) => {
         const val = t.gainLossUsd ?? 0;
         const isAssigned = t.status.toLowerCase().includes("assigned");
@@ -214,7 +203,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
     const winners = positions.filter((net) => net > 0).length + assignedCount;
     const winRate = positionCount > 0 ? Math.round((winners / positionCount) * 100) : 0;
 
-    return { totalLegs, putsCount, callsCount, putsPct, callsPct, premiumCollected, realizedPnl, positionCount, winRate };
+    return { totalLegs, putsCount, callsCount, putsPct, callsPct, netOptionsIncome, positionCount, winRate };
   }, [visibleTrades]);
 
   return (
@@ -248,7 +237,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
         {/* Total Trades */}
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">
@@ -262,30 +251,20 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
           </div>
         </div>
 
-        {/* Premium Collected */}
+        {/* Net Options Income */}
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">
-            Premium collected
-          </p>
-          <p className="text-2xl text-white font-semibold">
-            {formatCurrency(stats.premiumCollected)}
-          </p>
-        </div>
-
-        {/* Realized P&L */}
-        <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">
-            Realized P&L
+            Net Options Income
           </p>
           <p
             className={`text-2xl font-semibold ${
-              stats.realizedPnl >= 0 ? "text-sage-300" : "text-red-400"
+              stats.netOptionsIncome >= 0 ? "text-sage-300" : "text-red-400"
             }`}
           >
-            {stats.realizedPnl >= 0 ? "+" : ""}
-            {formatCurrency(stats.realizedPnl)}
+            {stats.netOptionsIncome >= 0 ? "+" : ""}
+            {formatCurrency(stats.netOptionsIncome)}
           </p>
-          <p className="text-[10px] text-cream-100/40 mt-1">Incl. premium &amp; capital gains</p>
+          <p className="text-[10px] text-cream-100/40 mt-1">STO credits net of BTC debits</p>
         </div>
 
         {/* Win Rate */}
