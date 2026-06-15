@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-149: Roll grouping display, Capital Gains card, force new build
+// update-150: Total P&L card, fix roll grouping (require same option type + mixed P&L)
 "use client";
 
 import { useState, useMemo } from "react";
@@ -53,14 +53,22 @@ type RollRow = {
 };
 type DisplayRow = SingleRow | RollRow;
 
-/** Are two adjacent trades linked as part of a roll? */
+/** Are two adjacent trades linked as part of a roll? Must be same ticker + same option type + date-linked */
 function areLinked(a: Trade, b: Trade): boolean {
   if (a.ticker !== b.ticker) return false;
-  return (
+  // Must be same option type (both calls or both puts)
+  if (a.optionType.toLowerCase() !== b.optionType.toLowerCase()) return false;
+  // Must have a date connection
+  const dateLinked =
     a.closeDate === b.closeDate ||
     a.closeDate === b.openDate ||
-    a.openDate === b.closeDate
-  );
+    a.openDate === b.closeDate;
+  if (!dateLinked) return false;
+  // Must have at least one positive and one negative between the pair (BTC + STO)
+  const aVal = a.gainLossUsd ?? 0;
+  const bVal = b.gainLossUsd ?? 0;
+  if ((aVal < 0 && bVal < 0) || (aVal >= 0 && bVal >= 0)) return false;
+  return true;
 }
 
 /** Group visible trades into display rows — merging BTC+STO roll pairs */
@@ -213,7 +221,9 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
     const winners = positions.filter((net) => net > 0).length + assignedCount;
     const winRate = positionCount > 0 ? Math.round((winners / positionCount) * 100) : 0;
 
-    return { totalLegs, putsCount, callsCount, putsPct, callsPct, netOptionsIncome, capitalGainsPnl, positionCount, winRate };
+    const totalPnl = netOptionsIncome + capitalGainsPnl;
+
+    return { totalLegs, putsCount, callsCount, putsPct, callsPct, netOptionsIncome, capitalGainsPnl, totalPnl, positionCount, winRate };
   }, [visibleTrades, capitalGainsTrades]);
 
   /* ── render ── */
@@ -241,34 +251,39 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-10">
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Total trades</p>
-          <p className="text-2xl text-white font-semibold mb-2">{stats.totalLegs}</p>
-          <div className="flex items-center gap-3 text-xs text-cream-100/60">
-            <span>{stats.putsCount} puts ({stats.putsPct}%)</span>
-            <span className="text-white/20">|</span>
-            <span>{stats.callsCount} calls ({stats.callsPct}%)</span>
-          </div>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Total P&L</p>
+          <p className={`text-2xl font-semibold ${stats.totalPnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
+            {stats.totalPnl >= 0 ? "+" : ""}{formatCurrency(stats.totalPnl)}
+          </p>
+          <p className="text-[10px] text-cream-100/40 mt-1">Options + capital gains</p>
         </div>
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Net Options Income</p>
           <p className={`text-2xl font-semibold ${stats.netOptionsIncome >= 0 ? "text-sage-300" : "text-red-400"}`}>
             {stats.netOptionsIncome >= 0 ? "+" : ""}{formatCurrency(stats.netOptionsIncome)}
           </p>
-          <p className="text-[10px] text-cream-100/40 mt-1">STO credits net of BTC debits</p>
         </div>
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Capital Gains</p>
           <p className={`text-2xl font-semibold ${stats.capitalGainsPnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
             {stats.capitalGainsPnl >= 0 ? "+" : ""}{formatCurrency(stats.capitalGainsPnl)}
           </p>
-          <p className="text-[10px] text-cream-100/40 mt-1">Share sales &amp; assignment equity</p>
+        </div>
+        <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Total trades</p>
+          <p className="text-2xl text-white font-semibold mb-2">{stats.totalLegs}</p>
+          <div className="flex items-center gap-3 text-xs text-cream-100/60">
+            <span>{stats.putsCount} puts</span>
+            <span className="text-white/20">|</span>
+            <span>{stats.callsCount} calls</span>
+          </div>
         </div>
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Win rate</p>
           <p className="text-2xl text-white font-semibold">{stats.winRate}%</p>
-          <p className="text-[10px] text-cream-100/40 mt-1">{stats.positionCount} positions netted</p>
+          <p className="text-[10px] text-cream-100/40 mt-1">{stats.positionCount} positions</p>
         </div>
       </div>
 
