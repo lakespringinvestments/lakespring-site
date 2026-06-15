@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-147: Replace Premium Collected with Net Options Income (nets BTC debits)
+// update-148: Add Capital Gains card, fix date filter to use closeDate
 "use client";
 
 import { useState, useMemo } from "react";
@@ -130,13 +130,13 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
     return Array.from(set).sort();
   }, [trades]);
 
-  /* filter trades */
-  const visibleTrades = useMemo(() => {
+  /* base filter — all 2026 settled trades */
+  const settledTrades2026 = useMemo(() => {
     let filtered = trades;
 
-    // Only show trades from 2026 onwards
+    // Only show trades closed/settled in 2026
     filtered = filtered.filter((t) => {
-      const dateStr = t.openDate || t.closeDate;
+      const dateStr = t.closeDate || t.openDate;
       return dateStr >= "2026-01-01";
     });
 
@@ -144,13 +144,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       filtered = filtered.filter((t) => t.ticker === ticker);
     }
 
-    // Exclude share accumulation rows (not options trades)
-    filtered = filtered.filter((t) => {
-      const ot = t.optionType.toLowerCase();
-      return ot !== "shares" && ot !== "";
-    });
-
-    // Only show closed/settled trades
+    // Only closed/settled
     filtered = filtered.filter((t) => {
       const s = t.status.toLowerCase();
       return (
@@ -161,16 +155,29 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       );
     });
 
-    // TODO: restore 30-day public delay once data is reconciled
-    // if (!member) {
-    //   filtered = filtered.filter((t) => {
-    //     const dateToCheck = t.closeDate || t.openDate;
-    //     return !isWithin30Days(dateToCheck);
-    //   });
-    // }
-
     return filtered;
-  }, [trades, ticker, member]);
+  }, [trades, ticker]);
+
+  /* split: options trades (for table) vs capital gains */
+  const CAPGAINS_STRATEGIES = new Set([
+    "share sale", "assignment income", "swing trade",
+  ]);
+
+  const visibleTrades = useMemo(() => {
+    return settledTrades2026.filter((t) => {
+      const ot = t.optionType.toLowerCase();
+      const st = t.strategyType.toLowerCase();
+      // Exclude SHARES/Stock/empty option type AND capital gains strategies
+      return ot !== "shares" && ot !== "stock" && ot !== "" && !CAPGAINS_STRATEGIES.has(st);
+    });
+  }, [settledTrades2026]);
+
+  const capitalGainsTrades = useMemo(() => {
+    return settledTrades2026.filter((t) => {
+      const st = t.strategyType.toLowerCase();
+      return CAPGAINS_STRATEGIES.has(st);
+    });
+  }, [settledTrades2026]);
 
   /* summary stats */
   const stats = useMemo(() => {
@@ -190,6 +197,12 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       0
     );
 
+    // Capital gains P&L
+    const capitalGainsPnl = capitalGainsTrades.reduce(
+      (sum, t) => sum + (t.gainLossUsd ?? 0),
+      0
+    );
+
     // Win rate: group adjacent same-ticker same-close-date legs into positions
     // Assigned trades are always wins (premium was collected)
     const nonAssigned = visibleTrades.filter(
@@ -203,8 +216,8 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
     const winners = positions.filter((net) => net > 0).length + assignedCount;
     const winRate = positionCount > 0 ? Math.round((winners / positionCount) * 100) : 0;
 
-    return { totalLegs, putsCount, callsCount, putsPct, callsPct, netOptionsIncome, positionCount, winRate };
-  }, [visibleTrades]);
+    return { totalLegs, putsCount, callsCount, putsPct, callsPct, netOptionsIncome, capitalGainsPnl, positionCount, winRate };
+  }, [visibleTrades, capitalGainsTrades]);
 
   return (
     <>
@@ -237,7 +250,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         {/* Total Trades */}
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">
@@ -265,6 +278,22 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
             {formatCurrency(stats.netOptionsIncome)}
           </p>
           <p className="text-[10px] text-cream-100/40 mt-1">STO credits net of BTC debits</p>
+        </div>
+
+        {/* Capital Gains */}
+        <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">
+            Capital Gains
+          </p>
+          <p
+            className={`text-2xl font-semibold ${
+              stats.capitalGainsPnl >= 0 ? "text-sage-300" : "text-red-400"
+            }`}
+          >
+            {stats.capitalGainsPnl >= 0 ? "+" : ""}
+            {formatCurrency(stats.capitalGainsPnl)}
+          </p>
+          <p className="text-[10px] text-cream-100/40 mt-1">Share sales &amp; assignment equity</p>
         </div>
 
         {/* Win Rate */}
