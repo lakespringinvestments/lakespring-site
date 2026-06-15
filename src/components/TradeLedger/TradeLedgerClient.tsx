@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-150: Total P&L card, fix roll grouping (require same option type + mixed P&L)
+// update-151: Reorder cards, rename Capital Gains, style Total P&L as sum indicator
 "use client";
 
 import { useState, useMemo } from "react";
@@ -253,23 +253,26 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       {/* Summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-10">
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Net Options Income</p>
+          <p className={`text-2xl font-semibold ${stats.netOptionsIncome >= 0 ? "text-sage-300" : "text-red-400"}`}>
+            {stats.netOptionsIncome >= 0 ? "+" : ""}{formatCurrency(stats.netOptionsIncome)}
+          </p>
+          <p className="text-[10px] text-cream-100/40 mt-1">STO credits net of BTC debits</p>
+        </div>
+        <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Realized Capital Gains</p>
+          <p className={`text-2xl font-semibold ${stats.capitalGainsPnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
+            {stats.capitalGainsPnl >= 0 ? "+" : ""}{formatCurrency(stats.capitalGainsPnl)}
+          </p>
+          <p className="text-[10px] text-cream-100/40 mt-1">Share sales &amp; assignment equity</p>
+        </div>
+        <div className="bg-white/[0.06] border border-sage-500/30 rounded-2xl p-5 relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-sage-400/50"></div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Total P&L</p>
           <p className={`text-2xl font-semibold ${stats.totalPnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
             {stats.totalPnl >= 0 ? "+" : ""}{formatCurrency(stats.totalPnl)}
           </p>
           <p className="text-[10px] text-cream-100/40 mt-1">Options + capital gains</p>
-        </div>
-        <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Net Options Income</p>
-          <p className={`text-2xl font-semibold ${stats.netOptionsIncome >= 0 ? "text-sage-300" : "text-red-400"}`}>
-            {stats.netOptionsIncome >= 0 ? "+" : ""}{formatCurrency(stats.netOptionsIncome)}
-          </p>
-        </div>
-        <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Capital Gains</p>
-          <p className={`text-2xl font-semibold ${stats.capitalGainsPnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
-            {stats.capitalGainsPnl >= 0 ? "+" : ""}{formatCurrency(stats.capitalGainsPnl)}
-          </p>
         </div>
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Total trades</p>
