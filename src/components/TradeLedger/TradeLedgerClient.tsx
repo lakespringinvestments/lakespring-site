@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-142: Remove 30-day lag for reconciliation, filter out SHARES rows
+// update-146: Show 2026 trades only, fix dropdown legibility on Windows
 "use client";
 
 import { useState, useMemo } from "react";
@@ -134,6 +134,12 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
   const visibleTrades = useMemo(() => {
     let filtered = trades;
 
+    // Only show trades from 2026 onwards
+    filtered = filtered.filter((t) => {
+      const dateStr = t.openDate || t.closeDate;
+      return dateStr >= "2026-01-01";
+    });
+
     if (ticker !== "ALL") {
       filtered = filtered.filter((t) => t.ticker === ticker);
     }
@@ -224,7 +230,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
             setTicker(e.target.value);
             setExpandedIdx(null);
           }}
-          className="bg-white/[0.06] border border-white/15 text-cream-100 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-sage-400 transition-colors cursor-pointer appearance-none"
+          className="bg-[#1a1a1a] border border-white/15 text-cream-100 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-sage-400 transition-colors cursor-pointer appearance-none"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none'%3E%3Cpath d='M3 4.5l3 3 3-3' stroke='%23999' stroke-width='1.2'/%3E%3C/svg%3E")`,
             backgroundRepeat: "no-repeat",
@@ -232,9 +238,9 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
             paddingRight: "32px",
           }}
         >
-          <option value="ALL">All tickers</option>
+          <option value="ALL" className="bg-[#1a1a1a] text-white">All tickers</option>
           {tickers.map((t) => (
-            <option key={t} value={t}>
+            <option key={t} value={t} className="bg-[#1a1a1a] text-white">
               {t}
             </option>
           ))}
