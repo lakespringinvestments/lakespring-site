@@ -39,10 +39,9 @@ export default async function DashboardPage() {
   }
 
   // Weekly net options income — matches Excel SUMIFS logic
-  // Uses openDate, excludes transfers/FPP/stock purchase/assignment/margin interest/capgains
+  // Uses openDate, excludes transfers/FPP/stock purchase (3 exclusions only)
   const EXCLUDE_STRATS = new Set([
     "transfer", "fpp accumulation", "stock purchase",
-    "options assignment", "margin interest",
     "share sale", "assignment income", "swing trade",
   ]);
 

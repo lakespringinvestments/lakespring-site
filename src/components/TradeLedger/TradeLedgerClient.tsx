@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-152: Match Excel SUMIFS logic (openDate, include Open status, same exclusions)
+// update-154: Match Excel SUMIFS exactly — 3 exclusions only (transfer, FPP, stock purchase)
 "use client";
 
 import { useState, useMemo } from "react";
@@ -106,9 +106,9 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
-/* ── Excluded strategy types (matches Excel SUMIFS exclusions + Options Assignment) ── */
+/* ── Excluded strategy types (matches Excel SUMIFS exclusions exactly) ── */
 const EXCLUDE_STRATEGIES = new Set([
-  "transfer", "fpp accumulation", "stock purchase", "options assignment", "margin interest",
+  "transfer", "fpp accumulation", "stock purchase",
 ]);
 const CAPGAINS_STRATEGIES = new Set(["share sale", "assignment income", "swing trade"]);
 
