@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-157: DTE, Capital at Risk, sortable columns, P&L donut chart
+// update-158: Replace donut with horizontal stacked bar chart
 "use client";
 
 import { useState, useMemo } from "react";
@@ -146,86 +146,92 @@ function buildDisplayRows(trades: Trade[], sortCol: SortCol, sortDir: SortDir): 
   return sorted;
 }
 
-/* ── P&L Donut Chart ── */
-function PnlDonut({ optionsTrades, capitalGainsTrades, ticker }: {
+/* ── P&L Stacked Bar Chart ── */
+const TICKER_COLORS: Record<string, string> = {
+  TSLA: "#CC0000", NVDA: "#76B900", PLTR: "#7C3AED", AMZN: "#FF9900",
+  GOOGL: "#4285F4", GOOG: "#4285F4", ASML: "#1E3A8A", NBIS: "#C8F000",
+  MRVL: "#0057B8", BMNR: "#06B6D4",
+};
+const FALLBACK_COLORS = ["#5DCAA5", "#3B82F6", "#D97706", "#8B5CF6", "#EC4899", "#06B6D4", "#84CC16", "#F97316"];
+
+function PnlBar({ optionsTrades, capitalGainsTrades, ticker }: {
   optionsTrades: Trade[]; capitalGainsTrades: Trade[]; ticker: string;
 }) {
   const data = useMemo(() => {
     if (ticker !== "ALL") {
-      // Single ticker: show options vs capital gains split
       const optNet = optionsTrades.reduce((s, t) => s + (t.gainLossUsd ?? 0), 0);
       const capNet = capitalGainsTrades.reduce((s, t) => s + (t.gainLossUsd ?? 0), 0);
       const segments = [];
-      if (optNet !== 0) segments.push({ label: "Options", value: optNet, color: "#5DCAA5" });
-      if (capNet !== 0) segments.push({ label: "Cap. Gains", value: capNet, color: "#3B82F6" });
+      if (optNet !== 0) segments.push({ label: "Options Income", value: optNet, color: "#5DCAA5" });
+      if (capNet !== 0) segments.push({ label: "Capital Gains", value: capNet, color: "#3B82F6" });
+      if (segments.length === 0) segments.push({ label: "Options Income", value: 0, color: "#5DCAA5" });
       return segments;
     }
-    // All tickers: show P&L by ticker
     const map = new Map<string, number>();
     for (const t of [...optionsTrades, ...capitalGainsTrades]) {
       const tk = t.ticker || "Other";
       map.set(tk, (map.get(tk) ?? 0) + (t.gainLossUsd ?? 0));
     }
-    const COLORS = ["#5DCAA5", "#3B82F6", "#E24B4A", "#D97706", "#8B5CF6", "#EC4899", "#06B6D4", "#84CC16"];
+    let colorIdx = 0;
     return Array.from(map.entries())
-      .filter(([, v]) => v > 0)
       .sort(([, a], [, b]) => b - a)
-      .map(([label, value], i) => ({ label, value, color: COLORS[i % COLORS.length] }));
+      .map(([label, value]) => ({
+        label, value,
+        color: TICKER_COLORS[label] ?? FALLBACK_COLORS[colorIdx++ % FALLBACK_COLORS.length],
+      }));
   }, [optionsTrades, capitalGainsTrades, ticker]);
 
   if (data.length === 0) return null;
 
   const total = data.reduce((s, d) => s + d.value, 0);
-  const cx = 90, cy = 90, outerR = 80, innerR = 52;
-
-  function polarToXY(angle: number, r: number) {
-    const rad = ((angle - 90) * Math.PI) / 180;
-    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-  }
-
-  let cumAngle = 0;
-  const slices = data.map((d) => {
-    const sweep = (d.value / total) * 360;
-    const start = cumAngle;
-    const end = cumAngle + sweep;
-    const mid = start + sweep / 2;
-    cumAngle = end;
-    const s = polarToXY(start, outerR);
-    const e = polarToXY(end, outerR);
-    const si = polarToXY(start, innerR);
-    const ei = polarToXY(end, innerR);
-    const large = sweep > 180 ? 1 : 0;
-    const path = `M ${s.x} ${s.y} A ${outerR} ${outerR} 0 ${large} 1 ${e.x} ${e.y} L ${ei.x} ${ei.y} A ${innerR} ${innerR} 0 ${large} 0 ${si.x} ${si.y} Z`;
-    return { ...d, path, mid };
-  });
+  const positiveSegments = data.filter((d) => d.value > 0);
+  const negativeSegments = data.filter((d) => d.value < 0);
+  const positiveTotal = positiveSegments.reduce((s, d) => s + d.value, 0);
 
   return (
     <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5 mb-6">
-      <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-4">
-        {ticker === "ALL" ? "P&L by Ticker" : `${ticker} — Income Breakdown`}
-      </p>
-      <div className="flex items-center gap-6">
-        <svg viewBox="0 0 180 180" className="w-40 h-40 flex-shrink-0">
-          {slices.map((s, i) => (
-            <path key={i} d={s.path} fill={s.color} stroke="#0A0A0A" strokeWidth="2" />
-          ))}
-          <text x={cx} y={cy + 4} textAnchor="middle" fontSize="14" fontWeight="700"
-            fill={total >= 0 ? "#5DCAA5" : "#E24B4A"} fontFamily="system-ui">
-            {total >= 0 ? "+" : ""}{total >= 1000 ? `$${(total / 1000).toFixed(1)}K` : formatCurrency(total)}
-          </text>
-        </svg>
-        <div className="flex flex-col gap-2">
-          {slices.map((s, i) => (
-            <div key={i} className="flex items-center gap-2.5 text-xs">
-              <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: s.color }} />
-              <span className="text-cream-100/70 w-16">{s.label}</span>
-              <span className={`tabular-nums font-medium ${s.value >= 0 ? "text-sage-300" : "text-red-400"}`}>
-                {s.value >= 0 ? "+" : ""}{formatCurrency(s.value)}
-              </span>
-              <span className="text-cream-100/30 tabular-nums">{((s.value / total) * 100).toFixed(0)}%</span>
-            </div>
-          ))}
-        </div>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300">
+          {ticker === "ALL" ? "P&L by Ticker" : `${ticker} — Income Breakdown`}
+        </p>
+        <p className={`text-sm font-semibold tabular-nums ${total >= 0 ? "text-sage-300" : "text-red-400"}`}>
+          {total >= 0 ? "+" : ""}{formatCurrency(total)}
+        </p>
+      </div>
+
+      {/* Stacked bar */}
+      <div className="w-full h-6 rounded-full overflow-hidden flex" style={{ background: "rgba(255,255,255,0.06)" }}>
+        {positiveTotal > 0 ? positiveSegments.map((d, i) => {
+          const pct = (d.value / positiveTotal) * 100;
+          return (
+            <div key={i} className="h-full transition-all duration-300"
+              style={{
+                width: `${pct}%`,
+                background: d.color,
+                borderRight: i < positiveSegments.length - 1 ? "1px solid rgba(10,10,10,0.4)" : "none",
+              }}
+              title={`${d.label}: ${formatCurrency(d.value)} (${pct.toFixed(0)}%)`}
+            />
+          );
+        }) : (
+          <div className="h-full w-full" style={{ background: "rgba(255,255,255,0.06)" }} />
+        )}
+      </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-3">
+        {data.map((d, i) => (
+          <div key={i} className="flex items-center gap-1.5 text-xs">
+            <div className="w-2 h-2 rounded-sm flex-shrink-0" style={{ background: d.color }} />
+            <span className="text-cream-100/60">{d.label}</span>
+            <span className={`tabular-nums font-medium ${d.value >= 0 ? "text-sage-300/80" : "text-red-400/80"}`}>
+              {d.value >= 0 ? "+" : ""}{formatCurrency(d.value)}
+            </span>
+            {positiveTotal > 0 && d.value > 0 && (
+              <span className="text-cream-100/30 tabular-nums">{((d.value / positiveTotal) * 100).toFixed(0)}%</span>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -373,7 +379,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       </div>
 
       {/* P&L Donut */}
-      <PnlDonut optionsTrades={optionsTrades} capitalGainsTrades={capitalGainsTrades} ticker={ticker} />
+      <PnlBar optionsTrades={optionsTrades} capitalGainsTrades={capitalGainsTrades} ticker={ticker} />
 
       {/* Ledger table */}
       <div className="overflow-x-auto -mx-6 px-6">
