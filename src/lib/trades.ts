@@ -123,13 +123,10 @@ export async function getAllTrades(): Promise<Trade[]> {
     const rows: string[][] = json.values ?? [];
 
     // No slice limit — return all trades, sorted most recent first
-    // Filter out header rows and N/A, but allow blank tickers (e.g. margin interest)
+    // Only filter out the header row; allow blank/N/A tickers (e.g. margin interest)
     return rows
       .map(rowToTrade)
-      .filter((t) => {
-        const upper = t.ticker.toUpperCase();
-        return upper !== "TICKER" && upper !== "N/A";
-      })
+      .filter((t) => t.ticker.toUpperCase() !== "TICKER")
       .sort((a, b) => {
         const da = a.closeDate || a.openDate;
         const db = b.closeDate || b.openDate;
