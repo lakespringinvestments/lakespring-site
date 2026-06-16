@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-155: Remove roll grouping, fix win rate definition, show all legs individually
+// update-156: Position group-based roll grouping (col AH), no heuristics
 "use client";
 
 import { useState, useMemo } from "react";
@@ -28,9 +28,76 @@ function isCall(t: Trade) {
   return ot === "calls" || ot === "cc" || ot === "call";
 }
 
-/* ── Excluded strategies (matches Excel SUMIFS exactly) ── */
+/* ── Exclusions (matches Excel SUMIFS exactly) ── */
 const EXCLUDE_STRATEGIES = new Set(["transfer", "fpp accumulation", "stock purchase"]);
 const CAPGAINS_STRATEGIES = new Set(["share sale", "assignment income", "swing trade"]);
+
+/* ── Display row types ── */
+type SingleRow = { kind: "single"; trade: Trade };
+type GroupRow = {
+  kind: "group";
+  groupId: string;
+  legs: Trade[];
+  ticker: string;
+  optionType: string;
+  oldStrike: number | null;
+  newStrike: number | null;
+  openDate: string;
+  closeDate: string;
+  netPnl: number;
+};
+type DisplayRow = SingleRow | GroupRow;
+
+/** Build display rows using positionGroup from col AH */
+function buildDisplayRows(trades: Trade[]): DisplayRow[] {
+  // Collect grouped trades
+  const groupMap = new Map<string, Trade[]>();
+  const ungrouped: Trade[] = [];
+
+  for (const t of trades) {
+    if (t.positionGroup) {
+      if (!groupMap.has(t.positionGroup)) groupMap.set(t.positionGroup, []);
+      groupMap.get(t.positionGroup)!.push(t);
+    } else {
+      ungrouped.push(t);
+    }
+  }
+
+  // Build display rows — maintain sort order by using the first trade's date
+  const rows: DisplayRow[] = [];
+  const seen = new Set<string>();
+
+  for (const t of trades) {
+    if (t.positionGroup && !seen.has(t.positionGroup)) {
+      seen.add(t.positionGroup);
+      const legs = groupMap.get(t.positionGroup)!;
+      const net = legs.reduce((s, l) => s + (l.gainLossUsd ?? 0), 0);
+      const btcLegs = legs.filter((l) => (l.gainLossUsd ?? 0) < 0);
+      const stoLegs = legs.filter((l) => (l.gainLossUsd ?? 0) >= 0);
+      const oldStrike = btcLegs.length > 0 ? btcLegs[0].strike : null;
+      const newStrike = stoLegs.length > 0 ? stoLegs[stoLegs.length - 1].strike : null;
+      const openDates = legs.map((l) => l.openDate).filter(Boolean);
+      const closeDates = legs.map((l) => l.closeDate || l.openDate).filter(Boolean);
+
+      rows.push({
+        kind: "group",
+        groupId: t.positionGroup,
+        legs,
+        ticker: legs[0].ticker,
+        optionType: legs[0].optionType,
+        oldStrike,
+        newStrike,
+        openDate: openDates.length ? openDates.reduce((a, b) => a < b ? a : b) : "",
+        closeDate: closeDates.length ? closeDates.reduce((a, b) => a > b ? a : b) : "",
+        netPnl: net,
+      });
+    } else if (!t.positionGroup) {
+      rows.push({ kind: "single", trade: t });
+    }
+  }
+
+  return rows;
+}
 
 function ChevronIcon({ open }: { open: boolean }) {
   return (
@@ -68,7 +135,6 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
     });
   }, [trades, ticker]);
 
-  /* Split: options trades (for table) vs capital gains (for card only) */
   const optionsTrades = useMemo(() => {
     return allIncludedTrades.filter((t) => !CAPGAINS_STRATEGIES.has(t.strategyType.toLowerCase()));
   }, [allIncludedTrades]);
@@ -77,7 +143,10 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
     return allIncludedTrades.filter((t) => CAPGAINS_STRATEGIES.has(t.strategyType.toLowerCase()));
   }, [allIncludedTrades]);
 
-  /* Stats */
+  /* Display rows — group by positionGroup column */
+  const displayRows = useMemo(() => buildDisplayRows(optionsTrades), [optionsTrades]);
+
+  /* Stats — still counts individual legs */
   const stats = useMemo(() => {
     const totalLegs = optionsTrades.length;
     const putsCount = optionsTrades.filter(isPut).length;
@@ -87,7 +156,6 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
     const capitalGainsPnl = capitalGainsTrades.reduce((sum, t) => sum + (t.gainLossUsd ?? 0), 0);
     const totalPnl = netOptionsIncome + capitalGainsPnl;
 
-    // Win rate: trades where cash was received (P&L > 0)
     const positivePnlCount = optionsTrades.filter((t) => (t.gainLossUsd ?? 0) > 0).length;
     const winRate = totalLegs > 0 ? Math.round((positivePnlCount / totalLegs) * 100) : 0;
 
@@ -144,11 +212,11 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Win rate</p>
           <p className="text-2xl text-white font-semibold">{stats.winRate}%</p>
-          <p className="text-[10px] text-cream-100/40 mt-1">Trades with positive P&L ({stats.positivePnlCount}/{stats.totalLegs})</p>
+          <p className="text-[10px] text-cream-100/40 mt-1">Positive P&L trades ({stats.positivePnlCount}/{stats.totalLegs})</p>
         </div>
       </div>
 
-      {/* Ledger table — every leg shown individually */}
+      {/* Ledger table */}
       <div className="overflow-x-auto -mx-6 px-6">
         <table className="w-full min-w-[760px] table-fixed">
           <colgroup><col className="w-[36px]" /><col /><col /><col /><col /><col /><col /><col /></colgroup>
@@ -164,46 +232,105 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
               <th className="pb-4 font-medium">Status</th>
             </tr>
           </thead>
-          {optionsTrades.length === 0 ? (
+          {displayRows.length === 0 ? (
             <tbody className="font-sans text-sm">
               <tr><td colSpan={8} className="py-12 text-center text-sage-300/60">
                 {ticker === "ALL" ? "No trades available yet." : `No trades for ${ticker}.`}
               </td></tr>
             </tbody>
           ) : (
-            optionsTrades.map((t, i) => {
+            displayRows.map((row, i) => {
               const isOpen = expandedIdx === i;
-              const hasRationale = !!t.rationale.trim();
-              const pnl = t.gainLossUsd;
+
+              if (row.kind === "single") {
+                const t = row.trade;
+                const hasRationale = !!t.rationale.trim();
+                const pnl = t.gainLossUsd;
+                return (
+                  <tbody key={i} className="font-sans text-sm">
+                    <tr className={`border-t border-white/10 transition-colors ${hasRationale ? "cursor-pointer hover:bg-white/[0.04]" : "hover:bg-white/[0.03]"} ${isOpen ? "bg-white/[0.04]" : ""}`}
+                      onClick={() => { if (hasRationale) setExpandedIdx(isOpen ? null : i); }}>
+                      <td className="py-4 text-center text-sage-300/50 align-middle">{hasRationale && <ChevronIcon open={isOpen} />}</td>
+                      <td className="py-4 text-center text-white font-semibold tracking-wide align-middle">{t.ticker}</td>
+                      <td className="py-4 text-center text-cream-100 align-middle">{t.optionType || "—"}</td>
+                      <td className="py-4 text-center text-cream-100 tabular-nums align-middle">{t.strike ? formatCurrency(t.strike) : "—"}</td>
+                      <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(t.openDate)}</td>
+                      <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(t.closeDate)}</td>
+                      <td className={`py-4 text-center tabular-nums font-medium align-middle ${pnl !== null && pnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
+                        {pnl !== null ? `${pnl >= 0 ? "+" : ""}${formatCurrency(pnl)}` : "—"}
+                      </td>
+                      <td className="py-4 text-center align-middle">
+                        <span className={`text-xs px-2.5 py-1 rounded-full ${
+                          t.status.toLowerCase().includes("expired") ? "bg-sage-500/20 text-sage-300"
+                          : t.status.toLowerCase().includes("assigned") ? "bg-amber-500/15 text-amber-300"
+                          : t.status.toLowerCase().includes("rolled") ? "bg-blue-500/15 text-blue-300"
+                          : t.status.toLowerCase().includes("open") ? "bg-white/10 text-cream-100"
+                          : "bg-sage-500/20 text-sage-300"
+                        }`}>{t.status}</span>
+                      </td>
+                    </tr>
+                    {isOpen && hasRationale && (
+                      <tr className="bg-white/[0.02]"><td></td>
+                        <td colSpan={7} className="pb-5 pt-1 pr-6">
+                          <div className="text-cream-100/70 text-sm leading-relaxed pl-0.5">
+                            <span className="text-[10px] uppercase tracking-[0.15em] text-sage-300/60 block mb-1.5">Rationale</span>
+                            {t.rationale}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                );
+              }
+
+              /* ── Group row ── */
+              const g = row;
+              const net = g.netPnl;
+              const strikeLabel = g.oldStrike && g.newStrike && g.oldStrike !== g.newStrike
+                ? `${formatCurrency(g.oldStrike)} → ${formatCurrency(g.newStrike)}`
+                : formatCurrency(g.newStrike ?? g.oldStrike);
+
               return (
                 <tbody key={i} className="font-sans text-sm">
-                  <tr className={`border-t border-white/10 transition-colors ${hasRationale ? "cursor-pointer hover:bg-white/[0.04]" : "hover:bg-white/[0.03]"} ${isOpen ? "bg-white/[0.04]" : ""}`}
-                    onClick={() => { if (hasRationale) setExpandedIdx(isOpen ? null : i); }}>
-                    <td className="py-4 text-center text-sage-300/50 align-middle">{hasRationale && <ChevronIcon open={isOpen} />}</td>
-                    <td className="py-4 text-center text-white font-semibold tracking-wide align-middle">{t.ticker}</td>
-                    <td className="py-4 text-center text-cream-100 align-middle">{t.optionType || "—"}</td>
-                    <td className="py-4 text-center text-cream-100 tabular-nums align-middle">{t.strike ? formatCurrency(t.strike) : "—"}</td>
-                    <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(t.openDate)}</td>
-                    <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(t.closeDate)}</td>
-                    <td className={`py-4 text-center tabular-nums font-medium align-middle ${pnl !== null && pnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
-                      {pnl !== null ? `${pnl >= 0 ? "+" : ""}${formatCurrency(pnl)}` : "—"}
+                  <tr className={`border-t border-white/10 transition-colors cursor-pointer hover:bg-white/[0.04] ${isOpen ? "bg-white/[0.04]" : ""}`}
+                    onClick={() => setExpandedIdx(isOpen ? null : i)}>
+                    <td className="py-4 text-center text-sage-300/50 align-middle"><ChevronIcon open={isOpen} /></td>
+                    <td className="py-4 text-center text-white font-semibold tracking-wide align-middle">{g.ticker}</td>
+                    <td className="py-4 text-center text-cream-100 align-middle">{g.optionType || "—"}</td>
+                    <td className="py-4 text-center text-cream-100 tabular-nums align-middle text-xs">{strikeLabel}</td>
+                    <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(g.openDate)}</td>
+                    <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(g.closeDate)}</td>
+                    <td className={`py-4 text-center tabular-nums font-medium align-middle ${net >= 0 ? "text-sage-300" : "text-red-400"}`}>
+                      {`${net >= 0 ? "+" : ""}${formatCurrency(net)}`}
                     </td>
                     <td className="py-4 text-center align-middle">
-                      <span className={`text-xs px-2.5 py-1 rounded-full ${
-                        t.status.toLowerCase().includes("expired") ? "bg-sage-500/20 text-sage-300"
-                        : t.status.toLowerCase().includes("assigned") ? "bg-amber-500/15 text-amber-300"
-                        : t.status.toLowerCase().includes("rolled") ? "bg-blue-500/15 text-blue-300"
-                        : t.status.toLowerCase().includes("open") ? "bg-white/10 text-cream-100"
-                        : "bg-sage-500/20 text-sage-300"
-                      }`}>{t.status}</span>
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-blue-500/15 text-blue-300">
+                        Roll ({g.legs.length} legs)
+                      </span>
                     </td>
                   </tr>
-                  {isOpen && hasRationale && (
+                  {isOpen && (
                     <tr className="bg-white/[0.02]"><td></td>
-                      <td colSpan={7} className="pb-5 pt-1 pr-6">
-                        <div className="text-cream-100/70 text-sm leading-relaxed pl-0.5">
-                          <span className="text-[10px] uppercase tracking-[0.15em] text-sage-300/60 block mb-1.5">Rationale</span>
-                          {t.rationale}
+                      <td colSpan={7} className="pb-4 pt-2 pr-6">
+                        <div className="space-y-1.5">
+                          {g.legs.map((leg, li) => {
+                            const lPnl = leg.gainLossUsd ?? 0;
+                            const isBtc = lPnl < 0;
+                            return (
+                              <div key={li} className="flex items-center gap-4 text-xs text-cream-100/60">
+                                <span className={`w-8 text-center font-medium ${isBtc ? "text-red-400/70" : "text-sage-300/70"}`}>{isBtc ? "BTC" : "STO"}</span>
+                                <span className="tabular-nums">{leg.strike ? `$${leg.strike.toLocaleString()}` : "—"}</span>
+                                <span className="tabular-nums">{formatDate(leg.openDate)} → {formatDate(leg.closeDate)}</span>
+                                <span className={`tabular-nums font-medium ${lPnl >= 0 ? "text-sage-300/80" : "text-red-400/80"}`}>{lPnl >= 0 ? "+" : ""}{formatCurrency(lPnl)}</span>
+                                <span className="text-cream-100/40">{leg.status}</span>
+                              </div>
+                            );
+                          })}
+                          <div className="flex items-center gap-4 text-xs pt-1.5 border-t border-white/10 mt-1.5">
+                            <span className="w-8 text-center font-medium text-white">NET</span>
+                            <span></span><span></span>
+                            <span className={`tabular-nums font-semibold ${net >= 0 ? "text-sage-300" : "text-red-400"}`}>{net >= 0 ? "+" : ""}{formatCurrency(net)}</span>
+                          </div>
                         </div>
                       </td>
                     </tr>

@@ -1,5 +1,5 @@
 // src/lib/trades.ts
-// update-155: Allow blank-ticker rows (margin interest) through data layer
+// update-156: Add positionGroup field (col AH) for roll grouping
 // Fetches trade data from the Lakespring Google Sheet (Trades tab).
 // Sheet ID is permanent regardless of filename changes.
 // Requires GOOGLE_SHEETS_API_KEY environment variable set in Vercel.
@@ -21,6 +21,7 @@ export type Trade = {
   optionType: string; // Puts, Calls, SHARES, etc.
   direction: string;
   rationale: string;
+  positionGroup: string;    // col AH = index 33
 };
 
 const SHEET_ID = "1kMeiB3u-itRqdSXUj7lGWQgpOxwWyEd61spMOHJ07mM";
@@ -67,6 +68,7 @@ function rowToTrade(row: string[]): Trade {
     direction:          row[18] ?? "",
     optionType:         normalizeOptionType(row[19] ?? ""),
     rationale:          row[32] ?? "",       // col AG = index 32
+    positionGroup:      (row[33] ?? "").trim(), // col AH = index 33
   };
 }
 
