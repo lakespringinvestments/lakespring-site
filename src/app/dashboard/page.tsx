@@ -5,7 +5,7 @@ import PremiumChart from "@/components/Dashboard/PremiumChart";
 import DashboardClient from "@/components/Dashboard/DashboardClient";
 import MemberGate from "@/components/Dashboard/MemberGate";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Portfolio — Lakespring Investments",
@@ -38,13 +38,23 @@ export default async function DashboardPage() {
     if (tradesByTicker[ticker].length < 8) tradesByTicker[ticker].push(trade);
   }
 
+  // Weekly net options income — matches Excel SUMIFS logic
+  // Uses openDate, excludes transfers/FPP/stock purchase/assignment/margin interest/capgains
+  const EXCLUDE_STRATS = new Set([
+    "transfer", "fpp accumulation", "stock purchase",
+    "options assignment", "margin interest",
+    "share sale", "assignment income", "swing trade",
+  ]);
+
   const weeklyMap: Record<string, number> = {};
   for (const trade of allTrades) {
-    if (!["CSP","CC"].includes(trade.optionType?.toUpperCase() ?? "")) continue;
-    const val = trade.totalPremiumUsd ?? 0;
-    if (val <= 0) continue;
-    const date = trade.closeDate || trade.openDate;
-    if (!date) continue;
+    const st = (trade.strategyType ?? "").toLowerCase();
+    if (EXCLUDE_STRATS.has(st)) continue;
+    if ((trade.description ?? "").toUpperCase().includes("TRANSFER IN")) continue;
+    const date = trade.openDate;
+    if (!date || date < "2026-01-01") continue;
+    const val = trade.gainLossUsd ?? 0;
+    if (val === 0) continue;
     try {
       const d = new Date(date);
       if (isNaN(d.getTime())) continue;

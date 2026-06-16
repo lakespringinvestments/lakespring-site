@@ -214,7 +214,7 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
       <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-[10px] uppercase tracking-[0.18em] text-ink-500 mb-0.5">
-            Weekly premiums collected
+            Weekly net options income
           </p>
           {totalShown > 0 && (
             <p className="text-sm font-medium text-teal-600"
