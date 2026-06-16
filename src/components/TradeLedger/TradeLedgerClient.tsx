@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-151: Reorder cards, rename Capital Gains, style Total P&L as sum indicator
+// update-152: Match Excel SUMIFS logic (openDate, include Open status, same exclusions)
 "use client";
 
 import { useState, useMemo } from "react";
@@ -18,11 +18,6 @@ function formatCurrency(n: number | null) {
   return n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
 
-function formatPct(n: number | null) {
-  if (n === null) return "—";
-  return `${n >= 0 ? "+" : ""}${n.toFixed(1)}%`;
-}
-
 function isPut(t: Trade) {
   const ot = t.optionType.toLowerCase();
   return ot === "puts" || ot === "csp" || ot === "put";
@@ -33,80 +28,47 @@ function isCall(t: Trade) {
   return ot === "calls" || ot === "cc" || ot === "call";
 }
 
-function isMember(): boolean {
-  if (typeof window === "undefined") return false;
-  return localStorage.getItem("lakespring_member") === "true";
-}
-
-/* ── Roll grouping types ── */
+/* ── Roll grouping ── */
 type SingleRow = { kind: "single"; trade: Trade };
 type RollRow = {
-  kind: "roll";
-  legs: Trade[];
-  ticker: string;
-  optionType: string;
-  oldStrike: number | null;
-  newStrike: number | null;
-  openDate: string;
-  closeDate: string;
-  netPnl: number;
+  kind: "roll"; legs: Trade[]; ticker: string; optionType: string;
+  oldStrike: number | null; newStrike: number | null;
+  openDate: string; closeDate: string; netPnl: number;
 };
 type DisplayRow = SingleRow | RollRow;
 
-/** Are two adjacent trades linked as part of a roll? Must be same ticker + same option type + date-linked */
 function areLinked(a: Trade, b: Trade): boolean {
   if (a.ticker !== b.ticker) return false;
-  // Must be same option type (both calls or both puts)
   if (a.optionType.toLowerCase() !== b.optionType.toLowerCase()) return false;
-  // Must have a date connection
-  const dateLinked =
-    a.closeDate === b.closeDate ||
-    a.closeDate === b.openDate ||
-    a.openDate === b.closeDate;
+  const dateLinked = a.closeDate === b.closeDate || a.closeDate === b.openDate || a.openDate === b.closeDate;
   if (!dateLinked) return false;
-  // Must have at least one positive and one negative between the pair (BTC + STO)
   const aVal = a.gainLossUsd ?? 0;
   const bVal = b.gainLossUsd ?? 0;
-  if ((aVal < 0 && bVal < 0) || (aVal >= 0 && bVal >= 0)) return false;
-  return true;
+  return (aVal < 0 && bVal >= 0) || (aVal >= 0 && bVal < 0);
 }
 
-/** Group visible trades into display rows — merging BTC+STO roll pairs */
 function buildDisplayRows(trades: Trade[]): DisplayRow[] {
   const rows: DisplayRow[] = [];
   let i = 0;
   while (i < trades.length) {
     let j = i + 1;
-    // Absorb adjacent linked same-ticker trades
-    while (j < trades.length && areLinked(trades[j - 1], trades[j])) {
-      j++;
-    }
+    while (j < trades.length && areLinked(trades[j - 1], trades[j])) j++;
     const group = trades.slice(i, j);
     if (group.length === 1) {
       rows.push({ kind: "single", trade: group[0] });
     } else {
-      // Identify BTC (negative P&L) and STO (positive P&L) legs
       const btcLegs = group.filter((t) => (t.gainLossUsd ?? 0) < 0);
       const stoLegs = group.filter((t) => (t.gainLossUsd ?? 0) >= 0);
       const net = group.reduce((s, t) => s + (t.gainLossUsd ?? 0), 0);
-
-      // Strike: BTC strike → STO strike (use first of each for display)
       const oldStrike = btcLegs.length > 0 ? btcLegs[0].strike : null;
       const newStrike = stoLegs.length > 0 ? stoLegs[stoLegs.length - 1].strike : null;
-
-      // Date range: earliest open → latest close
-      const dates = group.map((t) => t.closeDate || t.openDate).filter(Boolean);
       const openDates = group.map((t) => t.openDate).filter(Boolean);
-
+      const closeDates = group.map((t) => t.closeDate || t.openDate).filter(Boolean);
       rows.push({
-        kind: "roll",
-        legs: group,
-        ticker: group[0].ticker,
-        optionType: group[0].optionType,
-        oldStrike,
-        newStrike,
-        openDate: openDates.length > 0 ? openDates.reduce((a, b) => (a < b ? a : b)) : "",
-        closeDate: dates.length > 0 ? dates.reduce((a, b) => (a > b ? a : b)) : "",
+        kind: "roll", legs: group, ticker: group[0].ticker, optionType: group[0].optionType,
+        oldStrike, newStrike,
+        openDate: openDates.length ? openDates.reduce((a, b) => a < b ? a : b) : "",
+        closeDate: closeDates.length ? closeDates.reduce((a, b) => a > b ? a : b) : "",
         netPnl: net,
       });
     }
@@ -115,7 +77,6 @@ function buildDisplayRows(trades: Trade[]): DisplayRow[] {
   return rows;
 }
 
-/** Group positions for win rate (same logic as before) */
 function groupPositions(trades: Trade[]): number[] {
   const positions: number[] = [];
   let i = 0;
@@ -124,18 +85,11 @@ function groupPositions(trades: Trade[]): number[] {
     let net = trades[i].gainLossUsd ?? 0;
     let j = i + 1;
     while (j < trades.length && trades[j].ticker === ticker) {
-      const prev = trades[j - 1];
-      const curr = trades[j];
-      if (
-        prev.closeDate === curr.closeDate ||
-        prev.closeDate === curr.openDate ||
-        prev.openDate === curr.closeDate
-      ) {
+      const prev = trades[j - 1], curr = trades[j];
+      if (prev.closeDate === curr.closeDate || prev.closeDate === curr.openDate || prev.openDate === curr.closeDate) {
         net += curr.gainLossUsd ?? 0;
         j++;
-      } else {
-        break;
-      }
+      } else break;
     }
     positions.push(net);
     i = j;
@@ -143,7 +97,6 @@ function groupPositions(trades: Trade[]): number[] {
   return positions;
 }
 
-/* ── Chevron icon ── */
 function ChevronIcon({ open }: { open: boolean }) {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
@@ -153,11 +106,16 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
-/* ── main component ── */
+/* ── Excluded strategy types (matches Excel SUMIFS exclusions + Options Assignment) ── */
+const EXCLUDE_STRATEGIES = new Set([
+  "transfer", "fpp accumulation", "stock purchase", "options assignment", "margin interest",
+]);
+const CAPGAINS_STRATEGIES = new Set(["share sale", "assignment income", "swing trade"]);
+
+/* ── main ── */
 export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
   const [ticker, setTicker] = useState<string>("ALL");
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
-  const [member] = useState<boolean>(isMember);
 
   const TICKER_BLOCKLIST = new Set(["TICKER", "N/A", ""]);
   const isValidTicker = (s: string) =>
@@ -169,84 +127,61 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
     return Array.from(set).sort();
   }, [trades]);
 
-  /* base filter — all 2026 settled trades */
-  const settledTrades2026 = useMemo(() => {
+  /* Match Excel SUMIFS: openDate in 2026, exclude transfers/FPP/stock purchase/assignment */
+  const allIncludedTrades = useMemo(() => {
     return trades.filter((t) => {
-      const dateStr = t.closeDate || t.openDate;
-      if (dateStr < "2026-01-01") return false;
+      if (t.openDate < "2026-01-01") return false;
       if (ticker !== "ALL" && t.ticker !== ticker) return false;
-      const s = t.status.toLowerCase();
-      return s.includes("closed") || s.includes("expired") || s.includes("assigned") || s.includes("rolled");
+      const st = t.strategyType.toLowerCase();
+      if (EXCLUDE_STRATEGIES.has(st)) return false;
+      if (t.description.toUpperCase().includes("TRANSFER IN")) return false;
+      return true;
     });
   }, [trades, ticker]);
 
-  /* split: options trades vs capital gains */
-  const CAPGAINS_STRATEGIES = new Set(["share sale", "assignment income", "swing trade"]);
-
-  const visibleTrades = useMemo(() => {
-    return settledTrades2026.filter((t) => {
-      const ot = t.optionType.toLowerCase();
+  /* Split: options trades (for table) vs capital gains (for card only) */
+  const optionsTrades = useMemo(() => {
+    return allIncludedTrades.filter((t) => {
       const st = t.strategyType.toLowerCase();
-      return ot !== "shares" && ot !== "stock" && ot !== "" && !CAPGAINS_STRATEGIES.has(st);
+      return !CAPGAINS_STRATEGIES.has(st);
     });
-  }, [settledTrades2026]);
+  }, [allIncludedTrades]);
 
   const capitalGainsTrades = useMemo(() => {
-    return settledTrades2026.filter((t) => CAPGAINS_STRATEGIES.has(t.strategyType.toLowerCase()));
-  }, [settledTrades2026]);
+    return allIncludedTrades.filter((t) => CAPGAINS_STRATEGIES.has(t.strategyType.toLowerCase()));
+  }, [allIncludedTrades]);
 
-  /* display rows — group BTC+STO roll pairs */
-  const displayRows = useMemo(() => buildDisplayRows(visibleTrades), [visibleTrades]);
+  const displayRows = useMemo(() => buildDisplayRows(optionsTrades), [optionsTrades]);
 
-  /* summary stats — still counts individual legs */
+  /* Stats */
   const stats = useMemo(() => {
-    const totalLegs = visibleTrades.length;
-    const putsCount = visibleTrades.filter(isPut).length;
-    const callsCount = visibleTrades.filter(isCall).length;
-    const putsPct = totalLegs > 0 ? Math.round((putsCount / totalLegs) * 100) : 0;
-    const callsPct = totalLegs > 0 ? Math.round((callsCount / totalLegs) * 100) : 0;
+    const totalLegs = optionsTrades.length;
+    const putsCount = optionsTrades.filter(isPut).length;
+    const callsCount = optionsTrades.filter(isCall).length;
 
-    const netOptionsIncome = visibleTrades.reduce((sum, t) => {
-      const val = t.gainLossUsd ?? 0;
-      const isAssigned = t.status.toLowerCase().includes("assigned");
-      return sum + (isAssigned ? Math.max(val, 0) : val);
-    }, 0);
-
+    const netOptionsIncome = optionsTrades.reduce((sum, t) => sum + (t.gainLossUsd ?? 0), 0);
     const capitalGainsPnl = capitalGainsTrades.reduce((sum, t) => sum + (t.gainLossUsd ?? 0), 0);
-
-    const nonAssigned = visibleTrades.filter((t) => !t.status.toLowerCase().includes("assigned"));
-    const positions = groupPositions(nonAssigned);
-    const assignedCount = visibleTrades.filter((t) => t.status.toLowerCase().includes("assigned")).length;
-    const positionCount = positions.length + assignedCount;
-    const winners = positions.filter((net) => net > 0).length + assignedCount;
-    const winRate = positionCount > 0 ? Math.round((winners / positionCount) * 100) : 0;
-
     const totalPnl = netOptionsIncome + capitalGainsPnl;
 
-    return { totalLegs, putsCount, callsCount, putsPct, callsPct, netOptionsIncome, capitalGainsPnl, totalPnl, positionCount, winRate };
-  }, [visibleTrades, capitalGainsTrades]);
+    const positions = groupPositions(optionsTrades);
+    const positionCount = positions.length;
+    const winners = positions.filter((net) => net > 0).length;
+    const winRate = positionCount > 0 ? Math.round((winners / positionCount) * 100) : 0;
 
-  /* ── render ── */
+    return { totalLegs, putsCount, callsCount, netOptionsIncome, capitalGainsPnl, totalPnl, positionCount, winRate };
+  }, [optionsTrades, capitalGainsTrades]);
+
   return (
     <>
-      {/* Filter bar */}
+      {/* Filter */}
       <div className="flex items-center gap-4 mb-8 pb-8 border-b border-white/10">
         <label className="text-[10px] uppercase tracking-[0.2em] text-sage-300">Filter by ticker</label>
-        <select
-          value={ticker}
+        <select value={ticker}
           onChange={(e) => { setTicker(e.target.value); setExpandedIdx(null); }}
           className="bg-[#1a1a1a] border border-white/15 text-cream-100 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-sage-400 transition-colors cursor-pointer appearance-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none'%3E%3Cpath d='M3 4.5l3 3 3-3' stroke='%23999' stroke-width='1.2'/%3E%3C/svg%3E")`,
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "right 10px center",
-            paddingRight: "32px",
-          }}
-        >
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none'%3E%3Cpath d='M3 4.5l3 3 3-3' stroke='%23999' stroke-width='1.2'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center", paddingRight: "32px" }}>
           <option value="ALL" className="bg-[#1a1a1a] text-white">All tickers</option>
-          {tickers.map((t) => (
-            <option key={t} value={t} className="bg-[#1a1a1a] text-white">{t}</option>
-          ))}
+          {tickers.map((t) => (<option key={t} value={t} className="bg-[#1a1a1a] text-white">{t}</option>))}
         </select>
       </div>
 
@@ -293,10 +228,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       {/* Ledger table */}
       <div className="overflow-x-auto -mx-6 px-6">
         <table className="w-full min-w-[760px] table-fixed">
-          <colgroup>
-            <col className="w-[36px]" />
-            <col /><col /><col /><col /><col /><col /><col />
-          </colgroup>
+          <colgroup><col className="w-[36px]" /><col /><col /><col /><col /><col /><col /><col /></colgroup>
           <thead>
             <tr className="text-[10px] uppercase tracking-[0.2em] text-sage-300 text-center">
               <th className="pb-4 font-medium"></th>
@@ -311,30 +243,22 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
           </thead>
           {displayRows.length === 0 ? (
             <tbody className="font-sans text-sm">
-              <tr>
-                <td colSpan={8} className="py-12 text-center text-sage-300/60">
-                  {ticker === "ALL" ? "No closed trades available yet." : `No closed trades for ${ticker}.`}
-                </td>
-              </tr>
+              <tr><td colSpan={8} className="py-12 text-center text-sage-300/60">
+                {ticker === "ALL" ? "No trades available yet." : `No trades for ${ticker}.`}
+              </td></tr>
             </tbody>
           ) : (
             displayRows.map((row, i) => {
               const isOpen = expandedIdx === i;
-
               if (row.kind === "single") {
                 const t = row.trade;
                 const hasRationale = !!t.rationale.trim();
                 const pnl = t.gainLossUsd;
-                const canExpand = hasRationale;
                 return (
                   <tbody key={i} className="font-sans text-sm">
-                    <tr
-                      className={`border-t border-white/10 transition-colors ${canExpand ? "cursor-pointer hover:bg-white/[0.04]" : "hover:bg-white/[0.03]"} ${isOpen ? "bg-white/[0.04]" : ""}`}
-                      onClick={() => { if (canExpand) setExpandedIdx(isOpen ? null : i); }}
-                    >
-                      <td className="py-4 text-center text-sage-300/50 align-middle">
-                        {canExpand && <ChevronIcon open={isOpen} />}
-                      </td>
+                    <tr className={`border-t border-white/10 transition-colors ${hasRationale ? "cursor-pointer hover:bg-white/[0.04]" : "hover:bg-white/[0.03]"} ${isOpen ? "bg-white/[0.04]" : ""}`}
+                      onClick={() => { if (hasRationale) setExpandedIdx(isOpen ? null : i); }}>
+                      <td className="py-4 text-center text-sage-300/50 align-middle">{hasRationale && <ChevronIcon open={isOpen} />}</td>
                       <td className="py-4 text-center text-white font-semibold tracking-wide align-middle">{t.ticker}</td>
                       <td className="py-4 text-center text-cream-100 align-middle">{t.optionType || "—"}</td>
                       <td className="py-4 text-center text-cream-100 tabular-nums align-middle">{t.strike ? formatCurrency(t.strike) : "—"}</td>
@@ -348,13 +272,13 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                           t.status.toLowerCase().includes("expired") ? "bg-sage-500/20 text-sage-300"
                           : t.status.toLowerCase().includes("assigned") ? "bg-amber-500/15 text-amber-300"
                           : t.status.toLowerCase().includes("rolled") ? "bg-blue-500/15 text-blue-300"
+                          : t.status.toLowerCase().includes("open") ? "bg-white/10 text-cream-100"
                           : "bg-sage-500/20 text-sage-300"
                         }`}>{t.status}</span>
                       </td>
                     </tr>
                     {isOpen && hasRationale && (
-                      <tr className="bg-white/[0.02]">
-                        <td></td>
+                      <tr className="bg-white/[0.02]"><td></td>
                         <td colSpan={7} className="pb-5 pt-1 pr-6">
                           <div className="text-cream-100/70 text-sm leading-relaxed pl-0.5">
                             <span className="text-[10px] uppercase tracking-[0.15em] text-sage-300/60 block mb-1.5">Rationale</span>
@@ -366,24 +290,16 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                   </tbody>
                 );
               }
-
-              /* ── Roll group row ── */
               const r = row;
               const net = r.netPnl;
-              const strikeLabel =
-                r.oldStrike && r.newStrike && r.oldStrike !== r.newStrike
-                  ? `${formatCurrency(r.oldStrike)} → ${formatCurrency(r.newStrike)}`
-                  : formatCurrency(r.newStrike ?? r.oldStrike);
-
+              const strikeLabel = r.oldStrike && r.newStrike && r.oldStrike !== r.newStrike
+                ? `${formatCurrency(r.oldStrike)} → ${formatCurrency(r.newStrike)}`
+                : formatCurrency(r.newStrike ?? r.oldStrike);
               return (
                 <tbody key={i} className="font-sans text-sm">
-                  <tr
-                    className={`border-t border-white/10 transition-colors cursor-pointer hover:bg-white/[0.04] ${isOpen ? "bg-white/[0.04]" : ""}`}
-                    onClick={() => setExpandedIdx(isOpen ? null : i)}
-                  >
-                    <td className="py-4 text-center text-sage-300/50 align-middle">
-                      <ChevronIcon open={isOpen} />
-                    </td>
+                  <tr className={`border-t border-white/10 transition-colors cursor-pointer hover:bg-white/[0.04] ${isOpen ? "bg-white/[0.04]" : ""}`}
+                    onClick={() => setExpandedIdx(isOpen ? null : i)}>
+                    <td className="py-4 text-center text-sage-300/50 align-middle"><ChevronIcon open={isOpen} /></td>
                     <td className="py-4 text-center text-white font-semibold tracking-wide align-middle">{r.ticker}</td>
                     <td className="py-4 text-center text-cream-100 align-middle">{r.optionType || "—"}</td>
                     <td className="py-4 text-center text-cream-100 tabular-nums align-middle text-xs">{strikeLabel}</td>
@@ -393,15 +309,11 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                       {`${net >= 0 ? "+" : ""}${formatCurrency(net)}`}
                     </td>
                     <td className="py-4 text-center align-middle">
-                      <span className="text-xs px-2.5 py-1 rounded-full bg-blue-500/15 text-blue-300">
-                        Roll ({r.legs.length} legs)
-                      </span>
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-blue-500/15 text-blue-300">Roll ({r.legs.length} legs)</span>
                     </td>
                   </tr>
-                  {/* Expanded: show individual legs */}
                   {isOpen && (
-                    <tr className="bg-white/[0.02]">
-                      <td></td>
+                    <tr className="bg-white/[0.02]"><td></td>
                       <td colSpan={7} className="pb-4 pt-2 pr-6">
                         <div className="space-y-1.5">
                           {r.legs.map((leg, li) => {
@@ -409,25 +321,18 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                             const isBtc = lPnl < 0;
                             return (
                               <div key={li} className="flex items-center gap-4 text-xs text-cream-100/60">
-                                <span className={`w-8 text-center font-medium ${isBtc ? "text-red-400/70" : "text-sage-300/70"}`}>
-                                  {isBtc ? "BTC" : "STO"}
-                                </span>
+                                <span className={`w-8 text-center font-medium ${isBtc ? "text-red-400/70" : "text-sage-300/70"}`}>{isBtc ? "BTC" : "STO"}</span>
                                 <span className="tabular-nums">${leg.strike?.toLocaleString() ?? "—"}</span>
                                 <span className="tabular-nums">{formatDate(leg.openDate)} → {formatDate(leg.closeDate)}</span>
-                                <span className={`tabular-nums font-medium ${lPnl >= 0 ? "text-sage-300/80" : "text-red-400/80"}`}>
-                                  {lPnl >= 0 ? "+" : ""}{formatCurrency(lPnl)}
-                                </span>
+                                <span className={`tabular-nums font-medium ${lPnl >= 0 ? "text-sage-300/80" : "text-red-400/80"}`}>{lPnl >= 0 ? "+" : ""}{formatCurrency(lPnl)}</span>
                                 <span className="text-cream-100/40">{leg.status}</span>
                               </div>
                             );
                           })}
                           <div className="flex items-center gap-4 text-xs pt-1.5 border-t border-white/10 mt-1.5">
                             <span className="w-8 text-center font-medium text-white">NET</span>
-                            <span></span>
-                            <span></span>
-                            <span className={`tabular-nums font-semibold ${net >= 0 ? "text-sage-300" : "text-red-400"}`}>
-                              {net >= 0 ? "+" : ""}{formatCurrency(net)}
-                            </span>
+                            <span></span><span></span>
+                            <span className={`tabular-nums font-semibold ${net >= 0 ? "text-sage-300" : "text-red-400"}`}>{net >= 0 ? "+" : ""}{formatCurrency(net)}</span>
                           </div>
                         </div>
                       </td>
