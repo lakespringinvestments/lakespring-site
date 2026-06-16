@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-158: Replace donut with horizontal stacked bar chart
+// update-159: Remove DTE + monthly rows, add ROI column, stacked bar chart
 "use client";
 
 import { useState, useMemo } from "react";
@@ -28,24 +28,16 @@ function isCall(t: Trade) {
   return ot === "calls" || ot === "cc" || ot === "call";
 }
 
-function calcDte(openDate: string, closeDate: string): number | null {
-  if (!openDate) return null;
-  const start = new Date(openDate);
-  const end = closeDate ? new Date(closeDate) : new Date();
-  if (isNaN(start.getTime()) || isNaN(end.getTime())) return null;
-  return Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-}
-
 function calcCapitalAtRisk(t: Trade): number | null {
   if (t.strike && t.contracts) return Math.abs(t.strike * t.contracts * 100);
   return null;
 }
 
-function getMonthKey(d: string) { return d ? d.slice(0, 7) : ""; }
-function monthLabel(key: string) {
-  const [y, m] = key.split("-");
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  return `${months[parseInt(m) - 1]} ${y}`;
+function calcRoi(t: Trade): string {
+  const cap = calcCapitalAtRisk(t);
+  const pnl = t.gainLossUsd ?? 0;
+  if (!cap || cap === 0) return "—";
+  return ((pnl / cap) * 100).toFixed(2) + "%";
 }
 
 /* ── Exclusions ── */
@@ -59,23 +51,22 @@ type GroupRow = {
   oldStrike: number | null; newStrike: number | null;
   openDate: string; closeDate: string; netPnl: number;
 };
-type MonthHeader = { kind: "month"; monthKey: string; label: string; total: number };
-type DisplayRow = SingleRow | GroupRow | MonthHeader;
+type DisplayRow = SingleRow | GroupRow;
 
-type SortCol = "date" | "ticker" | "pnl" | "dte" | "capital";
+type SortCol = "date" | "ticker" | "pnl" | "capital" | "roi";
 type SortDir = "asc" | "desc";
 
 function getRowDate(r: SingleRow | GroupRow) { return r.kind === "single" ? r.trade.openDate : r.openDate; }
 function getRowPnl(r: SingleRow | GroupRow) { return r.kind === "single" ? (r.trade.gainLossUsd ?? 0) : r.netPnl; }
 function getRowTicker(r: SingleRow | GroupRow) { return r.kind === "single" ? r.trade.ticker : r.ticker; }
-function getRowDte(r: SingleRow | GroupRow) {
-  const od = r.kind === "single" ? r.trade.openDate : r.openDate;
-  const cd = r.kind === "single" ? r.trade.closeDate : r.closeDate;
-  return calcDte(od, cd) ?? 0;
-}
 function getRowCapital(r: SingleRow | GroupRow) {
   if (r.kind === "single") return calcCapitalAtRisk(r.trade) ?? 0;
   return r.legs.reduce((s, l) => s + (calcCapitalAtRisk(l) ?? 0), 0);
+}
+function getRowRoi(r: SingleRow | GroupRow) {
+  const cap = getRowCapital(r);
+  const pnl = getRowPnl(r);
+  return cap > 0 ? (pnl / cap) * 100 : 0;
 }
 
 function buildDisplayRows(trades: Trade[], sortCol: SortCol, sortDir: SortDir): DisplayRow[] {
@@ -118,30 +109,10 @@ function buildDisplayRows(trades: Trade[], sortCol: SortCol, sortDir: SortDir): 
     if (sortCol === "date") cmp = getRowDate(a).localeCompare(getRowDate(b));
     else if (sortCol === "ticker") cmp = getRowTicker(a).localeCompare(getRowTicker(b));
     else if (sortCol === "pnl") cmp = getRowPnl(a) - getRowPnl(b);
-    else if (sortCol === "dte") cmp = getRowDte(a) - getRowDte(b);
     else if (sortCol === "capital") cmp = getRowCapital(a) - getRowCapital(b);
+    else if (sortCol === "roi") cmp = getRowRoi(a) - getRowRoi(b);
     return sortDir === "desc" ? -cmp : cmp;
   });
-
-  // Add month headers only in date sort (default)
-  if (sortCol === "date") {
-    const rows: DisplayRow[] = [];
-    let currentMonth = "";
-    const monthTotals = new Map<string, number>();
-    for (const tr of sorted) {
-      const mk = getMonthKey(getRowDate(tr));
-      monthTotals.set(mk, (monthTotals.get(mk) ?? 0) + getRowPnl(tr));
-    }
-    for (const tr of sorted) {
-      const mk = getMonthKey(getRowDate(tr));
-      if (mk && mk !== currentMonth) {
-        currentMonth = mk;
-        rows.push({ kind: "month", monthKey: mk, label: monthLabel(mk), total: monthTotals.get(mk) ?? 0 });
-      }
-      rows.push(tr);
-    }
-    return rows;
-  }
 
   return sorted;
 }
@@ -386,8 +357,8 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
         <table className="w-full min-w-[920px] table-fixed">
           <colgroup>
             <col className="w-[32px]" /><col /><col className="w-[70px]" /><col className="w-[80px]" />
-            <col className="w-[50px]" /><col className="w-[90px]" /><col className="w-[100px]" />
-            <col className="w-[100px]" /><col className="w-[90px]" /><col className="w-[80px]" />
+            <col className="w-[90px]" /><col className="w-[100px]" /><col className="w-[100px]" />
+            <col className="w-[90px]" /><col className="w-[60px]" /><col className="w-[80px]" />
           </colgroup>
           <thead>
             <tr className="text-[10px] uppercase tracking-[0.2em] text-sage-300 text-center">
@@ -395,11 +366,11 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
               <th className={thClass} onClick={() => toggleSort("ticker")}>Ticker<SortIcon active={sortCol === "ticker"} dir={sortDir} /></th>
               <th className="pb-4 font-medium">Type</th>
               <th className="pb-4 font-medium">Strike</th>
-              <th className={thClass} onClick={() => toggleSort("dte")}>DTE<SortIcon active={sortCol === "dte"} dir={sortDir} /></th>
               <th className={thClass} onClick={() => toggleSort("capital")}>Capital<SortIcon active={sortCol === "capital"} dir={sortDir} /></th>
               <th className={thClass} onClick={() => toggleSort("date")}>Opened<SortIcon active={sortCol === "date"} dir={sortDir} /></th>
               <th className="pb-4 font-medium">Closed</th>
               <th className={thClass} onClick={() => toggleSort("pnl")}>P&L<SortIcon active={sortCol === "pnl"} dir={sortDir} /></th>
+              <th className={thClass} onClick={() => toggleSort("roi")}>ROI<SortIcon active={sortCol === "roi"} dir={sortDir} /></th>
               <th className="pb-4 font-medium">Status</th>
             </tr>
           </thead>
@@ -413,30 +384,13 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
             displayRows.map((row, i) => {
               const isOpen = expandedIdx === i;
 
-              if (row.kind === "month") {
-                return (
-                  <tbody key={`m-${row.monthKey}`}>
-                    <tr className="border-t-2 border-white/20">
-                      <td colSpan={8} className="py-3 pl-2">
-                        <span className="text-[11px] uppercase tracking-[0.15em] text-sage-300 font-semibold">{row.label}</span>
-                      </td>
-                      <td className="py-3 text-center">
-                        <span className={`text-xs font-semibold tabular-nums ${row.total >= 0 ? "text-sage-300" : "text-red-400"}`}>
-                          {row.total >= 0 ? "+" : ""}{formatCurrency(row.total)}
-                        </span>
-                      </td>
-                      <td></td>
-                    </tr>
-                  </tbody>
-                );
-              }
-
               if (row.kind === "single") {
                 const t = row.trade;
                 const hasRationale = !!t.rationale.trim();
                 const pnl = t.gainLossUsd;
-                const dte = calcDte(t.openDate, t.closeDate);
                 const cap = calcCapitalAtRisk(t);
+                const roi = calcRoi(t);
+                const roiNum = cap && pnl != null ? (pnl / cap) * 100 : null;
                 return (
                   <tbody key={i} className="font-sans text-sm">
                     <tr className={`border-t border-white/10 transition-colors ${hasRationale ? "cursor-pointer hover:bg-white/[0.04]" : "hover:bg-white/[0.03]"} ${isOpen ? "bg-white/[0.04]" : ""}`}
@@ -445,12 +399,14 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                       <td className="py-4 text-center text-white font-semibold tracking-wide align-middle">{t.ticker}</td>
                       <td className="py-4 text-center text-cream-100 align-middle">{t.optionType || "—"}</td>
                       <td className="py-4 text-center text-cream-100 tabular-nums align-middle">{t.strike ? formatCurrency(t.strike) : "—"}</td>
-                      <td className="py-4 text-center text-cream-100/60 tabular-nums align-middle">{dte !== null ? `${dte}d` : "—"}</td>
                       <td className="py-4 text-center text-cream-100/60 tabular-nums align-middle text-xs">{cap ? formatCurrency(cap) : "—"}</td>
                       <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(t.openDate)}</td>
                       <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(t.closeDate)}</td>
                       <td className={`py-4 text-center tabular-nums font-medium align-middle ${pnl !== null && pnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
                         {pnl !== null ? `${pnl >= 0 ? "+" : ""}${formatCurrency(pnl)}` : "—"}
+                      </td>
+                      <td className={`py-4 text-center tabular-nums text-xs font-medium align-middle ${roiNum !== null && roiNum >= 0 ? "text-sage-300/70" : "text-red-400/70"}`}>
+                        {roi}
                       </td>
                       <td className="py-4 text-center align-middle">
                         <span className={`text-xs px-2 py-1 rounded-full ${
@@ -479,8 +435,9 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
               /* Group row */
               const g = row;
               const net = g.netPnl;
-              const dte = calcDte(g.openDate, g.closeDate);
               const cap = g.legs.reduce((s, l) => s + (calcCapitalAtRisk(l) ?? 0), 0);
+              const groupRoi = cap > 0 ? ((net / cap) * 100).toFixed(2) + "%" : "—";
+              const groupRoiNum = cap > 0 ? (net / cap) * 100 : null;
               const strikeLabel = g.oldStrike && g.newStrike && g.oldStrike !== g.newStrike
                 ? `${formatCurrency(g.oldStrike)} → ${formatCurrency(g.newStrike)}`
                 : formatCurrency(g.newStrike ?? g.oldStrike);
@@ -493,12 +450,14 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                     <td className="py-4 text-center text-white font-semibold tracking-wide align-middle">{g.ticker}</td>
                     <td className="py-4 text-center text-cream-100 align-middle">{g.optionType || "—"}</td>
                     <td className="py-4 text-center text-cream-100 tabular-nums align-middle text-xs">{strikeLabel}</td>
-                    <td className="py-4 text-center text-cream-100/60 tabular-nums align-middle">{dte !== null ? `${dte}d` : "—"}</td>
                     <td className="py-4 text-center text-cream-100/60 tabular-nums align-middle text-xs">{cap > 0 ? formatCurrency(cap) : "—"}</td>
                     <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(g.openDate)}</td>
                     <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(g.closeDate)}</td>
                     <td className={`py-4 text-center tabular-nums font-medium align-middle ${net >= 0 ? "text-sage-300" : "text-red-400"}`}>
                       {`${net >= 0 ? "+" : ""}${formatCurrency(net)}`}
+                    </td>
+                    <td className={`py-4 text-center tabular-nums text-xs font-medium align-middle ${groupRoiNum !== null && groupRoiNum >= 0 ? "text-sage-300/70" : "text-red-400/70"}`}>
+                      {groupRoi}
                     </td>
                     <td className="py-4 text-center align-middle">
                       <span className="text-xs px-2 py-1 rounded-full bg-blue-500/15 text-blue-300">Roll ({g.legs.length})</span>
