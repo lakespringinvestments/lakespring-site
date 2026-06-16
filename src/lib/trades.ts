@@ -1,5 +1,5 @@
 // src/lib/trades.ts
-// update-145: Revert to original Sheet ID for import workflow
+// update-155: Allow blank-ticker rows (margin interest) through data layer
 // Fetches trade data from the Lakespring Google Sheet (Trades tab).
 // Sheet ID is permanent regardless of filename changes.
 // Requires GOOGLE_SHEETS_API_KEY environment variable set in Vercel.
@@ -121,10 +121,13 @@ export async function getAllTrades(): Promise<Trade[]> {
     const rows: string[][] = json.values ?? [];
 
     // No slice limit — return all trades, sorted most recent first
-    // Filter out non-trade rows (headers, cash entries, N/A)
+    // Filter out header rows and N/A, but allow blank tickers (e.g. margin interest)
     return rows
       .map(rowToTrade)
-      .filter((t) => isValidTicker(t.ticker))
+      .filter((t) => {
+        const upper = t.ticker.toUpperCase();
+        return upper !== "TICKER" && upper !== "N/A";
+      })
       .sort((a, b) => {
         const da = a.closeDate || a.openDate;
         const db = b.closeDate || b.openDate;
