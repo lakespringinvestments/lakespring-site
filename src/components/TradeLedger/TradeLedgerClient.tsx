@@ -146,7 +146,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
   /* Display rows — group by positionGroup column */
   const displayRows = useMemo(() => buildDisplayRows(optionsTrades), [optionsTrades]);
 
-  /* Stats — still counts individual legs */
+  /* Stats */
   const stats = useMemo(() => {
     const totalLegs = optionsTrades.length;
     const putsCount = optionsTrades.filter(isPut).length;
@@ -156,10 +156,28 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
     const capitalGainsPnl = capitalGainsTrades.reduce((sum, t) => sum + (t.gainLossUsd ?? 0), 0);
     const totalPnl = netOptionsIncome + capitalGainsPnl;
 
-    const positivePnlCount = optionsTrades.filter((t) => (t.gainLossUsd ?? 0) > 0).length;
-    const winRate = totalLegs > 0 ? Math.round((positivePnlCount / totalLegs) * 100) : 0;
+    // Win rate: count each position group as 1 trade (net P&L determines win/loss)
+    // Ungrouped trades count individually
+    const groupNets = new Map<string, number>();
+    let ungroupedWins = 0;
+    let ungroupedTotal = 0;
 
-    return { totalLegs, putsCount, callsCount, netOptionsIncome, capitalGainsPnl, totalPnl, positivePnlCount, winRate };
+    for (const t of optionsTrades) {
+      const pnl = t.gainLossUsd ?? 0;
+      if (t.positionGroup) {
+        groupNets.set(t.positionGroup, (groupNets.get(t.positionGroup) ?? 0) + pnl);
+      } else {
+        ungroupedTotal++;
+        if (pnl > 0) ungroupedWins++;
+      }
+    }
+
+    const groupWins = Array.from(groupNets.values()).filter((net) => net > 0).length;
+    const totalPositions = groupNets.size + ungroupedTotal;
+    const totalWins = groupWins + ungroupedWins;
+    const winRate = totalPositions > 0 ? Math.round((totalWins / totalPositions) * 100) : 0;
+
+    return { totalLegs, putsCount, callsCount, netOptionsIncome, capitalGainsPnl, totalPnl, totalPositions, totalWins, winRate };
   }, [optionsTrades, capitalGainsTrades]);
 
   return (
@@ -212,7 +230,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Win rate</p>
           <p className="text-2xl text-white font-semibold">{stats.winRate}%</p>
-          <p className="text-[10px] text-cream-100/40 mt-1">Positive P&L trades ({stats.positivePnlCount}/{stats.totalLegs})</p>
+          <p className="text-[10px] text-cream-100/40 mt-1">Profitable positions ({stats.totalWins}/{stats.totalPositions})</p>
         </div>
       </div>
 
