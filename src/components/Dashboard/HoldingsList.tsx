@@ -9,7 +9,7 @@ const TICKER_COLORS: Record<string, string> = {
   TSLA:  "#CC0000",
   NVDA:  "#76B900",
   PLTR:  "#101113",
-  AMZN:  "#EFCEAD",   // light warm brown
+  AMZN:  "#edbb81",
   GOOGL: "#E8EAED",
   SPCX: "#E8EAED",   // light gray — SpaceX logo on light bg
   // SD tickers — use transparent so each logo PNG's own background shows
@@ -143,9 +143,9 @@ function tradeYield(trade: Trade): string {
   return "—";
 }
 
-// Columns: Date | Type | Strike | Contracts | Capital req. | Opt. price | Premium | Yield | Expiry | Status
-const COLS = ["Date", "Type", "Strike", "Contracts", "Capital req.", "Opt. price", "Premium", "Yield", "Expiry", "Status"];
-const GRID = "85px 90px 65px 65px 100px 70px 70px 60px 95px 75px";
+// Simplified columns for holdings view — full detail on Trade Ledger
+const COLS = ["Date", "Type", "Premium", "Yield", "Expiry", "Status"];
+const GRID = "100px 100px 90px 70px 100px 80px";
 
 import type { PortfolioView } from "./types";
 
@@ -252,7 +252,7 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                       </span>
                       {totalPremiums !== 0 && (
                         <span className={`text-[11px] font-medium ${totalPremiums >= 0 ? "text-sage-600" : "text-red-500"}`}
-                          style={{ filter: member ? "none" : "blur(5px)" }}>
+                          style={{}}>
                           {totalPremiums >= 0 ? "+" : "-"}${Math.abs(totalPremiums).toLocaleString(undefined, { maximumFractionDigits: 0 })} net income
                         </span>
                       )}
@@ -287,8 +287,8 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                           </span>
                         ))}
                       </div>
-                      {/* Rows */}
-                      {optionsTrades.map((trade, idx) => (
+                      {/* Rows — 5 most recent */}
+                      {optionsTrades.slice(0, 5).map((trade, idx) => (
                         <div
                           key={idx}
                           className="grid px-4 py-2.5 border-b border-cream-100 last:border-0 items-center"
@@ -304,27 +304,10 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                           <span className="text-center font-medium" style={{ color: "#034147" }}>
                             {friendlyType(trade.optionType)}
                           </span>
-                          <span className="text-center text-ink-700 tabular-nums"
-                            style={{ filter: member ? "none" : "blur(5px)" }}>
-                            {trade.strike ? `$${trade.strike.toLocaleString()}` : "—"}
-                          </span>
-                          <span className="text-center text-ink-700 tabular-nums"
-                            style={{ filter: member ? "none" : "blur(5px)" }}>
-                            {trade.contracts ? `${trade.contracts} ct` : "—"}
-                          </span>
-                          <span className="text-center text-ink-700 tabular-nums"
-                            style={{ filter: member ? "none" : "blur(5px)" }}>
-                            {capitalRequired(trade)}
-                          </span>
-                          <span className="text-center text-ink-700 tabular-nums"
-                            style={{ filter: member ? "none" : "blur(5px)" }}>
-                            {optionPrice(trade)}
-                          </span>
-                          <span className="text-center text-ink-700 tabular-nums"
-                            style={{ filter: member ? "none" : "blur(5px)" }}>
+                          <span className="text-center text-ink-700 tabular-nums">
                             {premiumDisplay(trade)}
                           </span>
-                          <span className="text-center tabular-nums font-medium" style={{ color: "#1D9E75", filter: member ? "none" : "blur(5px)" }}>
+                          <span className="text-center tabular-nums font-medium" style={{ color: "#1D9E75" }}>
                             {tradeYield(trade)}
                           </span>
                           <span className="text-center text-ink-500 tabular-nums">
@@ -338,6 +321,12 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                           </span>
                         </div>
                       ))}
+                      {/* Trade Ledger link */}
+                      <div className="px-4 py-3 text-center border-t border-cream-100">
+                        <a href="/trades" className="text-xs text-teal-600 hover:text-teal-700 font-medium transition-colors">
+                          View full trade history on the Trade Ledger →
+                        </a>
+                      </div>
                     </div>
                   )}
                 </div>

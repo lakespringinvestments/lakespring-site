@@ -179,7 +179,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
                 fontSize="10" fontWeight="600"
                 fill="#fff"
                 fontFamily="system-ui, sans-serif"
-                style={{ opacity: 0, filter: member ? "none" : "blur(4px)" }}>
+                style={{ opacity: 0, filter: "none" }}>
                 {seg.weight.toFixed(0)}%
               </text>
             ) : null
@@ -201,7 +201,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
           {/* Centre */}
           <text x={cx} y={cy - 12} textAnchor="middle" fontSize="11" fill="#ccc" fontFamily="system-ui">total</text>
           <text x={cx} y={cy + 10} textAnchor="middle" fontSize="22" fontWeight="700" fill="#034147" fontFamily="system-ui"
-            style={{ filter: member ? "none" : "blur(6px)" }}>{totalDisplay}</text>
+            style={{ filter: "none" }}>{totalDisplay}</text>
         </svg>
       </div>
     </section>

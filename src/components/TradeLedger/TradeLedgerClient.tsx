@@ -384,7 +384,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
         <table className="w-full min-w-[920px] table-fixed">
           <colgroup>
             <col className="w-[32px]" /><col className="w-[80px]" /><col className="w-[70px]" /><col className="w-[80px]" />
-            <col className="w-[90px]" /><col className="w-[100px]" /><col className="w-[100px]" />
+            <col className="w-[40px]" /><col className="w-[90px]" /><col className="w-[100px]" /><col className="w-[100px]" />
             <col className="w-[90px]" /><col className="w-[60px]" /><col className="w-[80px]" />
           </colgroup>
           <thead>
@@ -393,6 +393,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
               <th className={thClass} onClick={() => toggleSort("ticker")}>Ticker<SortIcon active={sortCol === "ticker"} dir={sortDir} /></th>
               <th className="pb-4 font-medium">Type</th>
               <th className="pb-4 font-medium">Strike</th>
+              <th className="pb-4 font-medium">Cts</th>
               <th className={thClass} onClick={() => toggleSort("capital")}>Capital<SortIcon active={sortCol === "capital"} dir={sortDir} /></th>
               <th className={thClass} onClick={() => toggleSort("date")}>Opened<SortIcon active={sortCol === "date"} dir={sortDir} /></th>
               <th className="pb-4 font-medium">Closed</th>
@@ -403,7 +404,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
           </thead>
           {displayRows.length === 0 ? (
             <tbody className="font-sans text-sm">
-              <tr><td colSpan={10} className="py-12 text-center text-sage-300/60">
+              <tr><td colSpan={11} className="py-12 text-center text-sage-300/60">
                 {ticker === "ALL" ? "No trades available yet." : `No trades for ${ticker}.`}
               </td></tr>
             </tbody>
@@ -415,7 +416,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                 return (
                   <tbody key={`m-${row.monthKey}`}>
                     <tr>
-                      <td colSpan={10} className="pt-6 pb-2 px-0">
+                      <td colSpan={11} className="pt-6 pb-2 px-0">
                         <div className="bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 flex items-center justify-between">
                           <span className="text-[11px] uppercase tracking-[0.15em] text-sage-300 font-semibold">{row.label}</span>
                           <span className={`text-xs font-semibold tabular-nums ${row.total >= 0 ? "text-sage-300" : "text-red-400"}`}>
@@ -443,6 +444,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                       <td className="py-4 text-center text-white font-semibold tracking-wide align-middle">{t.ticker}</td>
                       <td className="py-4 text-center text-cream-100 align-middle">{t.optionType || "—"}</td>
                       <td className="py-4 text-center text-cream-100 tabular-nums align-middle">{t.strike ? formatCurrency(t.strike) : "—"}</td>
+                      <td className="py-4 text-center text-cream-100/60 tabular-nums align-middle text-xs">{t.contracts ?? "—"}</td>
                       <td className="py-4 text-center text-cream-100/60 tabular-nums align-middle text-xs">{cap ? formatCurrency(cap) : "—"}</td>
                       <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(t.openDate)}</td>
                       <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(t.closeDate)}</td>
@@ -464,7 +466,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                     </tr>
                     {isOpen && hasRationale && (
                       <tr className="bg-white/[0.02]"><td></td>
-                        <td colSpan={9} className="pb-5 pt-1 pr-6">
+                        <td colSpan={10} className="pb-5 pt-1 pr-6">
                           <div className="text-cream-100/70 text-sm leading-relaxed pl-0.5">
                             <span className="text-[10px] uppercase tracking-[0.15em] text-sage-300/60 block mb-1.5">Rationale</span>
                             {t.rationale}
@@ -494,6 +496,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                     <td className="py-4 text-center text-white font-semibold tracking-wide align-middle">{g.ticker}</td>
                     <td className="py-4 text-center text-cream-100 align-middle">{g.optionType || "—"}</td>
                     <td className="py-4 text-center text-cream-100 tabular-nums align-middle text-xs">{strikeLabel}</td>
+                    <td className="py-4 text-center text-cream-100/60 tabular-nums align-middle text-xs">{g.legs[0]?.contracts ?? "—"}</td>
                     <td className="py-4 text-center text-cream-100/60 tabular-nums align-middle text-xs">{cap > 0 ? formatCurrency(cap) : "—"}</td>
                     <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(g.openDate)}</td>
                     <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(g.closeDate)}</td>
@@ -509,7 +512,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                   </tr>
                   {isOpen && (
                     <tr className="bg-white/[0.02]"><td></td>
-                      <td colSpan={9} className="pb-4 pt-2 pr-6">
+                      <td colSpan={10} className="pb-4 pt-2 pr-6">
                         <div className="space-y-1.5">
                           {g.legs.map((leg, li) => {
                             const lPnl = leg.gainLossUsd ?? 0;
