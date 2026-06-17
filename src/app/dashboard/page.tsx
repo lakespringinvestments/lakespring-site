@@ -70,12 +70,22 @@ export default async function DashboardPage() {
     .sort(([a],[b]) => a.localeCompare(b))
     .map(([date, amount]) => ({ date, amount }));
 
+  // Cumulative P&L for sparkline
+  let cumul = 0;
+  const cumulativePnl = weeklyPremiums.map(({ date, amount }) => {
+    cumul += amount;
+    return { value: cumul };
+  });
+
+  // Net options income from trades
+  const netOptionsIncome = weeklyPremiums.reduce((s, w) => s + w.amount, 0);
+
   return (
     <>
       <MemberGate />
       <div className="max-w-6xl mx-auto px-6 py-10">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-5 mb-5">
-          <PortfolioHero portfolio={portfolio} />
+          <PortfolioHero portfolio={portfolio} cumulativePnl={cumulativePnl} netOptionsIncome={netOptionsIncome} />
           <PremiumChart weeklyData={weeklyPremiums} premiumYTD={portfolio.premiumYTD} />
         </div>
         <DashboardClient
