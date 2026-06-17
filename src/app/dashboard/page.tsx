@@ -71,12 +71,12 @@ export default async function DashboardPage() {
     .map(([date, amount]) => ({ date, amount }));
 
   // Total P&L (options + capital gains) for avg weekly in PortfolioHero
-  const CAPGAINS_STRATS = new Set(["share sale", "assignment income", "swing trade"]);
   const totalPnl = allTrades
     .filter((t) => {
       if ((t.openDate ?? "") < "2026-01-01") return false;
       const st = (t.strategyType ?? "").toLowerCase();
-      if (EXCLUDE_STRATS.has(st)) return false;
+      // Only exclude transfers/FPP/stock purchase — include capital gains
+      if (["transfer", "fpp accumulation", "stock purchase"].includes(st)) return false;
       if ((t.description ?? "").toUpperCase().includes("TRANSFER IN")) return false;
       return true;
     })
