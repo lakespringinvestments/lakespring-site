@@ -218,10 +218,10 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                           style={{ width: "90%", height: "90%", objectFit: "contain", display: "block" }}
                         />
                       ) : h.ticker === "SPCX" ? (
-                        // SpaceX: crop to center on the X mark
+                        // SpaceX: full logo visible, centered, reduced size
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logoSrc} alt={h.ticker}
-                          style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "28% 58%", display: "block" }}
+                          style={{ width: "70%", height: "70%", objectFit: "contain", display: "block", margin: "auto" }}
                         />
                       ) : ["MRVL","NBIS","ASML","BE","SMCI"].includes(h.ticker) ? (
                         // Other SD logos fill tile with their own background
