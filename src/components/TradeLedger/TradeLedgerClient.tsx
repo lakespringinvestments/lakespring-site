@@ -142,10 +142,13 @@ function buildDisplayRows(trades: Trade[], sortCol: SortCol, sortDir: SortDir): 
 }
 
 /* ── P&L Stacked Bar Chart ── */
+// Colors match AllocationDonut in portfolio dashboard
+// PLTR adjusted from #101113 (invisible on dark bg) to #4A4A52
 const TICKER_COLORS: Record<string, string> = {
-  TSLA: "#CC0000", NVDA: "#76B900", PLTR: "#7C3AED", AMZN: "#FF9900",
-  GOOGL: "#4285F4", GOOG: "#4285F4", ASML: "#1E3A8A", NBIS: "#C8F000",
-  MRVL: "#0057B8", BMNR: "#06B6D4",
+  TSLA: "#CC0000", NVDA: "#76B900", PLTR: "#4A4A52", AMZN: "#FF9900",
+  GOOGL: "#4285F4", GOOG: "#4285F4", LLY: "#D4537E", SPCX: "#5A6578",
+  MRVL: "#0057B8", NBIS: "#C8F000", ASML: "#1E3A8A", BE: "#00A86B", SMCI: "#8A9BB0",
+  BMNR: "#06B6D4",
 };
 const FALLBACK_COLORS = ["#5DCAA5", "#3B82F6", "#D97706", "#8B5CF6", "#EC4899", "#06B6D4", "#84CC16", "#F97316"];
 
@@ -411,16 +414,15 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
               if (row.kind === "month") {
                 return (
                   <tbody key={`m-${row.monthKey}`}>
-                    <tr className="border-t-2 border-white/20">
-                      <td colSpan={8} className="py-3 pl-2">
-                        <span className="text-[11px] uppercase tracking-[0.15em] text-sage-300 font-semibold">{row.label}</span>
+                    <tr>
+                      <td colSpan={10} className="pt-6 pb-2 px-0">
+                        <div className="bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 flex items-center justify-between">
+                          <span className="text-[11px] uppercase tracking-[0.15em] text-sage-300 font-semibold">{row.label}</span>
+                          <span className={`text-xs font-semibold tabular-nums ${row.total >= 0 ? "text-sage-300" : "text-red-400"}`}>
+                            {row.total >= 0 ? "+" : ""}{formatCurrency(row.total)}
+                          </span>
+                        </div>
                       </td>
-                      <td className="py-3 text-center">
-                        <span className={`text-xs font-semibold tabular-nums ${row.total >= 0 ? "text-sage-300" : "text-red-400"}`}>
-                          {row.total >= 0 ? "+" : ""}{formatCurrency(row.total)}
-                        </span>
-                      </td>
-                      <td></td>
                     </tr>
                   </tbody>
                 );
