@@ -15,7 +15,7 @@ function buildSparklinePath(
 ) {
   if (points.length < 2) return { line: "", fill: "" };
   const values = points.map((p) => p.value);
-  const min = Math.min(...values, 0); // Always include 0 as baseline
+  const min = Math.min(...values);
   const max = Math.max(...values);
   const range = max - min || 1;
   const step = width / (points.length - 1);
@@ -33,24 +33,23 @@ function buildSparklinePath(
 
 interface Props {
   portfolio: Portfolio;
-  cumulativePnl: { value: number }[];
-  netOptionsIncome: number;
+  totalPnl: number;
 }
 
-export default function PortfolioHero({ portfolio, cumulativePnl, netOptionsIncome }: Props) {
-  // Use cumulative P&L for sparkline (falls back to portfolio.performance)
-  const sparkData = cumulativePnl.length >= 2 ? cumulativePnl : portfolio.performance;
-  const { line, fill } = buildSparklinePath(sparkData, 400, 60);
-
-  // Use net options income from trades, fall back to portfolio.premiumYTD
-  const ytdIncome = netOptionsIncome || portfolio.premiumYTD;
+export default function PortfolioHero({ portfolio, totalPnl }: Props) {
+  const { line, fill } = buildSparklinePath(portfolio.performance, 400, 60);
 
   // Calendar weeks elapsed
   const yearStart = new Date("2026-01-05");
   const now = new Date();
   const msPerWeek = 7 * 24 * 60 * 60 * 1000;
   const weeksElapsed = Math.max(1, Math.floor((now.getTime() - yearStart.getTime()) / msPerWeek) + 2);
-  const avgWeekly = weeksElapsed > 0 ? Math.round(ytdIncome / weeksElapsed) : 0;
+
+  // Avg weekly = total P&L (options + capital gains) / weeks
+  const avgWeekly = weeksElapsed > 0 ? totalPnl / weeksElapsed : 0;
+  const avgFormatted = avgWeekly.toLocaleString("en-US", {
+    style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2,
+  });
 
   return (
     <section className="bg-[#034147] rounded-2xl p-6 flex flex-col gap-4">
@@ -69,7 +68,7 @@ export default function PortfolioHero({ portfolio, cumulativePnl, netOptionsInco
         </p>
       </div>
 
-      {/* Sparkline — cumulative P&L */}
+      {/* Sparkline */}
       <div className="w-full">
         <svg
           viewBox="0 0 400 60"
@@ -85,22 +84,13 @@ export default function PortfolioHero({ portfolio, cumulativePnl, netOptionsInco
           {fill && <path d={fill} fill="url(#sparkFill)" />}
           {line && <path d={line} fill="none" stroke="#5DCAA5" strokeWidth="1.5" />}
         </svg>
-        <p className="text-[9px] text-white/25 mt-0.5">Cumulative net options income</p>
       </div>
 
-      {/* YTD income */}
+      {/* Avg weekly income */}
       <div className="border-t border-white/10 pt-4">
-        <p className="text-[10px] uppercase tracking-[0.18em] text-white/50 mb-1">
-          Net Options Income YTD
+        <p className="text-xs text-white/40">
+          Avg <span className="text-[#5DCAA5] font-semibold">{avgFormatted}</span> / week ({weeksElapsed} weeks)
         </p>
-        <p className="text-xl font-semibold text-[#5DCAA5] leading-none">
-          {formatCurrency(ytdIncome)}
-        </p>
-        {avgWeekly > 0 && (
-          <p className="text-xs text-white/40 mt-1">
-            Avg {formatCurrency(avgWeekly)} / week ({weeksElapsed} weeks)
-          </p>
-        )}
       </div>
     </section>
   );
