@@ -18,6 +18,7 @@ export type Trade = {
   optionType: string; // CSP, CC, SHARES, etc.
   direction: string;
   gainLossUsd: number | null;
+  positionGroup: string;
 };
 
 const SHEET_ID = "1pSCIgrecbgT7q9kNNHNqQitFnLK94MVWT3xKT25SG0w";
@@ -80,6 +81,7 @@ export async function getTradesForTicker(ticker: string): Promise<Trade[]> {
         direction:          row[18] ?? "",
         optionType:         row[19] ?? "",
         gainLossUsd:        parseNum(row[12]),
+        positionGroup:      "",
       }))
       // Most recent first
       .sort((a, b) => {
@@ -124,6 +126,7 @@ export async function getAllTrades(): Promise<Trade[]> {
       direction:          row[18] ?? "",
       optionType:         row[19] ?? "",
       gainLossUsd:        parseNum(row[12]),
+      positionGroup:      "",
     }));
   } catch (err) {
     console.error("Error fetching all trades:", err);
