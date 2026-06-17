@@ -54,42 +54,23 @@ export default function MetricCards({ portfolio, allTrades, view, setView }: Met
 
   const avgWeekly = weeksElapsed > 0 ? Math.round(netOptionsIncome / weeksElapsed) : 0;
 
-  // Annualized yield: (avg weekly income × 52) / capital at risk
-  // Primary: use open position capital. Fallback: avg weekly capital deployed.
-  const openCapital = optionsTrades
-    .filter((t) => t.status?.toLowerCase() === "open")
-    .reduce((sum, t) => {
-      if (t.strike && t.contracts) return sum + Math.abs(t.strike * t.contracts * 100);
-      return sum;
-    }, 0);
+  // Annualized yield: (avg weekly income / avg weekly capital) × 52
+  // Both numerator and denominator averaged over same period for consistency
+  const totalCapitalDeployed = optionsTrades.reduce((sum, t) => {
+    if (t.strike && t.contracts) return sum + Math.abs(t.strike * t.contracts * 100);
+    return sum;
+  }, 0);
+  const avgWeeklyCapital = weeksElapsed > 0 ? totalCapitalDeployed / weeksElapsed : 0;
 
-  // Fallback: average capital deployed per active week
-  const weekCapMap = new Map<string, number>();
-  for (const t of optionsTrades) {
-    if (!t.openDate || !t.strike || !t.contracts) continue;
-    const d = new Date(t.openDate);
-    if (isNaN(d.getTime())) continue;
-    const day = d.getDay();
-    d.setDate(d.getDate() - day + (day === 0 ? -6 : 1));
-    const wk = d.toISOString().slice(0, 10);
-    weekCapMap.set(wk, (weekCapMap.get(wk) ?? 0) + Math.abs(t.strike * t.contracts * 100));
-  }
-  const avgWeeklyCapital = weekCapMap.size > 0
-    ? Array.from(weekCapMap.values()).reduce((s, v) => s + v, 0) / weekCapMap.size
-    : 0;
-
-  const yieldCapital = openCapital > 0 ? openCapital : avgWeeklyCapital;
-  const yieldLabel = openCapital > 0 ? "avg weekly × 52 / open capital" : "avg weekly × 52 / avg capital deployed";
-
-  const annualizedYield = yieldCapital > 0 && avgWeekly > 0
-    ? ((avgWeekly * 52) / yieldCapital * 100).toFixed(1) + "%" : "—";
+  const annualizedYield = avgWeeklyCapital > 0 && avgWeekly > 0
+    ? ((avgWeekly / avgWeeklyCapital) * 52 * 100).toFixed(1) + "%" : "—";
 
   const openCount = optionsTrades.filter((t) => t.status?.toLowerCase() === "open").length;
 
   const cards = [
     { label: "Net options income",     value: fmt(netOptionsIncome || portfolio.premiumYTD), sub: "YTD net (STO − BTC)" },
     { label: "Avg weekly premiums",    value: avgWeekly > 0 ? fmt(avgWeekly) : fmt(Math.round(portfolio.premiumYTD / 22)), sub: `W1–W${weeksElapsed} (${weeksElapsed} weeks)` },
-    { label: "Annualized yield",       value: annualizedYield, sub: yieldLabel },
+    { label: "Annualized yield",       value: annualizedYield, sub: "avg income / avg capital × 52" },
     { label: "Open positions",         value: (openCount || portfolio.openPositions).toString(), sub: "Active contracts" },
   ];
 
