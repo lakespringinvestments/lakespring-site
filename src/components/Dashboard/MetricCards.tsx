@@ -54,21 +54,17 @@ export default function MetricCards({ portfolio, allTrades, view, setView }: Met
 
   const avgWeekly = weeksElapsed > 0 ? Math.round(netOptionsIncome / weeksElapsed) : 0;
 
-  const capitalDeployed = optionsTrades.reduce((sum, t) => {
-    if (t.strike && t.contracts) return sum + Math.abs(t.strike * t.contracts * 100);
-    return sum;
-  }, 0);
-
-  const annualizedYield = capitalDeployed > 0 && avgWeekly > 0
-    ? ((avgWeekly * 52) / capitalDeployed * 100).toFixed(1) + "%" : "—";
+  // Annualized yield: (avg weekly income / portfolio value) * 52
+  const annualizedYield = portfolio.totalValue > 0 && avgWeekly > 0
+    ? ((avgWeekly * 52) / portfolio.totalValue * 100).toFixed(1) + "%" : "—";
 
   const openCount = optionsTrades.filter((t) => t.status?.toLowerCase() === "open").length;
 
   const cards = [
-    { label: "Net options income",  value: fmt(netOptionsIncome || portfolio.premiumYTD), sub: "YTD net (STO − BTC)" },
-    { label: "Avg weekly income",   value: avgWeekly > 0 ? fmt(avgWeekly) : fmt(Math.round(portfolio.premiumYTD / 22)), sub: `W1–W${weeksElapsed} (${weeksElapsed} weeks)` },
-    { label: "Annualized yield",    value: annualizedYield, sub: "avg weekly × 52 / capital" },
-    { label: "Open positions",      value: (openCount || portfolio.openPositions).toString(), sub: "Active contracts" },
+    { label: "Net options income",     value: fmt(netOptionsIncome || portfolio.premiumYTD), sub: "YTD net (STO − BTC)" },
+    { label: "Avg weekly premiums",    value: avgWeekly > 0 ? fmt(avgWeekly) : fmt(Math.round(portfolio.premiumYTD / 22)), sub: `W1–W${weeksElapsed} (${weeksElapsed} weeks)` },
+    { label: "Annualized yield",       value: annualizedYield, sub: "avg weekly × 52 / portfolio" },
+    { label: "Open positions",         value: (openCount || portfolio.openPositions).toString(), sub: "Active contracts" },
   ];
 
   return (
