@@ -5,13 +5,13 @@ import type { Portfolio } from "../../../types/portfolio";
 import type { PortfolioView } from "./types";
 
 const FP_BOOK_COSTS: Record<string, number> = {
-  TSLA: 210675, NVDA: 18028, PLTR: 72500, AMZN: 0, GOOGL: 0, LLY: 0,
+  TSLA: 210675, NVDA: 18028, PLTR: 72500, AMZN: 0, GOOGL: 0, LLY: 0, SPCX: 0,
 };
 const SD_BOOK_COSTS: Record<string, number> = {
   MRVL: 0, NBIS: 0, ASML: 0, BE: 0, TSM: 0,
 };
 
-const FP_TICKERS = ["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY"];
+const FP_TICKERS = ["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"];
 const SD_TICKERS = ["MRVL","NBIS","ASML","BE","TSM"];
 
 const SD_NAMES: Record<string, string> = {

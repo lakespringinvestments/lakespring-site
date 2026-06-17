@@ -18,6 +18,7 @@ const TICKER_COLORS: Record<string, string> = {
   SMCI: "#8A9BB0",   // gray
   ASML: "transparent",
   BE:   "transparent",
+  SPCX: "#0A0A0A",
 };
 
 const TICKER_LOGOS: Record<string, string> = {
@@ -32,17 +33,18 @@ const TICKER_LOGOS: Record<string, string> = {
   LLY:  "/logos/lilly.png",
   ASML: "/logos/asml.png",
   BE:   "/logos/bloom_energy.png",
+  SPCX: "/logos/space-x.png",
   SMCI: "/logos/smci.png",
 };
 
 const EXCLUDED = new Set(["BTC", "SOL"]);
 const OPTIONS_TYPES = new Set(["CSP", "CC"]);
-const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY"]);
+const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"]);
 const SD_TICKERS  = new Set(["MRVL","NBIS","ASML","BE","SMCI"]);
 
 // Tickers that may not be in portfolio.holdings — show as placeholders
 const FP_NAMES: Record<string, string> = {
-  TSLA: "Tesla", NVDA: "Nvidia", PLTR: "Palantir", AMZN: "Amazon", GOOGL: "Alphabet", LLY: "Eli Lilly",
+  TSLA: "Tesla", NVDA: "Nvidia", PLTR: "Palantir", AMZN: "Amazon", GOOGL: "Alphabet", LLY: "Eli Lilly", SPCX: "SpaceX",
 };
 const SD_NAMES: Record<string, string> = {
   MRVL: "Marvell", NBIS: "Nebius Group",
@@ -215,7 +217,7 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                         <img src={logoSrc} alt={h.ticker}
                           style={{ width: "90%", height: "90%", objectFit: "contain", display: "block" }}
                         />
-                      ) : ["MRVL","NBIS","ASML","BE","SMCI"].includes(h.ticker) ? (
+                      ) : ["MRVL","NBIS","ASML","BE","SMCI","SPCX"].includes(h.ticker) ? (
                         // Other SD logos fill tile with their own background
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logoSrc} alt={h.ticker}
