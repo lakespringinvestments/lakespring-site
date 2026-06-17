@@ -221,7 +221,7 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                         // SpaceX: full logo visible, centered, reduced size
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logoSrc} alt={h.ticker}
-                          style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", marginLeft: "4px" }}
+                          style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", marginLeft: "10px" }}
                         />
                       ) : ["MRVL","NBIS","ASML","BE","SMCI"].includes(h.ticker) ? (
                         // Other SD logos fill tile with their own background
