@@ -11,6 +11,7 @@ const TICKER_COLORS: Record<string, string> = {
   PLTR:  "#101113",
   AMZN:  "#EFCEAD",   // light warm brown
   GOOGL: "#E8EAED",
+  SPCX: "#5A6578",   // slate
   // SD tickers — use transparent so each logo PNG's own background shows
   MRVL: "transparent",
   NBIS: "transparent",
@@ -37,12 +38,12 @@ const TICKER_LOGOS: Record<string, string> = {
 
 const EXCLUDED = new Set(["BTC", "SOL"]);
 const OPTIONS_TYPES = new Set(["CSP", "CC", "PUTS", "CALLS"]);
-const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY"]);
+const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL","GOOG","LLY","SPCX"]);
 const SD_TICKERS  = new Set(["MRVL","NBIS","ASML","BE","SMCI"]);
 
 // Tickers that may not be in portfolio.holdings — show as placeholders
 const FP_NAMES: Record<string, string> = {
-  TSLA: "Tesla", NVDA: "Nvidia", PLTR: "Palantir", AMZN: "Amazon", GOOGL: "Alphabet", LLY: "Eli Lilly",
+  TSLA: "Tesla", NVDA: "Nvidia", PLTR: "Palantir", AMZN: "Amazon", GOOGL: "Alphabet", LLY: "Eli Lilly", SPCX: "SpaceX",
 };
 const SD_NAMES: Record<string, string> = {
   MRVL: "Marvell", NBIS: "Nebius Group",

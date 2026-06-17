@@ -14,7 +14,7 @@ interface MetricCardsProps {
 const OPTIONS_TYPES = new Set(["CSP", "CC", "PUTS", "CALLS"]);
 const EXCLUDE_STRATS = new Set(["transfer", "fpp accumulation", "stock purchase"]);
 const CAPGAINS_STRATS = new Set(["share sale", "assignment income", "swing trade"]);
-const FP_TICKERS = new Set(["TSLA", "NVDA", "PLTR", "AMZN", "GOOGL", "LLY", "SPCX"]);
+const FP_TICKERS = new Set(["TSLA", "NVDA", "PLTR", "AMZN", "GOOGL", "GOOG", "LLY", "SPCX"]);
 
 const THEME: Record<PortfolioView, { bg: string; label: string }> = {
   first:  { bg: "#034147", label: "First Principles Portfolio" },
@@ -46,20 +46,13 @@ export default function MetricCards({ portfolio, allTrades, view, setView }: Met
   // Net options income (matching trade ledger — includes BTC debits)
   const netOptionsIncome = optionsTrades.reduce((sum, t) => sum + (t.gainLossUsd ?? 0), 0);
 
-  // Week grouping by openDate (matching Excel SUMIFS)
-  const weeks = new Set(
-    optionsTrades.map((t) => {
-      const date = t.openDate;
-      if (!date) return null;
-      const d = new Date(date);
-      if (isNaN(d.getTime())) return null;
-      const day = d.getDay();
-      d.setDate(d.getDate() - day + (day === 0 ? -6 : 1));
-      return d.toISOString().slice(0, 10);
-    }).filter(Boolean)
-  );
+  // Calendar weeks elapsed from Jan 1, 2026 to today
+  const yearStart = new Date("2026-01-05"); // First Monday of 2026 (W2)
+  const now = new Date();
+  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+  const weeksElapsed = Math.max(1, Math.floor((now.getTime() - yearStart.getTime()) / msPerWeek) + 2); // +2 for W1
 
-  const avgWeekly = weeks.size > 0 ? Math.round(netOptionsIncome / weeks.size) : 0;
+  const avgWeekly = weeksElapsed > 0 ? Math.round(netOptionsIncome / weeksElapsed) : 0;
 
   const capitalDeployed = optionsTrades.reduce((sum, t) => {
     if (t.strike && t.contracts) return sum + Math.abs(t.strike * t.contracts * 100);
@@ -73,7 +66,7 @@ export default function MetricCards({ portfolio, allTrades, view, setView }: Met
 
   const cards = [
     { label: "Net options income",  value: fmt(netOptionsIncome || portfolio.premiumYTD), sub: "YTD net (STO − BTC)" },
-    { label: "Avg weekly income",   value: avgWeekly > 0 ? fmt(avgWeekly) : fmt(Math.round(portfolio.premiumYTD / 22)), sub: `Rolling ${weeks.size || 22} weeks` },
+    { label: "Avg weekly income",   value: avgWeekly > 0 ? fmt(avgWeekly) : fmt(Math.round(portfolio.premiumYTD / 22)), sub: `W1–W${weeksElapsed} (${weeksElapsed} weeks)` },
     { label: "Annualized yield",    value: annualizedYield, sub: "avg weekly × 52 / capital" },
     { label: "Open positions",      value: (openCount || portfolio.openPositions).toString(), sub: "Active contracts" },
   ];
