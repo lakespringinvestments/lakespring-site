@@ -83,7 +83,10 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
           <div key={ticker} className="grid px-5 py-3 items-center text-xs"
             style={{ gridTemplateColumns: "90px 1fr 1fr 1fr 70px", gap: "8px" }}>
             <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded w-fit"
-              style={{ background: tickerBg(TICKER_COLORS[ticker] ?? "#034147"), color: tickerTextColor(TICKER_COLORS[ticker] ?? "#034147") }}>
+              style={{
+                background: ticker === "PLTR" ? "#1a1a1a" : tickerBg(TICKER_COLORS[ticker] ?? "#034147"),
+                color: ticker === "PLTR" ? "#ffffff" : tickerTextColor(TICKER_COLORS[ticker] ?? "#034147"),
+              }}>
               {ticker}
             </span>
             <span className="text-ink-700 tabular-nums"

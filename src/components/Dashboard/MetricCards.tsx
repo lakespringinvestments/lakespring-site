@@ -12,7 +12,7 @@ interface MetricCardsProps {
 }
 
 const OPTIONS_TYPES = new Set(["CSP", "CC"]);
-const FP_TICKERS = new Set(["TSLA", "NVDA", "PLTR", "AMZN", "GOOGL"]);
+const FP_TICKERS = new Set(["TSLA", "NVDA", "PLTR", "AMZN", "GOOGL", "LLY", "SPCX"]);
 
 const THEME: Record<PortfolioView, { bg: string; label: string }> = {
   first:  { bg: "#034147", label: "First Principles Portfolio" },
