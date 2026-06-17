@@ -11,7 +11,7 @@ const TICKER_COLORS: Record<string, string> = {
   PLTR:  "#101113",
   AMZN:  "#EFCEAD",   // light warm brown
   GOOGL: "#E8EAED",
-  SPCX: "#5A6578",   // slate
+  SPCX: "#E8EAED",   // light gray — SpaceX logo on light bg
   // SD tickers — use transparent so each logo PNG's own background shows
   MRVL: "transparent",
   NBIS: "transparent",
@@ -33,12 +33,13 @@ const TICKER_LOGOS: Record<string, string> = {
   LLY:  "/logos/lilly.png",
   ASML: "/logos/asml.png",
   BE:   "/logos/bloom_energy.png",
+  SPCX: "/logos/space-x.png",
   SMCI: "/logos/smci.png",
 };
 
 const EXCLUDED = new Set(["BTC", "SOL"]);
 const OPTIONS_TYPES = new Set(["CSP", "CC", "PUTS", "CALLS"]);
-const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL","GOOG","LLY","SPCX"]);
+const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"]);
 const SD_TICKERS  = new Set(["MRVL","NBIS","ASML","BE","SMCI"]);
 
 // Tickers that may not be in portfolio.holdings — show as placeholders
@@ -55,7 +56,7 @@ function pickColor(ticker: string) {
 }
 
 function pickTextColor(bg: string) {
-  const lightBgs = ["#76B900", "#E8EAED", "#EFCEAD"];
+  const lightBgs = ["#76B900", "#E8EAED", "#EFCEAD", "#FAF8F3"];
   return lightBgs.includes(bg) ? "#0a0a0a" : "#ffffff";
 }
 
@@ -212,6 +213,12 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logoSrc} alt={h.ticker}
                           style={{ width: "90%", height: "90%", objectFit: "contain", display: "block" }}
+                        />
+                      ) : h.ticker === "SPCX" ? (
+                        // SpaceX: full logo visible, centered, reduced size
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={logoSrc} alt={h.ticker}
+                          style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", marginLeft: "10px" }}
                         />
                       ) : ["MRVL","NBIS","ASML","BE","SMCI"].includes(h.ticker) ? (
                         // Other SD logos fill tile with their own background
