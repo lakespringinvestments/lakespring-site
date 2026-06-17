@@ -83,8 +83,19 @@ export default function AllocationDonut({ portfolio, view }: Props) {
       : Math.round((seg.weight/segTotal)*1000)/10,
   }));
 
+  // Interleave large and small slices to prevent label overlap
+  const sorted = [...segments].sort((a, b) => b.weight - a.weight);
+  const interleaved: typeof segments = [];
+  let lo = 0, hi = sorted.length - 1;
+  let pickLarge = true;
+  while (lo <= hi) {
+    if (pickLarge) { interleaved.push(sorted[lo++]); }
+    else { interleaved.push(sorted[hi--]); }
+    pickLarge = !pickLarge;
+  }
+
   let cumulAngle = 0;
-  const sliceData = segments.map(seg => {
+  const sliceData = interleaved.map(seg => {
     const start = cumulAngle;
     const sweep = (seg.weight / 100) * 360;
     const end = start + sweep;
@@ -176,7 +187,6 @@ export default function AllocationDonut({ portfolio, view }: Props) {
 
           {/* Ticker label just outside the ring */}
           {sliceData.map((seg) => (
-            seg.sweep >= 15 ? (
             <text key={`ticker-${seg.ticker}`} className="donut-ticker"
               x={seg.tp.x} y={seg.tp.y}
               textAnchor={seg.tickerAnchor} dominantBaseline="middle"
@@ -186,7 +196,6 @@ export default function AllocationDonut({ portfolio, view }: Props) {
               style={{ opacity: 0 }}>
               {seg.ticker}
             </text>
-            ) : null
           ))}
 
           {/* Centre */}
