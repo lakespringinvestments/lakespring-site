@@ -18,7 +18,7 @@ const TICKER_COLORS: Record<string, string> = {
   SMCI: "#8A9BB0",   // gray
   ASML: "transparent",
   BE:   "transparent",
-  SPCX: "#0A0A0A",
+  SPCX: "#E8EAED",
 };
 
 const TICKER_LOGOS: Record<string, string> = {
@@ -211,13 +211,13 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                     style={{ background: bg }}
                   >
                     {logoSrc ? (
-                      h.ticker === "LLY" ? (
+                      h.ticker === "LLY" || h.ticker === "SPCX" ? (
                         // Lilly: wide landscape logo — contain on cream bg so full text shows
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logoSrc} alt={h.ticker}
                           style={{ width: "90%", height: "90%", objectFit: "contain", display: "block" }}
                         />
-                      ) : ["MRVL","NBIS","ASML","BE","SMCI","SPCX"].includes(h.ticker) ? (
+                      ) : ["MRVL","NBIS","ASML","BE","SMCI"].includes(h.ticker) ? (
                         // Other SD logos fill tile with their own background
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logoSrc} alt={h.ticker}

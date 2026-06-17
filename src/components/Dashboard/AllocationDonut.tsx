@@ -176,6 +176,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
 
           {/* Ticker label just outside the ring */}
           {sliceData.map((seg) => (
+            seg.sweep >= 15 ? (
             <text key={`ticker-${seg.ticker}`} className="donut-ticker"
               x={seg.tp.x} y={seg.tp.y}
               textAnchor={seg.tickerAnchor} dominantBaseline="middle"
@@ -185,6 +186,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
               style={{ opacity: 0 }}>
               {seg.ticker}
             </text>
+            ) : null
           ))}
 
           {/* Centre */}
