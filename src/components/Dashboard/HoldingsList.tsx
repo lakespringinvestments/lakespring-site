@@ -96,11 +96,7 @@ function sumPremiums(trades: Trade[]): number {
   return trades
     .filter(t => OPTIONS_TYPES.has(t.optionType?.toUpperCase()))
     .reduce((sum, t) => {
-      const val = t.totalPremiumUsd ?? (
-        t.premiumPerContract != null && t.contracts != null
-          ? t.premiumPerContract * t.contracts : 0
-      );
-      return val > 0 ? sum + val : sum;
+      return sum + (t.gainLossUsd ?? 0);
     }, 0);
 }
 
@@ -113,9 +109,8 @@ function capitalRequired(trade: Trade): string {
 }
 
 function premiumTotal(trade: Trade): number | null {
-  if (trade.totalPremiumUsd != null && trade.totalPremiumUsd > 0) return trade.totalPremiumUsd;
-  if (trade.premiumPerContract != null && trade.contracts != null && trade.premiumPerContract > 0)
-    return Math.abs(trade.premiumPerContract * trade.contracts);
+  if (trade.gainLossUsd != null) return trade.gainLossUsd;
+  if (trade.totalPremiumUsd != null) return trade.totalPremiumUsd;
   return null;
 }
 
@@ -131,7 +126,9 @@ function optionPrice(trade: Trade): string {
 
 function premiumDisplay(trade: Trade): string {
   const val = premiumTotal(trade);
-  return val ? "$" + val.toLocaleString() : "—";
+  if (val == null) return "—";
+  const prefix = val >= 0 ? "" : "-";
+  return prefix + "$" + Math.abs(val).toLocaleString();
 }
 
 function tradeYield(trade: Trade): string {
@@ -245,10 +242,10 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                       <span className="text-[11px] text-ink-400">
                         <span className="text-ink-600 font-medium">{h.weight.toFixed(0)}%</span> of portfolio
                       </span>
-                      {totalPremiums > 0 && (
-                        <span className="text-[11px] text-sage-600 font-medium"
+                      {totalPremiums !== 0 && (
+                        <span className={`text-[11px] font-medium ${totalPremiums >= 0 ? "text-sage-600" : "text-red-500"}`}
                           style={{ filter: member ? "none" : "blur(5px)" }}>
-                          +${totalPremiums.toLocaleString(undefined, { maximumFractionDigits: 0 })} premiums
+                          {totalPremiums >= 0 ? "+" : "-"}${Math.abs(totalPremiums).toLocaleString(undefined, { maximumFractionDigits: 0 })} net income
                         </span>
                       )}
                     </div>

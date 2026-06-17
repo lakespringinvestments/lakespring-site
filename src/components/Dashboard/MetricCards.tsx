@@ -12,7 +12,9 @@ interface MetricCardsProps {
 }
 
 const OPTIONS_TYPES = new Set(["CSP", "CC", "PUTS", "CALLS"]);
-const FP_TICKERS = new Set(["TSLA", "NVDA", "PLTR", "AMZN", "GOOGL"]);
+const EXCLUDE_STRATS = new Set(["transfer", "fpp accumulation", "stock purchase"]);
+const CAPGAINS_STRATS = new Set(["share sale", "assignment income", "swing trade"]);
+const FP_TICKERS = new Set(["TSLA", "NVDA", "PLTR", "AMZN", "GOOGL", "LLY", "SPCX"]);
 
 const THEME: Record<PortfolioView, { bg: string; label: string }> = {
   first:  { bg: "#034147", label: "First Principles Portfolio" },
@@ -26,7 +28,13 @@ function fmt(n: number) {
 export default function MetricCards({ portfolio, allTrades, view, setView }: MetricCardsProps) {
   const theme = THEME[view];
 
+  // Match trade ledger logic: 2026+, exclude transfers/FPP/stock purchase
   const relevantTrades = allTrades.filter((t) => {
+    if (t.openDate < "2026-01-01") return false;
+    const st = (t.strategyType ?? "").toLowerCase();
+    if (EXCLUDE_STRATS.has(st)) return false;
+    if ((t.description ?? "").toUpperCase().includes("TRANSFER IN")) return false;
+    if (CAPGAINS_STRATS.has(st)) return false;
     const isFP = FP_TICKERS.has(t.ticker.toUpperCase());
     return view === "first" ? isFP : !isFP;
   });
@@ -35,39 +43,39 @@ export default function MetricCards({ portfolio, allTrades, view, setView }: Met
     (t) => OPTIONS_TYPES.has(t.optionType?.toUpperCase() ?? "")
   );
 
-  const totalPremiums = optionsTrades.reduce((sum, t) => {
-    const val = t.totalPremiumUsd ?? 0;
-    return val > 0 ? sum + val : sum;
-  }, 0);
+  // Net options income (matching trade ledger — includes BTC debits)
+  const netOptionsIncome = optionsTrades.reduce((sum, t) => sum + (t.gainLossUsd ?? 0), 0);
 
+  // Week grouping by openDate (matching Excel SUMIFS)
   const weeks = new Set(
     optionsTrades.map((t) => {
-      const date = t.closeDate || t.openDate;
+      const date = t.openDate;
       if (!date) return null;
       const d = new Date(date);
+      if (isNaN(d.getTime())) return null;
       const day = d.getDay();
       d.setDate(d.getDate() - day + (day === 0 ? -6 : 1));
       return d.toISOString().slice(0, 10);
     }).filter(Boolean)
   );
 
-  const avgWeekly = weeks.size > 0 ? Math.round(totalPremiums / weeks.size) : 0;
+  const avgWeekly = weeks.size > 0 ? Math.round(netOptionsIncome / weeks.size) : 0;
 
   const capitalDeployed = optionsTrades.reduce((sum, t) => {
     if (t.strike && t.contracts) return sum + Math.abs(t.strike * t.contracts * 100);
     return sum;
   }, 0);
-  // Annualized yield: (avg weekly premium / capital deployed) * 52 weeks
+
   const annualizedYield = capitalDeployed > 0 && avgWeekly > 0
     ? ((avgWeekly * 52) / capitalDeployed * 100).toFixed(1) + "%" : "—";
 
   const openCount = optionsTrades.filter((t) => t.status?.toLowerCase() === "open").length;
 
   const cards = [
-    { label: "YTD premiums",       value: fmt(totalPremiums || portfolio.premiumYTD), sub: "USD collected" },
-    { label: "Avg weekly premium", value: avgWeekly > 0 ? fmt(avgWeekly) : fmt(Math.round(portfolio.premiumYTD / 22)), sub: `Rolling ${weeks.size || 22} weeks` },
-    { label: "Annualized yield",   value: annualizedYield, sub: "avg weekly × 52 / capital" },
-    { label: "Open positions",     value: (openCount || portfolio.openPositions).toString(), sub: "Active contracts" },
+    { label: "Net options income",  value: fmt(netOptionsIncome || portfolio.premiumYTD), sub: "YTD net (STO − BTC)" },
+    { label: "Avg weekly income",   value: avgWeekly > 0 ? fmt(avgWeekly) : fmt(Math.round(portfolio.premiumYTD / 22)), sub: `Rolling ${weeks.size || 22} weeks` },
+    { label: "Annualized yield",    value: annualizedYield, sub: "avg weekly × 52 / capital" },
+    { label: "Open positions",      value: (openCount || portfolio.openPositions).toString(), sub: "Active contracts" },
   ];
 
   return (

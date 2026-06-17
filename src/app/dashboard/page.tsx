@@ -35,7 +35,7 @@ export default async function DashboardPage() {
     const ticker = (trade.ticker ?? "").toUpperCase();
     if (!ticker) continue;
     if (!tradesByTicker[ticker]) tradesByTicker[ticker] = [];
-    if (tradesByTicker[ticker].length < 8) tradesByTicker[ticker].push(trade);
+    if (tradesByTicker[ticker].length < 20) tradesByTicker[ticker].push(trade);
   }
 
   // Weekly net options income — matches Excel SUMIFS logic
