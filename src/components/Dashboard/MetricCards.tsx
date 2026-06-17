@@ -11,8 +11,8 @@ interface MetricCardsProps {
   setView: (v: PortfolioView) => void;
 }
 
-const OPTIONS_TYPES = new Set(["CSP", "CC"]);
-const FP_TICKERS = new Set(["TSLA", "NVDA", "PLTR", "AMZN", "GOOGL", "LLY", "SPCX"]);
+const OPTIONS_TYPES = new Set(["CSP", "CC", "PUTS", "CALLS"]);
+const FP_TICKERS = new Set(["TSLA", "NVDA", "PLTR", "AMZN", "GOOGL"]);
 
 const THEME: Record<PortfolioView, { bg: string; label: string }> = {
   first:  { bg: "#034147", label: "First Principles Portfolio" },
