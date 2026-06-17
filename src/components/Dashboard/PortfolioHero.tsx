@@ -91,6 +91,7 @@ export default function PortfolioHero({ portfolio, totalPnl }: Props) {
         <p className="text-xs text-white/40">
           Avg <span className="text-[#5DCAA5] font-semibold">{avgFormatted}</span> / week ({weeksElapsed} weeks)
         </p>
+        <p className="text-[10px] text-white/25 mt-1">Includes net options income and capital gain/loss</p>
       </div>
     </section>
   );
