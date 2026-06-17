@@ -14,6 +14,30 @@ const SD_BOOK_COSTS: Record<string, number> = {
 const FP_TICKERS = ["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"];
 const SD_TICKERS = ["MRVL","NBIS","ASML","BE","TSM"];
 
+const TICKER_COLORS: Record<string, string> = {
+  TSLA: "#CC0000", NVDA: "#76B900", PLTR: "#101113", AMZN: "#FF9900",
+  GOOGL: "#4285F4", LLY: "#D4537E", SPCX: "#5A6578",
+  MRVL: "#0057B8", NBIS: "#C8F000", ASML: "#1E3A8A", BE: "#00A86B",
+  SMCI: "#8A9BB0", TSM: "#E31937",
+};
+
+function tickerBg(hex: string): string {
+  // Convert hex to rgba at 15% opacity for badge background
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},0.15)`;
+}
+
+function tickerTextColor(hex: string): string {
+  // For very light colors (lime green), darken the text
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const luminance = (r * 299 + g * 587 + b * 114) / 1000;
+  return luminance > 180 ? "#333" : hex;
+}
+
 const SD_NAMES: Record<string, string> = {
   MRVL: "Marvell", NBIS: "Nebius Group",
   ASML: "ASML", BE: "Bloom Energy", TSM: "TSMC",
@@ -59,7 +83,7 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
           <div key={ticker} className="grid px-5 py-3 items-center text-xs"
             style={{ gridTemplateColumns: "90px 1fr 1fr 1fr 70px", gap: "8px" }}>
             <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded w-fit"
-              style={{ background: "rgba(3,65,71,0.08)", color: "#034147" }}>
+              style={{ background: tickerBg(TICKER_COLORS[ticker] ?? "#034147"), color: tickerTextColor(TICKER_COLORS[ticker] ?? "#034147") }}>
               {ticker}
             </span>
             <span className="text-ink-700 tabular-nums"
