@@ -32,7 +32,9 @@ export default async function DashboardPage() {
 
   const tradesByTicker: Record<string, typeof allTrades> = {};
   for (const trade of allTrades) {
-    const ticker = (trade.ticker ?? "").toUpperCase();
+    // Merge GOOG into GOOGL so Alphabet holdings shows both
+    let ticker = (trade.ticker ?? "").toUpperCase();
+    if (ticker === "GOOG") ticker = "GOOGL";
     if (!ticker) continue;
     if (!tradesByTicker[ticker]) tradesByTicker[ticker] = [];
     if (tradesByTicker[ticker].length < 20) tradesByTicker[ticker].push(trade);
