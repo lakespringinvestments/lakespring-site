@@ -1,5 +1,5 @@
 // src/components/TradeLedger/TradeLedgerClient.tsx
-// update-159: Remove DTE + monthly rows, add ROI column, stacked bar chart
+// update-160: Restore monthly grouping, thin ticker column, ROI + stacked bar
 "use client";
 
 import { useState, useMemo } from "react";
@@ -51,7 +51,8 @@ type GroupRow = {
   oldStrike: number | null; newStrike: number | null;
   openDate: string; closeDate: string; netPnl: number;
 };
-type DisplayRow = SingleRow | GroupRow;
+type MonthHeader = { kind: "month"; monthKey: string; label: string; total: number };
+type DisplayRow = SingleRow | GroupRow | MonthHeader;
 
 type SortCol = "date" | "ticker" | "pnl" | "capital" | "roi";
 type SortDir = "asc" | "desc";
@@ -113,6 +114,29 @@ function buildDisplayRows(trades: Trade[], sortCol: SortCol, sortDir: SortDir): 
     else if (sortCol === "roi") cmp = getRowRoi(a) - getRowRoi(b);
     return sortDir === "desc" ? -cmp : cmp;
   });
+
+  // Add month headers in date sort (based on openDate)
+  if (sortCol === "date") {
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const rows: DisplayRow[] = [];
+    let currentMonth = "";
+    const monthTotals = new Map<string, number>();
+    for (const tr of sorted) {
+      const mk = getRowDate(tr).slice(0, 7);
+      monthTotals.set(mk, (monthTotals.get(mk) ?? 0) + getRowPnl(tr));
+    }
+    for (const tr of sorted) {
+      const mk = getRowDate(tr).slice(0, 7);
+      if (mk && mk !== currentMonth) {
+        currentMonth = mk;
+        const [y, m] = mk.split("-");
+        const label = `${months[parseInt(m) - 1]} ${y}`;
+        rows.push({ kind: "month", monthKey: mk, label, total: monthTotals.get(mk) ?? 0 });
+      }
+      rows.push(tr);
+    }
+    return rows;
+  }
 
   return sorted;
 }
@@ -356,7 +380,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       <div className="overflow-x-auto -mx-6 px-6">
         <table className="w-full min-w-[920px] table-fixed">
           <colgroup>
-            <col className="w-[32px]" /><col /><col className="w-[70px]" /><col className="w-[80px]" />
+            <col className="w-[32px]" /><col className="w-[80px]" /><col className="w-[70px]" /><col className="w-[80px]" />
             <col className="w-[90px]" /><col className="w-[100px]" /><col className="w-[100px]" />
             <col className="w-[90px]" /><col className="w-[60px]" /><col className="w-[80px]" />
           </colgroup>
@@ -383,6 +407,24 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
           ) : (
             displayRows.map((row, i) => {
               const isOpen = expandedIdx === i;
+
+              if (row.kind === "month") {
+                return (
+                  <tbody key={`m-${row.monthKey}`}>
+                    <tr className="border-t-2 border-white/20">
+                      <td colSpan={8} className="py-3 pl-2">
+                        <span className="text-[11px] uppercase tracking-[0.15em] text-sage-300 font-semibold">{row.label}</span>
+                      </td>
+                      <td className="py-3 text-center">
+                        <span className={`text-xs font-semibold tabular-nums ${row.total >= 0 ? "text-sage-300" : "text-red-400"}`}>
+                          {row.total >= 0 ? "+" : ""}{formatCurrency(row.total)}
+                        </span>
+                      </td>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                );
+              }
 
               if (row.kind === "single") {
                 const t = row.trade;
