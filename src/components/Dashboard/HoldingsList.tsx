@@ -12,7 +12,7 @@ const TICKER_COLORS: Record<string, string> = {
   AMZN:  "#edbb81",
   GOOGL: "#E8EAED",
   SPCX: "#E8EAED",   // light gray — SpaceX logo on light bg
-  // SD tickers — use transparent so each logo PNG's own background shows
+  // TM tickers — use transparent so each logo PNG's own background shows
   MRVL: "transparent",
   NBIS: "transparent",
   LLY:  "#FAF8F3",   // cream — Lilly logo contained on light bg
@@ -27,7 +27,7 @@ const TICKER_LOGOS: Record<string, string> = {
   PLTR:  "/logos/palantir.png",
   AMZN:  "/logos/amazon.png",
   GOOGL: "/logos/google.png",
-  // Second Derivatives
+  // Thematic Momentum
   MRVL: "/logos/marvell.png",
   NBIS: "/logos/nebius.png",
   LLY:  "/logos/lilly.png",
@@ -40,13 +40,13 @@ const TICKER_LOGOS: Record<string, string> = {
 const EXCLUDED = new Set(["BTC", "SOL"]);
 const OPTIONS_TYPES = new Set(["CSP", "CC", "PUTS", "CALLS"]);
 const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"]);
-const SD_TICKERS  = new Set(["MRVL","NBIS","ASML","BE","SMCI"]);
+const TM_TICKERS  = new Set(["MRVL","NBIS","ASML","BE","SMCI"]);
 
 // Tickers that may not be in portfolio.holdings — show as placeholders
 const FP_NAMES: Record<string, string> = {
   TSLA: "Tesla", NVDA: "Nvidia", PLTR: "Palantir", AMZN: "Amazon", GOOGL: "Alphabet", LLY: "Eli Lilly", SPCX: "SpaceX",
 };
-const SD_NAMES: Record<string, string> = {
+const TM_NAMES: Record<string, string> = {
   MRVL: "Marvell", NBIS: "Nebius Group",
   ASML: "ASML", BE: "Bloom Energy", SMCI: "Super Micro Computer",
 };
@@ -161,12 +161,12 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
   useEffect(() => { setMember(localStorage.getItem("lakespring_member") === "true"); }, []);
 
   // Filter holdings by portfolio view
-  const activeTickers = view === "first" ? FP_TICKERS : SD_TICKERS;
+  const activeTickers = view === "first" ? FP_TICKERS : TM_TICKERS;
   const liveHoldings = portfolio.holdings.filter(h =>
     activeTickers.has(h.ticker) && !EXCLUDED.has(h.ticker)
   );
 
-  // For SD: include placeholder rows for tickers not yet in portfolio
+  // For TM: include placeholder rows for tickers not yet in portfolio
   const holdings = view === "first"
     ? [...new Set([...FP_TICKERS])].map(ticker => {
         const live = liveHoldings.find(h => h.ticker === ticker);
@@ -175,10 +175,10 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
           price: 0, weight: 0, dayChangePct: 0,
         };
       })
-    : [...new Set([...SD_TICKERS])].map(ticker => {
+    : [...new Set([...TM_TICKERS])].map(ticker => {
         const live = liveHoldings.find(h => h.ticker === ticker);
         return live ?? {
-          ticker, name: SD_NAMES[ticker] ?? ticker,
+          ticker, name: TM_NAMES[ticker] ?? ticker,
           price: 0, weight: 0, dayChangePct: 0,
         };
       });
@@ -221,7 +221,7 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                           style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", marginLeft: "10px" }}
                         />
                       ) : ["MRVL","NBIS","ASML","BE","SMCI"].includes(h.ticker) ? (
-                        // Other SD logos fill tile with their own background
+                        // Other TM logos fill tile with their own background
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logoSrc} alt={h.ticker}
                           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}

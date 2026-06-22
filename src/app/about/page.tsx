@@ -50,6 +50,32 @@ const sections = [
   },
   {
     number: "03",
+    label: "The Thematic Momentum Portfolio",
+    body: (
+      <>
+        <p>
+          Not every position needs a decade-long thesis. The Thematic Momentum
+          portfolio is a rotation-driven set of names selected for current
+          market conditions — high-conviction stocks riding structural
+          tailwinds where the setup favours outsized capital gains and
+          elevated implied volatility.
+        </p>
+        <p className="mt-4">
+          These are companies that meet the same conviction bar as the First
+          Principles holdings, but the intent is different. The goal is to
+          capture momentum-driven upside and collect fatter premiums while
+          conditions are favourable — not to hold through every cycle. When
+          the thesis matures or the tailwind fades, the position rotates.
+        </p>
+        <p className="italic text-sage-700 mt-6">
+          First Principles is the foundation. Thematic Momentum is the
+          opportunistic edge built on top of it.
+        </p>
+      </>
+    ),
+  },
+  {
+    number: "04",
     label: "What you'll find here",
     body: (
       <div className="space-y-4">

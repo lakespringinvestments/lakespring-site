@@ -15,11 +15,11 @@ function useMember() {
 const FP_COLORS: Record<string, string> = {
   TSLA: "#CC0000", NVDA: "#76B900", PLTR: "#101113", AMZN: "#FF9900", GOOGL: "#4285F4", LLY: "#D4537E", SPCX: "#5A6578",
 };
-const SD_COLORS: Record<string, string> = {
+const TM_COLORS: Record<string, string> = {
   MRVL: "#0057B8", NBIS: "#C8F000", ASML: "#1E3A8A", BE: "#00A86B", SMCI: "#8A9BB0",
 };
 const FP_TICKERS = ["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"];
-const SD_TICKERS = ["MRVL","NBIS","ASML","BE","SMCI"];
+const TM_TICKERS = ["MRVL","NBIS","ASML","BE","SMCI"];
 
 function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
   const rad = ((angleDeg - 90) * Math.PI) / 180;
@@ -57,8 +57,8 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   // Percentages sit in the middle of the ring band
   const pctR = (outerR + innerR) / 2;
 
-  const tickers = view === "first" ? FP_TICKERS : SD_TICKERS;
-  const colors  = view === "first" ? FP_COLORS  : SD_COLORS;
+  const tickers = view === "first" ? FP_TICKERS : TM_TICKERS;
+  const colors  = view === "first" ? FP_COLORS  : TM_COLORS;
 
   const relevant = portfolio.holdings.filter(h => tickers.includes(h.ticker));
   const totalWeight = relevant.reduce((s, h) => s + h.weight, 0);

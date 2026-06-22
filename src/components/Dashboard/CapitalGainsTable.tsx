@@ -5,14 +5,14 @@ import type { Portfolio } from "../../../types/portfolio";
 import type { PortfolioView } from "./types";
 
 const FP_BOOK_COSTS: Record<string, number> = {
-  TSLA: 210675, NVDA: 18028, PLTR: 72500, AMZN: 0, GOOGL: 0, LLY: 0, SPCX: 0,
+  TSLA: 252866, NVDA: 18028, PLTR: 69210, AMZN: 0, GOOGL: 0, LLY: 0, SPCX: 0,
 };
-const SD_BOOK_COSTS: Record<string, number> = {
-  MRVL: 0, NBIS: 0, ASML: 0, BE: 0, TSM: 0,
+const TM_BOOK_COSTS: Record<string, number> = {
+  MRVL: 763, NBIS: 0, ASML: 0, BE: 0, TSM: 0,
 };
 
 const FP_TICKERS = ["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"];
-const SD_TICKERS = ["MRVL","NBIS","ASML","BE","TSM"];
+const TM_TICKERS = ["MRVL","NBIS","ASML","BE","TSM"];
 
 // Badge colors matching AllocationDonut — light bg, darker text
 const BADGE_COLORS: Record<string, { bg: string; text: string }> = {
@@ -25,7 +25,7 @@ const BADGE_COLORS: Record<string, { bg: string; text: string }> = {
   SPCX:  { bg: "rgba(90,101,120,0.08)",  text: "#5A6578" },
 };
 
-const SD_NAMES: Record<string, string> = {
+const TM_NAMES: Record<string, string> = {
   MRVL: "Marvell", NBIS: "Nebius Group",
   ASML: "ASML", BE: "Bloom Energy", TSM: "TSMC",
 };
@@ -38,9 +38,9 @@ function fmt(n: number) {
 interface Props { portfolio: Portfolio; view: PortfolioView; }
 
 export default function CapitalGainsTable({ portfolio, view }: Props) {
-  const tickers = view === "first" ? FP_TICKERS : SD_TICKERS;
-  const bookCosts = view === "first" ? FP_BOOK_COSTS : SD_BOOK_COSTS;
-  const title = view === "first" ? "First Principles — Capital Gains" : "Second Derivatives — Capital Gains";
+  const tickers = view === "first" ? FP_TICKERS : TM_TICKERS;
+  const bookCosts = view === "first" ? FP_BOOK_COSTS : TM_BOOK_COSTS;
+  const title = view === "first" ? "First Principles — Capital Gains" : "Thematic Momentum — Capital Gains";
   const COLS = ["Ticker", "Book cost", "Mkt value", "Capital gain", "ROI"];
   const [member, setMember] = useState(false);
   useEffect(() => { setMember(localStorage.getItem("lakespring_member") === "true"); }, []);
@@ -53,7 +53,7 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
     const hasPosition = bookCost > 0 && mktValue > 0;
     const capitalGain = hasPosition ? mktValue - bookCost : null;
     const roi = hasPosition ? ((mktValue - bookCost) / bookCost) * 100 : null;
-    const name = SD_NAMES[ticker] ?? ticker;
+    const name = TM_NAMES[ticker] ?? ticker;
     return { ticker, name, bookCost, mktValue, capitalGain, roi };
   });
 
