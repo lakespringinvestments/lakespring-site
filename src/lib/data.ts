@@ -3,19 +3,30 @@ import { fetchHoldingsFromSheet, fetchPerformanceFromSheet, fetchPremiumYTD } fr
 
 // Base holdings — always shown even when not currently held.
 // Live data from the sheet overwrites price/weight when available.
+// Weights reflect actual portfolio allocation (% of total ~$875K).
+// Tickers with weight 0 appear as placeholder slices in the donut.
 const BASE_HOLDINGS = [
-  { ticker: "TSLA",  name: "Tesla",    price: 391.00, weight: 26, dayChangePct: 0 },
-  { ticker: "NVDA",  name: "Nvidia",   price: 205.10, weight: 20, dayChangePct: 0 },
-  { ticker: "PLTR",  name: "Palantir", price: 135.53, weight: 13, dayChangePct: 0 },
-  { ticker: "AMZN",  name: "Amazon",   price: 218.60, weight: 7,  dayChangePct: 0 },
-  { ticker: "GOOGL", name: "Alphabet", price: 184.30, weight: 6,  dayChangePct: 0 },
+  // ── First Principles ──
+  { ticker: "TSLA",  name: "Tesla",          price: 399.40, weight: 37, dayChangePct: 0 },
+  { ticker: "NVDA",  name: "Nvidia",         price: 213.25, weight: 0,  dayChangePct: 0 },
+  { ticker: "PLTR",  name: "Palantir",       price: 127.39, weight: 7,  dayChangePct: 0 },
+  { ticker: "AMZN",  name: "Amazon",         price: 239.90, weight: 0,  dayChangePct: 0 },
+  { ticker: "GOOGL", name: "Alphabet",       price: 355.54, weight: 0,  dayChangePct: 0 },
+  { ticker: "LLY",   name: "Eli Lilly",      price: 1101.55, weight: 0, dayChangePct: 0 },
+  { ticker: "SPCX",  name: "SpaceX",         price: 171.20, weight: 0,  dayChangePct: 0 },
+  // ── Thematic Momentum ──
+  { ticker: "MRVL",  name: "Marvell",        price: 302.79, weight: 0,  dayChangePct: 0 },
+  { ticker: "NBIS",  name: "Nebius Group",   price: 282.61, weight: 0,  dayChangePct: 0 },
+  { ticker: "ASML",  name: "ASML",           price: 1940.86, weight: 0, dayChangePct: 0 },
+  { ticker: "BE",    name: "Bloom Energy",   price: 0,      weight: 0,  dayChangePct: 0 },
+  { ticker: "SMCI",  name: "Super Micro",    price: 34.06,  weight: 0,  dayChangePct: 0 },
 ];
 
 const MOCK_PORTFOLIO: Portfolio = {
-  totalValue: 487231,
+  totalValue: 875035,
   dayChange: 11420,
   dayChangePct: 2.4,
-  premiumYTD: 45628,
+  premiumYTD: 57340,
   openPositions: 5,
   shortCalls: 3,
   cash: 42108,
@@ -24,7 +35,7 @@ const MOCK_PORTFOLIO: Portfolio = {
   holdings: BASE_HOLDINGS,
   performance: Array.from({ length: 30 }, (_, i) => ({
     date: new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10),
-    value: 460000 + Math.sin(i / 4) * 8000 + i * 900,
+    value: 850000 + Math.sin(i / 4) * 8000 + i * 900,
   })),
 };
 

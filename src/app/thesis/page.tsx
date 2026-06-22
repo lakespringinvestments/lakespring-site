@@ -383,11 +383,13 @@ export default function ThesisPage() {
             <p>
               When premiums on First Principles names are compressed, we widen the programme
               to the{" "}
-              <strong className="text-teal-600 font-semibold">Second Derivatives Portfolio</strong>
-              {" "}— names that either directly benefit from the same transformations or carry
-              elevated IV because they represent higher-risk bets in the same themes. On names
-              we wouldn&apos;t hold long term, we&apos;ll run opportunistic swing trades rather than
-              accumulating a permanent position.
+              <strong className="text-teal-600 font-semibold">Thematic Momentum Portfolio</strong>
+              {" "}— high-conviction names positioned around current market conditions and
+              structural tailwinds, selected for outsized capital gain upside and the elevated
+              implied volatility that generates fatter premiums. These aren&apos;t decade-long
+              holds — when the thesis matures or the tailwind fades, the position rotates.
+              On names we wouldn&apos;t accumulate permanently, we run opportunistic swing trades
+              to capture the move.
             </p>
             <p className="italic text-ink-500">
               The premium isn&apos;t speculative income. It&apos;s compensation for committing to price

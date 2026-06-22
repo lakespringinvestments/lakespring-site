@@ -68,7 +68,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
     const holding = relevant.find(h => h.ticker === t);
     return {
       ticker: t,
-      weight: holding && totalWeight > 0
+      weight: holding && totalWeight > 0 && holding.weight > 0
         ? (holding.weight / totalWeight) * 100
         : relevant.length > 0 ? 1 : 100 / tickers.length,
       color: colors[t] ?? "#A8B0B6",
