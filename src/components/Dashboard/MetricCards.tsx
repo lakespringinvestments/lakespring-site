@@ -18,7 +18,7 @@ const FP_TICKERS = new Set(["TSLA", "NVDA", "PLTR", "AMZN", "GOOGL", "GOOG", "LL
 
 const THEME: Record<PortfolioView, { bg: string; label: string }> = {
   first:  { bg: "#034147", label: "First Principles Portfolio" },
-  second: { bg: "#00857A", label: "Second Derivatives Portfolio" },
+  second: { bg: "#00857A", label: "Thematic Momentum Portfolio" },
 };
 
 function fmt(n: number) {
