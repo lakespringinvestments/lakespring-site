@@ -3,7 +3,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getAllArticles, getArticleBySlug } from "@/lib/articles";
-import EmailSignup from "@/components/EmailSignup";
+import NewsletterSignup from "@/components/NewsletterSignup";
 
 export async function generateStaticParams() {
   return getAllArticles().map((a) => ({ slug: a.slug }));
@@ -215,14 +215,12 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
 
       {/* ── Email signup ── */}
       <div className="max-w-6xl mx-auto px-6 pb-20">
-        <div className="pt-10 border-t border-cream-200 max-w-2xl">
-          <p className="text-2xl text-teal-600 mb-4 tracking-tight font-semibold">
-            Enjoyed this?
-          </p>
-          <p className="text-ink-500 mb-6 text-sm">
-            Subscribe for occasional notes on portfolio thinking.
-          </p>
-          <EmailSignup />
+        <div className="max-w-2xl">
+          <NewsletterSignup
+            variant="inline"
+            heading="Enjoyed this?"
+            description="Subscribe for trade alerts, weekly analysis, and portfolio updates."
+          />
         </div>
       </div>
     </article>

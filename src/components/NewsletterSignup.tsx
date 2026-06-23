@@ -10,7 +10,9 @@ interface Props {
   /** Button label */
   buttonText?: string;
   /** Visual variant */
-  variant?: "inline" | "card" | "hero";
+  variant?: "inline" | "card" | "hero" | "minimal";
+  /** Dark background mode (e.g. inside the teal footer) */
+  dark?: boolean;
 }
 
 export default function NewsletterSignup({
@@ -18,6 +20,7 @@ export default function NewsletterSignup({
   description = "Weekly portfolio updates, trade alerts, and analysis — delivered to your inbox.",
   buttonText = "Subscribe",
   variant = "card",
+  dark = false,
 }: Props) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -59,31 +62,38 @@ export default function NewsletterSignup({
     }
   }
 
+  const showHeading = variant !== "minimal" && heading;
+  const showDescription = variant !== "minimal" && description;
+
   if (status === "success") {
     return (
-      <div className={wrapperClass(variant)}>
+      <div className={wrapperClass(variant, dark)}>
         <div className="flex items-center gap-3">
-          <span className="text-sage-600 text-lg">✓</span>
-          <p className="text-ink-700 text-sm font-medium">{message}</p>
+          <span className={dark ? "text-white text-lg" : "text-sage-600 text-lg"}>✓</span>
+          <p className={dark ? "text-white text-sm font-medium" : "text-ink-700 text-sm font-medium"}>
+            {message}
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={wrapperClass(variant)}>
-      {heading && (
-        <h3 className={variant === "hero"
-          ? "text-2xl md:text-3xl font-semibold text-teal-600 mb-2"
-          : "text-sm font-semibold text-teal-600 mb-1"
+    <div className={wrapperClass(variant, dark)}>
+      {showHeading && (
+        <h3 className={
+          variant === "hero"
+            ? `text-2xl md:text-3xl font-semibold mb-2 ${dark ? "text-white" : "text-teal-600"}`
+            : `text-sm font-semibold mb-1 ${dark ? "text-white" : "text-teal-600"}`
         }>
           {heading}
         </h3>
       )}
-      {description && (
-        <p className={variant === "hero"
-          ? "text-ink-500 text-base leading-relaxed mb-6 max-w-md"
-          : "text-ink-400 text-xs leading-relaxed mb-4"
+      {showDescription && (
+        <p className={
+          variant === "hero"
+            ? `text-base leading-relaxed mb-6 max-w-md ${dark ? "text-white/70" : "text-ink-500"}`
+            : `text-xs leading-relaxed mb-4 ${dark ? "text-white/60" : "text-ink-400"}`
         }>
           {description}
         </p>
@@ -96,44 +106,50 @@ export default function NewsletterSignup({
           onChange={(e) => { setEmail(e.target.value); setStatus("idle"); }}
           placeholder="you@email.com"
           required
-          className="flex-1 min-w-0 px-3.5 py-2.5 text-sm rounded-lg border border-cream-200 bg-white
-                     text-ink-900 placeholder:text-ink-300
-                     focus:outline-none focus:ring-2 focus:ring-teal-600/20 focus:border-teal-600
-                     transition-colors"
+          className={`flex-1 min-w-0 px-3.5 py-2.5 text-sm rounded-lg border transition-colors
+            focus:outline-none focus:ring-2
+            ${dark
+              ? "bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:ring-white/30 focus:border-white/40"
+              : "bg-white border-cream-200 text-ink-900 placeholder:text-ink-300 focus:ring-teal-600/20 focus:border-teal-600"
+            }`}
         />
         <button
           type="submit"
           disabled={status === "loading"}
-          className="px-5 py-2.5 text-sm font-medium rounded-lg text-white
-                     transition-all duration-150 whitespace-nowrap
-                     disabled:opacity-60 disabled:cursor-not-allowed"
-          style={{ background: "#034147" }}
-          onMouseEnter={(e) => { if (status !== "loading") e.currentTarget.style.background = "#045a63"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = "#034147"; }}
+          className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-150 whitespace-nowrap
+            disabled:opacity-60 disabled:cursor-not-allowed
+            ${dark
+              ? "bg-white text-teal-600 hover:bg-cream-50"
+              : "bg-[#034147] text-white hover:bg-[#045a63]"
+            }`}
         >
           {status === "loading" ? "..." : buttonText}
         </button>
       </form>
 
       {status === "error" && message && (
-        <p className="text-red-500 text-xs mt-2">{message}</p>
+        <p className={`text-xs mt-2 ${dark ? "text-red-300" : "text-red-500"}`}>{message}</p>
       )}
 
-      <p className="text-ink-300 text-[10px] mt-3">
+      <p className={`text-[10px] mt-3 ${dark ? "text-white/30" : "text-ink-300"}`}>
         No spam. Unsubscribe anytime.
       </p>
     </div>
   );
 }
 
-function wrapperClass(variant: "inline" | "card" | "hero"): string {
+function wrapperClass(variant: string, dark: boolean): string {
   switch (variant) {
     case "hero":
       return "py-8";
     case "card":
-      return "bg-white rounded-2xl border border-cream-200 p-6";
+      return dark
+        ? "rounded-2xl p-6"
+        : "bg-white rounded-2xl border border-cream-200 p-6";
     case "inline":
-      return "py-6 border-t border-cream-200";
+      return dark ? "py-6" : "py-6 border-t border-cream-200";
+    case "minimal":
+      return "";
     default:
       return "";
   }
