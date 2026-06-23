@@ -1,27 +1,11 @@
-import NewsletterSignup from "@/components/NewsletterSignup";
+import FooterNewsletter from "./FooterNewsletter";
 
 export default function Footer() {
   return (
     <footer>
-      {/* Newsletter section — brand teal */}
-      <div className="bg-teal-600">
-        <div className="max-w-6xl mx-auto px-6 pt-20 pb-14 grid md:grid-cols-[1fr_1.2fr] gap-12 items-center">
-          <div>
-            <h3 className="text-2xl text-white mb-3 tracking-tight font-semibold">
-              Join Our Newsletter
-            </h3>
-            <p className="text-cream-100/70 text-sm leading-relaxed max-w-md">
-              Occasional notes on portfolio thinking, market analysis, and wealth
-              stories.
-            </p>
-          </div>
-          <div>
-            <NewsletterSignup variant="minimal" dark />
-          </div>
-        </div>
-      </div>
+      <FooterNewsletter />
 
-      {/* Disclaimer section — black */}
+      {/* Disclaimer section — black (always visible) */}
       <div className="bg-[#0a0a0a]">
         <div className="max-w-6xl mx-auto px-6 py-8 grid md:grid-cols-[auto_1fr] gap-6 md:gap-12 items-start">
           <span className="text-xs text-white/40 whitespace-nowrap">
