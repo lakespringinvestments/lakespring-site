@@ -1,4 +1,4 @@
-import EmailSignup from "@/components/EmailSignup";
+import NewsletterSignup from "@/components/NewsletterSignup";
 import Image from "next/image";
 
 export default function Footer() {
@@ -26,8 +26,8 @@ export default function Footer() {
             compounding of asymmetric bets. No noise.
           </p>
         </div>
-        <div>
-          <EmailSignup />
+        <div className="flex items-center">
+          <NewsletterSignup variant="minimal" dark />
         </div>
       </div>
 
