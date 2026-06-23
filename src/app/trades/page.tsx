@@ -2,7 +2,7 @@
 // update-143: Force dynamic rendering, no caching
 import { getAllTrades } from "@/lib/trades";
 import TradeLedgerClient from "@/components/TradeLedger/TradeLedgerClient";
-import EmailSignup from "@/components/EmailSignup";
+import NewsletterSignup from "@/components/NewsletterSignup";
 
 export const dynamic = "force-dynamic";
 
@@ -37,10 +37,11 @@ export default async function TradesPage() {
                 fits the underlying thesis.
               </p>
               <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/10 max-w-md">
-                <p className="text-sm text-cream-100 mb-4">
-                  Join the journal — be first to know when members tier opens.
-                </p>
-                <EmailSignup />
+                <NewsletterSignup
+                  variant="minimal"
+                  dark
+                  buttonText="Join waitlist"
+                />
               </div>
             </div>
           </div>
