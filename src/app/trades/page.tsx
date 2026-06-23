@@ -35,7 +35,7 @@ export default async function TradesPage() {
                 behind every fill, and weekly market analysis report before
                 the start of the trading week.
               </p>
-              <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/10 max-w-md">
+              <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/10 max-w-lg">
                 <NewsletterSignup
                   variant="minimal"
                   dark
