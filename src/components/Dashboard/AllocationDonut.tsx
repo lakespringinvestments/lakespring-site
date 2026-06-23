@@ -49,31 +49,29 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   const prevView = useRef<PortfolioView | null>(null);
   const member = useMember();
 
-  // Larger viewBox — ring fills more space since no leader lines needed
   const VW = 320, VH = 320, cx = 160, cy = 160;
   const outerR = 118, innerR = 72;
-  // Ticker labels sit just outside the ring
   const tickerR = outerR + 14;
-  // Percentages sit in the middle of the ring band
   const pctR = (outerR + innerR) / 2;
 
   const tickers = view === "first" ? FP_TICKERS : TM_TICKERS;
   const colors  = view === "first" ? FP_COLORS  : TM_COLORS;
 
-  const relevant = portfolio.holdings.filter(h => tickers.includes(h.ticker));
-  const totalWeight = relevant.reduce((s, h) => s + h.weight, 0);
+  // Only include tickers with actual holdings (weight > 0)
+  const held = portfolio.holdings.filter(
+    h => tickers.includes(h.ticker) && h.weight > 0
+  );
+  const totalWeight = held.reduce((s, h) => s + h.weight, 0);
+  const hasPositions = held.length > 0 && totalWeight > 0;
 
-  // Include all tickers — use holdings data when available, placeholder for missing
-  const rawSegs = tickers.map((t) => {
-    const holding = relevant.find(h => h.ticker === t);
-    return {
-      ticker: t,
-      weight: holding && totalWeight > 0 && holding.weight > 0
-        ? (holding.weight / totalWeight) * 100
-        : relevant.length > 0 ? 1 : 100 / tickers.length,
-      color: colors[t] ?? "#A8B0B6",
-    };
-  });
+  // Build segments only for held positions
+  const rawSegs = hasPositions
+    ? held.map((h) => ({
+        ticker: h.ticker,
+        weight: (h.weight / totalWeight) * 100,
+        color: colors[h.ticker] ?? "#A8B0B6",
+      }))
+    : []; // empty → neutral ring fallback rendered below
 
   const segTotal = rawSegs.reduce((s, seg) => s + seg.weight, 0);
   const segments = rawSegs.map((seg, i) => ({
@@ -101,11 +99,8 @@ export default function AllocationDonut({ portfolio, view }: Props) {
     const end = start + sweep;
     const mid = start + sweep / 2;
 
-    // Ticker label: just outside ring
     const tp = polarToCartesian(cx, cy, tickerR, mid);
     const tickerAnchor = (tp.x < cx - 4 ? "end" : tp.x > cx + 4 ? "start" : "middle") as "end"|"start"|"middle";
-
-    // Percentage: middle of ring band — only show if slice is wide enough
     const pp = polarToCartesian(cx, cy, pctR, mid);
 
     cumulAngle = end;
@@ -117,6 +112,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
 
   useEffect(() => {
     if (animRef.current) cancelAnimationFrame(animRef.current);
+    if (!hasPositions) return; // No animation needed for neutral ring
     const DURATION = 700;
     const startTime = performance.now();
     prevView.current = view;
@@ -141,7 +137,6 @@ export default function AllocationDonut({ portfolio, view }: Props) {
         const path = paths[i] as SVGPathElement;
         if (path) path.setAttribute("d", buildPath(cx, cy, outerR, innerR, cumul, end));
 
-        // Fade in labels in final 20%
         const opacity = progress > 0.8 ? ((progress - 0.8) / 0.2).toString() : "0";
         const pct = pctTexts[i] as SVGTextElement;
         const ticker = tickerTexts[i] as SVGTextElement;
@@ -163,40 +158,50 @@ export default function AllocationDonut({ portfolio, view }: Props) {
       <h2 className="text-[11px] uppercase tracking-[0.12em] text-ink-500 font-medium mb-2">Allocation</h2>
       <div className="flex justify-center">
         <svg ref={svgRef} viewBox={`0 0 ${VW} ${VH}`} className="w-full" style={{ maxHeight: "340px" }}>
-          {/* Slices */}
-          {sliceData.map((seg) => (
-            <path key={seg.ticker} className="donut-slice"
-              d={buildPath(cx, cy, outerR, innerR, seg.start, seg.start)}
-              fill={seg.color} stroke="white" strokeWidth="2" />
-          ))}
 
-          {/* Percentage inside the ring band — only if slice > 8% */}
-          {sliceData.map((seg) => (
-            seg.sweep >= 25 ? (
-              <text key={`pct-${seg.ticker}`} className="donut-pct"
-                x={seg.pp.x} y={seg.pp.y}
-                textAnchor="middle" dominantBaseline="middle"
-                fontSize="10" fontWeight="600"
-                fill="#fff"
-                fontFamily="system-ui, sans-serif"
-                style={{ opacity: 0, filter: "none" }}>
-                {seg.weight.toFixed(0)}%
-              </text>
-            ) : null
-          ))}
+          {hasPositions ? (
+            <>
+              {/* Slices */}
+              {sliceData.map((seg) => (
+                <path key={seg.ticker} className="donut-slice"
+                  d={buildPath(cx, cy, outerR, innerR, seg.start, seg.start)}
+                  fill={seg.color} stroke="white" strokeWidth="2" />
+              ))}
 
-          {/* Ticker label just outside the ring */}
-          {sliceData.map((seg) => (
-            <text key={`ticker-${seg.ticker}`} className="donut-ticker"
-              x={seg.tp.x} y={seg.tp.y}
-              textAnchor={seg.tickerAnchor} dominantBaseline="middle"
-              fontSize="9.5" fontWeight="700"
-              fill={seg.color === "#101113" ? "#333" : seg.color === "#C8F000" ? "#7A9000" : seg.color}
-              fontFamily="system-ui, sans-serif"
-              style={{ opacity: 0 }}>
-              {seg.ticker}
-            </text>
-          ))}
+              {/* Percentage inside the ring band */}
+              {sliceData.map((seg) => (
+                seg.sweep >= 25 ? (
+                  <text key={`pct-${seg.ticker}`} className="donut-pct"
+                    x={seg.pp.x} y={seg.pp.y}
+                    textAnchor="middle" dominantBaseline="middle"
+                    fontSize="10" fontWeight="600"
+                    fill="#fff"
+                    fontFamily="system-ui, sans-serif"
+                    style={{ opacity: 0, filter: "none" }}>
+                    {seg.weight.toFixed(0)}%
+                  </text>
+                ) : null
+              ))}
+
+              {/* Ticker label just outside the ring */}
+              {sliceData.map((seg) => (
+                <text key={`ticker-${seg.ticker}`} className="donut-ticker"
+                  x={seg.tp.x} y={seg.tp.y}
+                  textAnchor={seg.tickerAnchor} dominantBaseline="middle"
+                  fontSize="9.5" fontWeight="700"
+                  fill={seg.color === "#101113" ? "#333" : seg.color === "#C8F000" ? "#7A9000" : seg.color}
+                  fontFamily="system-ui, sans-serif"
+                  style={{ opacity: 0 }}>
+                  {seg.ticker}
+                </text>
+              ))}
+            </>
+          ) : (
+            /* Neutral ring when no positions held in this portfolio */
+            <circle cx={cx} cy={cy} r={(outerR + innerR) / 2}
+              fill="none" stroke="#E8E1CF" strokeWidth={outerR - innerR}
+              opacity="0.5" />
+          )}
 
           {/* Centre */}
           <text x={cx} y={cy - 12} textAnchor="middle" fontSize="11" fill="#ccc" fontFamily="system-ui">total</text>
