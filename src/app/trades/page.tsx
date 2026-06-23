@@ -1,5 +1,4 @@
 // src/app/trades/page.tsx
-// update-143: Force dynamic rendering, no caching
 import { getAllTrades } from "@/lib/trades";
 import TradeLedgerClient from "@/components/TradeLedger/TradeLedgerClient";
 import NewsletterSignup from "@/components/NewsletterSignup";
@@ -26,21 +25,21 @@ export default async function TradesPage() {
           <div className="mt-16 pt-12 border-t border-white/15">
             <div className="max-w-2xl">
               <p className="text-xs uppercase tracking-[0.25em] text-sage-300 mb-3">
-                Coming soon — Members tier
+                Paid Membership Tier
               </p>
               <h2 className="text-2xl md:text-3xl text-white tracking-tight mb-4 font-semibold">
                 See the live ledger.
               </h2>
               <p className="text-cream-100 leading-relaxed mb-8">
-                Members will see open positions in real time, the reasoning
-                behind every fill, and detailed write-ups of how each trade
-                fits the underlying thesis.
+                Members will see open positions in real time, our reasoning
+                behind every fill, and weekly market analysis report before
+                the start of the trading week.
               </p>
               <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/10 max-w-md">
                 <NewsletterSignup
                   variant="minimal"
                   dark
-                  buttonText="Join waitlist"
+                  buttonText="Join our Community"
                 />
               </div>
             </div>
