@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const PUBLICATION_ID = "0a30b2d5-820a-460f-b5da-e166b7ae408f";
+const PUBLICATION_ID = "pub_0a30b2d5-820a-460f-b5da-e166b7ae408f";
 
 export async function POST(request: Request) {
   try {
