@@ -19,6 +19,7 @@ const TICKER_COLORS: Record<string, string> = {
   SMCI: "#8A9BB0",   // gray
   ASML: "transparent",
   BE:   "transparent",
+  CRWV: "#2563EB",
 };
 
 const TICKER_LOGOS: Record<string, string> = {
@@ -35,12 +36,13 @@ const TICKER_LOGOS: Record<string, string> = {
   BE:   "/logos/bloom_energy.png",
   SPCX: "/logos/space-x.png",
   SMCI: "/logos/smci.png",
+  CRWV: "/logos/coreweave.png",
 };
 
 const EXCLUDED = new Set(["BTC", "SOL"]);
 const OPTIONS_TYPES = new Set(["CSP", "CC", "PUTS", "CALLS"]);
 const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"]);
-const TM_TICKERS  = new Set(["MRVL","NBIS","ASML","BE","SMCI"]);
+const TM_TICKERS  = new Set(["MRVL","NBIS","ASML","BE","SMCI","CRWV"]);
 
 // Tickers that may not be in portfolio.holdings — show as placeholders
 const FP_NAMES: Record<string, string> = {
@@ -49,6 +51,7 @@ const FP_NAMES: Record<string, string> = {
 const TM_NAMES: Record<string, string> = {
   MRVL: "Marvell", NBIS: "Nebius Group",
   ASML: "ASML", BE: "Bloom Energy", SMCI: "Super Micro Computer",
+  CRWV: "CoreWeave",
 };
 
 function pickColor(ticker: string) {
@@ -220,7 +223,7 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                         <img src={logoSrc} alt={h.ticker}
                           style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", marginLeft: "10px" }}
                         />
-                      ) : ["MRVL","NBIS","ASML","BE","SMCI"].includes(h.ticker) ? (
+                      ) : ["MRVL","NBIS","ASML","BE","SMCI","CRWV"].includes(h.ticker) ? (
                         // Other TM logos fill tile with their own background
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logoSrc} alt={h.ticker}

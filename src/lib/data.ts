@@ -20,6 +20,7 @@ const BASE_HOLDINGS = [
   { ticker: "ASML",  name: "ASML",           price: 1940.86, weight: 0, dayChangePct: 0 },
   { ticker: "BE",    name: "Bloom Energy",   price: 0,      weight: 0,  dayChangePct: 0 },
   { ticker: "SMCI",  name: "Super Micro",    price: 34.06,  weight: 0,  dayChangePct: 0 },
+  { ticker: "CRWV",  name: "CoreWeave",      price: 89.24,  weight: 0,  dayChangePct: 0 },
 ];
 
 const MOCK_PORTFOLIO: Portfolio = {

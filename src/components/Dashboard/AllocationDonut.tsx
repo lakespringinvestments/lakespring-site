@@ -16,10 +16,10 @@ const FP_COLORS: Record<string, string> = {
   TSLA: "#CC0000", NVDA: "#76B900", PLTR: "#101113", AMZN: "#FF9900", GOOGL: "#4285F4", LLY: "#D4537E", SPCX: "#5A6578",
 };
 const TM_COLORS: Record<string, string> = {
-  MRVL: "#0057B8", NBIS: "#C8F000", ASML: "#1E3A8A", BE: "#00A86B", SMCI: "#8A9BB0",
+  MRVL: "#0057B8", NBIS: "#C8F000", ASML: "#1E3A8A", BE: "#00A86B", SMCI: "#8A9BB0", CRWV: "#2563EB",
 };
 const FP_TICKERS = ["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"];
-const TM_TICKERS = ["MRVL","NBIS","ASML","BE","SMCI"];
+const TM_TICKERS = ["MRVL","NBIS","ASML","BE","SMCI","CRWV"];
 
 function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
   const rad = ((angleDeg - 90) * Math.PI) / 180;

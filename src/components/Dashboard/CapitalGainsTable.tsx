@@ -8,11 +8,11 @@ const FP_BOOK_COSTS: Record<string, number> = {
   TSLA: 252866, NVDA: 18028, PLTR: 69210, AMZN: 0, GOOGL: 0, LLY: 0, SPCX: 0,
 };
 const TM_BOOK_COSTS: Record<string, number> = {
-  MRVL: 763, NBIS: 0, ASML: 0, BE: 0, TSM: 0,
+  MRVL: 763, NBIS: 0, ASML: 0, BE: 0, TSM: 0, CRWV: 0,
 };
 
 const FP_TICKERS = ["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"];
-const TM_TICKERS = ["MRVL","NBIS","ASML","BE","TSM"];
+const TM_TICKERS = ["MRVL","NBIS","ASML","BE","TSM","CRWV"];
 
 // Badge colors matching AllocationDonut — light bg, darker text
 const BADGE_COLORS: Record<string, { bg: string; text: string }> = {
@@ -27,7 +27,7 @@ const BADGE_COLORS: Record<string, { bg: string; text: string }> = {
 
 const TM_NAMES: Record<string, string> = {
   MRVL: "Marvell", NBIS: "Nebius Group",
-  ASML: "ASML", BE: "Bloom Energy", TSM: "TSMC",
+  ASML: "ASML", BE: "Bloom Energy", TSM: "TSMC", CRWV: "CoreWeave",
 };
 
 function fmt(n: number) {
