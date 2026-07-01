@@ -14,12 +14,20 @@ export const metadata = {
 export default async function TradesPage() {
   const trades = await getAllTrades();
 
+  // Merge GOOG into GOOGL so Alphabet shows as one ticker
+  const mergedTrades = trades.map(t => {
+    if ((t.ticker ?? "").toUpperCase() === "GOOG") {
+      return { ...t, ticker: "GOOGL" };
+    }
+    return t;
+  });
+
   return (
     <>
       {/* Dark ledger */}
       <section className="bg-[#0A0A0A] pb-20 md:pb-24 pt-16 md:pt-20">
         <div className="max-w-6xl mx-auto px-6">
-          <TradeLedgerClient trades={trades} />
+          <TradeLedgerClient trades={mergedTrades} />
 
           {/* Members tier teaser */}
           <div className="mt-16 pt-12 border-t border-white/15">
