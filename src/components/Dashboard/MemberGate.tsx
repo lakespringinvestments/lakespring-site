@@ -16,7 +16,9 @@ export default function MemberGate() {
         Subscribe for full access to live positions, weekly analysis, and trade history.
       </p>
       <a
-        href="#"
+        href="https://buy.stripe.com/test_9B66oH1nF9Zpe5Wewxfw400"
+        target="_blank"
+        rel="noopener noreferrer"
         className="ml-4 flex-shrink-0 bg-white text-black font-semibold text-xs px-4 py-1.5 rounded-full hover:bg-gray-100 transition-colors"
       >
         Subscribe →
