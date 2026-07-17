@@ -29,41 +29,88 @@ function parseNum(val: string): number {
 
 // ─── Holdings ────────────────────────────────────────────────────────────────
 // Reads from "Current Portfolio Summary" tab.
-// Finds rows with recognised tickers and extracts price, weight, day change.
-const HOLDINGS_TICKERS = new Set(["TSLA", "NVDA", "PLTR", "AMZN", "GOOGL", "BTC", "ASML"]);
+// Column layout (0-indexed):
+//   A(0): Account  B(1): Ticker  C(2): Holdings/Name  D(3): Qty
+//   E(4): Avg Cost  F(5): Book Value  G(6): Live Price  H(7): Market Value
+//   I(8): Unreal. P&L  J(9): Unreal. P&L %
+
+const DASHBOARD_TICKERS = new Set([
+  // First Principles
+  "TSLA", "NVDA", "PLTR", "AMZN", "GOOGL", "GOOG", "LLY", "SPCX",
+  // Thematic Momentum
+  "MRVL", "NBIS", "ASML", "BE", "SMCI", "CRWV",
+]);
 
 export async function fetchHoldingsFromSheet(): Promise<Holding[]> {
-  // Fetch the holdings section — columns A:Q, rows 1-25
-  const rows = await fetchRange("Current Portfolio Summary", "A1:Q30");
+  const rows = await fetchRange("Current Portfolio Summary", "A1:J30");
   if (rows.length === 0) return [];
 
-  const holdings: Holding[] = [];
+  // First pass: collect market values per ticker (merge GOOG → GOOGL, sum across accounts)
+  const tickerData: Record<string, { price: number; mktValue: number; qty: number }> = {};
 
   for (const row of rows) {
-    let ticker = (row[2] ?? "").trim().toUpperCase();
+    let ticker = (row[1] ?? "").trim().toUpperCase();
     // Normalise crypto tickers
     ticker = ticker.replace(/-USD$/, "").replace(/-CAD$/, "");
+    // Merge GOOG into GOOGL
+    if (ticker === "GOOG") ticker = "GOOGL";
 
-    if (!HOLDINGS_TICKERS.has(ticker)) continue;
+    if (!DASHBOARD_TICKERS.has(ticker)) continue;
 
-    const price = parseNum(row[3]);   // Column D: Price (USD)
-    const qty   = parseNum(row[6]);   // Column G: Qty
-    const bookCost = parseNum(row[8]); // Column I: Book Cost (USD)
-    const mktValue = parseNum(row[9]); // Column J: Market Value (USD)
-    const pct   = parseNum(row[14]);  // Column O: Portfolio %
+    const qty      = parseNum(row[3]);  // Column D
+    const price    = parseNum(row[6]);  // Column G: Live Price
+    const mktValue = parseNum(row[7]);  // Column H: Market Value
 
     if (price <= 0 && mktValue <= 0) continue;
 
+    if (!tickerData[ticker]) {
+      tickerData[ticker] = { price: 0, mktValue: 0, qty: 0 };
+    }
+    // Sum market values across accounts (e.g. TSLA in TFSA + Margin)
+    tickerData[ticker].mktValue += mktValue;
+    tickerData[ticker].qty += qty;
+    // Keep the latest non-zero price
+    if (price > 0) tickerData[ticker].price = price;
+  }
+
+  // Calculate total market value for weight calculation
+  const totalMktValue = Object.values(tickerData).reduce((sum, d) => sum + d.mktValue, 0);
+
+  // Build holdings array
+  const holdings: Holding[] = [];
+  for (const [ticker, data] of Object.entries(tickerData)) {
     holdings.push({
       ticker,
       name: nameForTicker(ticker),
-      price: price || mktValue / (qty || 1),
-      weight: pct,
-      dayChangePct: 0, // Not available in this tab — leave 0
+      price: data.price || (data.qty > 0 ? data.mktValue / data.qty : 0),
+      weight: totalMktValue > 0 ? (data.mktValue / totalMktValue) * 100 : 0,
+      dayChangePct: 0,
     });
   }
 
   return holdings;
+}
+
+// ─── Total Portfolio Value ───────────────────────────────────────────────────
+// Reads the "ACTIVE HOLDINGS TOTAL" row from Current Portfolio Summary
+export async function fetchTotalValue(): Promise<number> {
+  const rows = await fetchRange("Current Portfolio Summary", "A1:J30");
+  if (rows.length === 0) return 0;
+
+  for (const row of rows) {
+    const label = (row[0] ?? "").trim().toUpperCase();
+    if (label.includes("ACTIVE HOLDINGS TOTAL")) {
+      return parseNum(row[7]); // Column H: Market Value total
+    }
+  }
+
+  // Fallback: sum all market values
+  let total = 0;
+  for (const row of rows) {
+    const mktValue = parseNum(row[7] ?? "");
+    if (mktValue > 0) total += mktValue;
+  }
+  return total;
 }
 
 function nameForTicker(ticker: string): string {
@@ -73,8 +120,15 @@ function nameForTicker(ticker: string): string {
     PLTR: "Palantir",
     AMZN: "Amazon",
     GOOGL: "Alphabet",
-    BTC: "Bitcoin",
+    LLY: "Eli Lilly",
+    SPCX: "SpaceX",
+    MRVL: "Marvell",
+    NBIS: "Nebius Group",
     ASML: "ASML",
+    BE: "Bloom Energy",
+    SMCI: "Super Micro",
+    CRWV: "CoreWeave",
+    BTC: "Bitcoin",
   };
   return names[ticker] ?? ticker;
 }

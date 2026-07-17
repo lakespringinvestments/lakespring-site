@@ -1,9 +1,9 @@
 import type { Portfolio } from "../../types/portfolio";
-import { fetchHoldingsFromSheet, fetchPerformanceFromSheet, fetchPremiumYTD } from "./sheets";
+import { fetchHoldingsFromSheet, fetchPerformanceFromSheet, fetchPremiumYTD, fetchTotalValue } from "./sheets";
 
 // Base holdings — always shown even when not currently held.
 // Live data from the sheet overwrites price/weight when available.
-// Weights reflect actual portfolio allocation (% of total ~$875K).
+// Weights reflect actual portfolio allocation.
 // Tickers with weight 0 appear as placeholder slices in the donut.
 const BASE_HOLDINGS = [
   // ── First Principles ──
@@ -42,10 +42,11 @@ const MOCK_PORTFOLIO: Portfolio = {
 
 export async function getPortfolio(): Promise<Portfolio> {
   try {
-    const [sheetHoldings, performance, premiumYTD] = await Promise.all([
+    const [sheetHoldings, performance, premiumYTD, sheetTotal] = await Promise.all([
       fetchHoldingsFromSheet(),
       fetchPerformanceFromSheet(),
       fetchPremiumYTD(),
+      fetchTotalValue(),
     ]);
 
     // Merge: start with base holdings, overwrite with live sheet data where available
@@ -66,21 +67,23 @@ export async function getPortfolio(): Promise<Portfolio> {
       return base;
     });
 
-    const perfTotal =
-      performance.length > 0
+    // Use sheet total if available, otherwise fall back to performance or mock
+    const totalValue = sheetTotal > 0
+      ? sheetTotal
+      : performance.length > 0
         ? performance[performance.length - 1].value
         : MOCK_PORTFOLIO.totalValue;
 
     const previousValue =
       performance.length > 1
         ? performance[performance.length - 2].value
-        : perfTotal;
+        : totalValue;
 
-    const dayChange = perfTotal - previousValue;
+    const dayChange = totalValue - previousValue;
     const dayChangePct = previousValue ? (dayChange / previousValue) * 100 : 0;
 
     return {
-      totalValue: perfTotal || MOCK_PORTFOLIO.totalValue,
+      totalValue,
       dayChange,
       dayChangePct,
       premiumYTD: premiumYTD || MOCK_PORTFOLIO.premiumYTD,
