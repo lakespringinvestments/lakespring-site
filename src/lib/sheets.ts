@@ -40,7 +40,7 @@ const DASHBOARD_TICKERS = new Set([
   // Thematic Momentum
   "MRVL", "NBIS", "ASML", "BE", "SMCI", "CRWV",
   // Crypto
-  "BTC", "ETH",
+  "BTC", "ETH", "SOL", "BMNR", "MSTR",
   // Cash
   "CASH",
 ]);
@@ -133,6 +133,11 @@ function nameForTicker(ticker: string): string {
     SMCI: "Super Micro",
     CRWV: "CoreWeave",
     BTC: "Bitcoin",
+    ETH: "Ethereum",
+    SOL: "Solana",
+    BMNR: "Bitmine Immersion",
+    MSTR: "Strategy",
+    CASH: "USD Cash",
   };
   return names[ticker] ?? ticker;
 }

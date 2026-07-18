@@ -19,12 +19,16 @@ const TM_COLORS: Record<string, string> = {
   MRVL: "#0057B8", NBIS: "#C8F000", ASML: "#1E3A8A", BE: "#00A86B", SMCI: "#8A9BB0", CRWV: "#2563EB",
 };
 const CRYPTO_COLORS: Record<string, string> = {
-  BTC: "#F7931A", ETH: "#627EEA",
+  BTC: "#F7931A", ETH: "#627EEA", SOL: "#9945FF", BMNR: "#E8874A", MSTR: "#CC3300",
+};
+const CASH_COLORS: Record<string, string> = {
+  CASH: "#1D9E75",
 };
 
 const FP_TICKERS = ["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"];
 const TM_TICKERS = ["MRVL","NBIS","ASML","BE","SMCI","CRWV"];
-const CRYPTO_TICKERS = ["BTC","ETH"];
+const CRYPTO_TICKERS = ["BTC","ETH","SOL","BMNR","MSTR"];
+const CASH_TICKERS = ["CASH"];
 
 function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
   const rad = ((angleDeg - 90) * Math.PI) / 180;
@@ -51,7 +55,7 @@ function getTickersAndColors(view: PortfolioView) {
     case "first":  return { tickers: FP_TICKERS, colors: FP_COLORS };
     case "second": return { tickers: TM_TICKERS, colors: TM_COLORS };
     case "crypto": return { tickers: CRYPTO_TICKERS, colors: CRYPTO_COLORS };
-    default:       return { tickers: [] as string[], colors: {} as Record<string, string> };
+    case "cash":   return { tickers: CASH_TICKERS, colors: CASH_COLORS };
   }
 }
 
@@ -70,17 +74,13 @@ export default function AllocationDonut({ portfolio, view }: Props) {
 
   const { tickers, colors } = getTickersAndColors(view);
 
-  // Cash view shows neutral ring — no donut
-  const isCashView = view === "cash";
-
   // Only include tickers with actual holdings (weight > 0)
   const held = portfolio.holdings.filter(
     h => tickers.includes(h.ticker) && h.weight > 0
   );
   const totalWeight = held.reduce((s, h) => s + h.weight, 0);
-  const hasPositions = held.length > 0 && totalWeight > 0 && !isCashView;
+  const hasPositions = held.length > 0 && totalWeight > 0;
 
-  // Build segments only for held positions
   const rawSegs = hasPositions
     ? held.map((h) => ({
         ticker: h.ticker,
@@ -125,18 +125,24 @@ export default function AllocationDonut({ portfolio, view }: Props) {
 
   // Centre display
   let totalDisplay = "—";
-  if (isCashView) {
+  let centreLabel = "total";
+  if (view === "cash") {
     const cashHolding = portfolio.holdings.find(h => h.ticker === "CASH");
     const cashVal = cashHolding ? Math.round((cashHolding.weight / 100) * portfolio.totalValue) : portfolio.cash ?? 0;
     totalDisplay = cashVal > 0 ? "$" + (cashVal / 1000).toFixed(0) + "K" : "—";
+    centreLabel = "cash";
   } else if (view === "crypto") {
     const cryptoVal = held.reduce((sum, h) => sum + (h.weight / 100) * portfolio.totalValue, 0);
     totalDisplay = cryptoVal > 0 ? "$" + (cryptoVal / 1000).toFixed(0) + "K" : "—";
+    centreLabel = "crypto";
   } else {
-    totalDisplay = portfolio.totalValue > 0 ? "$" + (portfolio.totalValue / 1000).toFixed(0) + "K" : "—";
+    const viewVal = held.reduce((sum, h) => sum + (h.weight / 100) * portfolio.totalValue, 0);
+    if (viewVal > 0) {
+      totalDisplay = "$" + (viewVal / 1000).toFixed(0) + "K";
+    } else {
+      totalDisplay = portfolio.totalValue > 0 ? "$" + (portfolio.totalValue / 1000).toFixed(0) + "K" : "—";
+    }
   }
-
-  const centreLabel = isCashView ? "cash" : view === "crypto" ? "crypto" : "total";
 
   useEffect(() => {
     if (animRef.current) cancelAnimationFrame(animRef.current);
@@ -184,7 +190,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   return (
     <section className="bg-white rounded-2xl border border-cream-200 p-6">
       <h2 className="text-[11px] uppercase tracking-[0.12em] text-ink-500 font-medium mb-2">
-        {isCashView ? "Cash Position" : "Allocation"}
+        {view === "cash" ? "Cash Position" : "Allocation"}
       </h2>
       <div className="flex justify-center">
         <svg ref={svgRef} viewBox={`0 0 ${VW} ${VH}`} className="w-full" style={{ maxHeight: "340px" }}>
@@ -196,20 +202,21 @@ export default function AllocationDonut({ portfolio, view }: Props) {
                   d={buildPath(cx, cy, outerR, innerR, seg.start, seg.start)}
                   fill={seg.color} stroke="white" strokeWidth="2" />
               ))}
+              {/* Hide percentage for single-slice views (cash) and small slices */}
               {sliceData.map((seg) => (
-                seg.sweep >= 25 ? (
+                seg.sweep >= 25 && sliceData.length > 1 ? (
                   <text key={`pct-${seg.ticker}`} className="donut-pct"
                     x={seg.pp.x} y={seg.pp.y}
                     textAnchor="middle" dominantBaseline="middle"
-                    fontSize="10" fontWeight="600"
-                    fill="#fff"
+                    fontSize="10" fontWeight="600" fill="#fff"
                     fontFamily="system-ui, sans-serif"
                     style={{ opacity: 0, filter: "none" }}>
                     {seg.weight.toFixed(0)}%
                   </text>
                 ) : null
               ))}
-              {sliceData.map((seg) => (
+              {/* Hide ticker label for single-slice views (cash) */}
+              {sliceData.length > 1 && sliceData.map((seg) => (
                 <text key={`ticker-${seg.ticker}`} className="donut-ticker"
                   x={seg.tp.x} y={seg.tp.y}
                   textAnchor={seg.tickerAnchor} dominantBaseline="middle"
@@ -223,8 +230,8 @@ export default function AllocationDonut({ portfolio, view }: Props) {
             </>
           ) : (
             <circle cx={cx} cy={cy} r={(outerR + innerR) / 2}
-              fill="none" stroke={isCashView ? "#1D9E75" : "#E8E1CF"} strokeWidth={outerR - innerR}
-              opacity={isCashView ? 0.25 : 0.5} />
+              fill="none" stroke="#E8E1CF" strokeWidth={outerR - innerR}
+              opacity="0.5" />
           )}
 
           <text x={cx} y={cy - 12} textAnchor="middle" fontSize="11" fill="#ccc" fontFamily="system-ui">{centreLabel}</text>

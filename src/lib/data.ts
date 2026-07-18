@@ -20,6 +20,9 @@ const BASE_HOLDINGS = [
   // ── Crypto ──
   { ticker: "BTC",   name: "Bitcoin",        price: 74593,  weight: 45, dayChangePct: 0 },
   { ticker: "ETH",   name: "Ethereum",       price: 1718,   weight: 0.1, dayChangePct: 0 },
+  { ticker: "SOL",   name: "Solana",         price: 0,      weight: 0,  dayChangePct: 0 },
+  { ticker: "BMNR",  name: "Bitmine Immersion", price: 15.69, weight: 1.7, dayChangePct: 0 },
+  { ticker: "MSTR",  name: "Strategy",       price: 0,      weight: 0,  dayChangePct: 0 },
   // ── Cash ──
   { ticker: "CASH",  name: "USD Cash",       price: 1,      weight: 8.5, dayChangePct: 0 },
 ];
@@ -81,7 +84,6 @@ export async function getPortfolio(): Promise<Portfolio> {
     const dayChange = totalValue - previousValue;
     const dayChangePct = previousValue ? (dayChange / previousValue) * 100 : 0;
 
-    // Find cash from holdings
     const cashHolding = holdings.find(h => h.ticker === "CASH");
     const cashVal = cashHolding && cashHolding.weight > 0
       ? Math.round((cashHolding.weight / 100) * totalValue)

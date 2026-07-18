@@ -6,61 +6,43 @@ import type { Portfolio } from "../../../types/portfolio";
 import type { Trade } from "@/lib/trades";
 
 const TICKER_COLORS: Record<string, string> = {
-  TSLA:  "#CC0000",
-  NVDA:  "#76B900",
-  PLTR:  "#101113",
-  AMZN:  "#edbb81",
-  GOOGL: "#E8EAED",
-  SPCX: "#E8EAED",
-  MRVL: "transparent",
-  NBIS: "transparent",
-  LLY:  "#FAF8F3",
-  SMCI: "#8A9BB0",
-  ASML: "transparent",
-  BE:   "transparent",
-  CRWV: "#2563EB",
-  BTC:  "#F7931A",
-  ETH:  "#627EEA",
+  TSLA:  "#CC0000", NVDA:  "#76B900", PLTR:  "#101113", AMZN:  "#edbb81",
+  GOOGL: "#E8EAED", SPCX: "#E8EAED", LLY:  "#FAF8F3",
+  MRVL: "transparent", NBIS: "transparent", ASML: "transparent", BE: "transparent",
+  SMCI: "#8A9BB0", CRWV: "#2563EB",
+  BTC:  "#F7931A", ETH:  "#627EEA", SOL: "#1A1A2E", BMNR: "#1A1A1A", MSTR: "#F7931A",
 };
 
 const TICKER_LOGOS: Record<string, string> = {
-  TSLA:  "/logos/tesla.png",
-  NVDA:  "/logos/nvidia.png",
-  PLTR:  "/logos/palantir.png",
-  AMZN:  "/logos/amazon.png",
-  GOOGL: "/logos/google.png",
-  MRVL: "/logos/marvell.png",
-  NBIS: "/logos/nebius.png",
-  LLY:  "/logos/lilly.png",
-  ASML: "/logos/asml.png",
+  TSLA:  "/logos/tesla.png", NVDA:  "/logos/nvidia.png", PLTR:  "/logos/palantir.png",
+  AMZN:  "/logos/amazon.png", GOOGL: "/logos/google.png", LLY:  "/logos/lilly.png",
+  SPCX: "/logos/space-x.png", SMCI: "/logos/smci.png", CRWV: "/logos/coreweave.png",
+  MRVL: "/logos/marvell.png", NBIS: "/logos/nebius.png", ASML: "/logos/asml.png",
   BE:   "/logos/bloom_energy.png",
-  SPCX: "/logos/space-x.png",
-  SMCI: "/logos/smci.png",
-  CRWV: "/logos/coreweave.png",
+  BTC:  "/logos/bitcoin.png", ETH:  "/logos/ethereum.png", SOL: "/logos/solana.png",
+  BMNR: "/logos/bitmine-immersion-technologies.png", MSTR: "/logos/microstrategy.png",
 };
 
-const EXCLUDED = new Set(["SOL"]);
+const EXCLUDED = new Set<string>();
 const OPTIONS_TYPES = new Set(["CSP", "CC", "PUTS", "CALLS"]);
 const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"]);
-const TM_TICKERS  = new Set(["MRVL","NBIS","ASML","BE","SMCI","CRWV"]);
-const CRYPTO_TICKERS = new Set(["BTC","ETH"]);
+const TM_TICKERS = new Set(["MRVL","NBIS","ASML","BE","SMCI","CRWV"]);
+const CRYPTO_TICKERS = new Set(["BTC","ETH","SOL","BMNR","MSTR"]);
 
 const FP_NAMES: Record<string, string> = {
   TSLA: "Tesla", NVDA: "Nvidia", PLTR: "Palantir", AMZN: "Amazon", GOOGL: "Alphabet", LLY: "Eli Lilly", SPCX: "SpaceX",
 };
 const TM_NAMES: Record<string, string> = {
-  MRVL: "Marvell", NBIS: "Nebius Group",
-  ASML: "ASML", BE: "Bloom Energy", SMCI: "Super Micro Computer",
-  CRWV: "CoreWeave",
+  MRVL: "Marvell", NBIS: "Nebius Group", ASML: "ASML", BE: "Bloom Energy", SMCI: "Super Micro Computer", CRWV: "CoreWeave",
 };
 const CRYPTO_NAMES: Record<string, string> = {
-  BTC: "Bitcoin", ETH: "Ethereum",
+  BTC: "Bitcoin", ETH: "Ethereum", SOL: "Solana", BMNR: "Bitmine Immersion", MSTR: "Strategy (MicroStrategy)",
 };
 
-function pickColor(ticker: string) {
-  return TICKER_COLORS[ticker] ?? "#034147";
-}
+// Tickers where the logo PNG has its own dark background — use objectFit cover
+const LOGO_COVER_TICKERS = new Set(["MRVL","NBIS","ASML","BE","SMCI","CRWV","SOL","BMNR","MSTR"]);
 
+function pickColor(ticker: string) { return TICKER_COLORS[ticker] ?? "#034147"; }
 function pickTextColor(bg: string) {
   const lightBgs = ["#76B900", "#E8EAED", "#EFCEAD", "#FAF8F3"];
   return lightBgs.includes(bg) ? "#0a0a0a" : "#ffffff";
@@ -72,6 +54,7 @@ function logoSize(ticker: string): number {
   if (ticker === "PLTR") return 36;
   if (ticker === "AMZN") return 30;
   if (ticker === "GOOGL") return 28;
+  if (["BTC","ETH"].includes(ticker)) return 36;
   return 36;
 }
 
@@ -82,12 +65,10 @@ function friendlyType(optionType: string): string {
   return optionType;
 }
 
-function formatDate(iso: string, fullYear = false): string {
+function formatDate(iso: string): string {
   if (!iso) return "—";
   try {
-    return new Date(iso).toLocaleDateString("en-US", {
-      month: "short", day: "numeric", year: "numeric",
-    });
+    return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   } catch { return iso; }
 }
 
@@ -115,8 +96,7 @@ function premiumTotal(trade: Trade): number | null {
 function premiumDisplay(trade: Trade): string {
   const val = premiumTotal(trade);
   if (val == null) return "—";
-  const prefix = val >= 0 ? "" : "-";
-  return prefix + "$" + Math.abs(val).toLocaleString();
+  return (val >= 0 ? "" : "-") + "$" + Math.abs(val).toLocaleString();
 }
 
 function tradeYield(trade: Trade): string {
@@ -144,32 +124,8 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
   const [member, setMember] = useState(false);
   useEffect(() => { setMember(localStorage.getItem("lakespring_member") === "true"); }, []);
 
-  // Cash view shows a summary, not holdings
-  if (view === "cash") {
-    const cashHolding = portfolio.holdings.find(h => h.ticker === "CASH");
-    const cashVal = cashHolding ? Math.round((cashHolding.weight / 100) * portfolio.totalValue) : portfolio.cash ?? 0;
-    return (
-      <section className="bg-white rounded-2xl border border-cream-200 p-6">
-        <h2 className="text-[11px] uppercase tracking-[0.12em] text-ink-500 font-medium mb-4">Cash Summary</h2>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center py-2">
-            <span className="text-sm text-ink-700">USD Cash Balance</span>
-            <span className="text-sm font-semibold text-ink-900 tabular-nums">
-              ${cashVal.toLocaleString()}
-            </span>
-          </div>
-          <div className="flex justify-between items-center py-2 border-t border-cream-100">
-            <span className="text-sm text-ink-700">Monthly Withdrawal</span>
-            <span className="text-sm font-medium text-ink-500 tabular-nums">$2,500</span>
-          </div>
-          <div className="flex justify-between items-center py-2 border-t border-cream-100">
-            <span className="text-sm text-ink-700">Next Withdrawal</span>
-            <span className="text-sm text-ink-500">1st of next month</span>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  // Cash view: summary is in CapitalGainsTable position — nothing here
+  if (view === "cash") return null;
 
   const activeTickers = view === "first" ? FP_TICKERS : view === "second" ? TM_TICKERS : CRYPTO_TICKERS;
   const nameMap = view === "first" ? FP_NAMES : view === "second" ? TM_NAMES : CRYPTO_NAMES;
@@ -179,10 +135,7 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
 
   const holdings = [...new Set([...activeTickers])].map(ticker => {
     const live = liveHoldings.find(h => h.ticker === ticker);
-    return live ?? {
-      ticker, name: nameMap[ticker] ?? ticker,
-      price: 0, weight: 0, dayChangePct: 0,
-    };
+    return live ?? { ticker, name: nameMap[ticker] ?? ticker, price: 0, weight: 0, dayChangePct: 0 };
   });
 
   const toggle = (ticker: string) => setExpanded(prev => prev === ticker ? null : ticker);
@@ -204,36 +157,23 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
             <div key={h.ticker}>
               <button onClick={() => toggle(h.ticker)} className="w-full py-3 text-left" aria-expanded={isOpen}>
                 <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center"
-                    style={{ background: bg }}
-                  >
+                  <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center"
+                    style={{ background: bg }}>
                     {logoSrc ? (
                       h.ticker === "LLY" ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={logoSrc} alt={h.ticker}
-                          style={{ width: "90%", height: "90%", objectFit: "contain", display: "block" }}
-                        />
+                        <img src={logoSrc} alt={h.ticker} style={{ width: "90%", height: "90%", objectFit: "contain", display: "block" }} />
                       ) : h.ticker === "SPCX" ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={logoSrc} alt={h.ticker}
-                          style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", marginLeft: "10px" }}
-                        />
-                      ) : ["MRVL","NBIS","ASML","BE","SMCI","CRWV"].includes(h.ticker) ? (
+                        <img src={logoSrc} alt={h.ticker} style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", marginLeft: "10px" }} />
+                      ) : LOGO_COVER_TICKERS.has(h.ticker) ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={logoSrc} alt={h.ticker}
-                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                        />
+                        <img src={logoSrc} alt={h.ticker} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                       ) : (
-                        <Image src={logoSrc} alt={h.ticker}
-                          width={logoSize(h.ticker)} height={logoSize(h.ticker)}
-                          className="object-contain"
-                        />
+                        <Image src={logoSrc} alt={h.ticker} width={logoSize(h.ticker)} height={logoSize(h.ticker)} className="object-contain" />
                       )
                     ) : (
-                      <span className="text-[11px] font-medium" style={{ color: fg }}>
-                        {h.ticker.slice(0, 4)}
-                      </span>
+                      <span className="text-[11px] font-medium" style={{ color: fg }}>{h.ticker.slice(0, 4)}</span>
                     )}
                   </div>
 
@@ -269,51 +209,21 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                     <p className="text-xs text-ink-400 py-2">No options trades found for {h.ticker}.</p>
                   ) : (
                     <div className="rounded-xl border border-cream-200 overflow-hidden text-xs min-w-[760px]">
-                      <div
-                        className="grid px-4 py-2.5"
-                        style={{ gridTemplateColumns: GRID, gap: "0", background: "#034147" }}
-                      >
+                      <div className="grid px-4 py-2.5" style={{ gridTemplateColumns: GRID, gap: "0", background: "#034147" }}>
                         {COLS.map((col, ci) => (
-                          <span
-                            key={col}
-                            className="text-[10px] uppercase tracking-wide font-medium text-white/80"
-                            style={{ textAlign: ci === 0 ? "left" : "center" }}
-                          >
-                            {col}
-                          </span>
+                          <span key={col} className="text-[10px] uppercase tracking-wide font-medium text-white/80"
+                            style={{ textAlign: ci === 0 ? "left" : "center" }}>{col}</span>
                         ))}
                       </div>
                       {optionsTrades.slice(0, 5).map((trade, idx) => (
-                        <div
-                          key={idx}
-                          className="grid px-4 py-2.5 border-b border-cream-100 last:border-0 items-center"
-                          style={{
-                            gridTemplateColumns: GRID,
-                            gap: "0",
-                            background: idx % 2 === 1 ? "rgba(250,248,243,0.6)" : "white",
-                          }}
-                        >
-                          <span className="text-ink-500 tabular-nums text-left">
-                            {formatDate(trade.openDate)}
-                          </span>
-                          <span className="text-center font-medium" style={{ color: "#034147" }}>
-                            {friendlyType(trade.optionType)}
-                          </span>
-                          <span className="text-center text-ink-700 tabular-nums">
-                            {premiumDisplay(trade)}
-                          </span>
-                          <span className="text-center tabular-nums font-medium" style={{ color: "#1D9E75" }}>
-                            {tradeYield(trade)}
-                          </span>
-                          <span className="text-center text-ink-500 tabular-nums">
-                            {formatDate(trade.closeDate)}
-                          </span>
-                          <span
-                            className="text-center font-medium"
-                            style={{ color: statusColor(trade.status) }}
-                          >
-                            {trade.status || "—"}
-                          </span>
+                        <div key={idx} className="grid px-4 py-2.5 border-b border-cream-100 last:border-0 items-center"
+                          style={{ gridTemplateColumns: GRID, gap: "0", background: idx % 2 === 1 ? "rgba(250,248,243,0.6)" : "white" }}>
+                          <span className="text-ink-500 tabular-nums text-left">{formatDate(trade.openDate)}</span>
+                          <span className="text-center font-medium" style={{ color: "#034147" }}>{friendlyType(trade.optionType)}</span>
+                          <span className="text-center text-ink-700 tabular-nums">{premiumDisplay(trade)}</span>
+                          <span className="text-center tabular-nums font-medium" style={{ color: "#1D9E75" }}>{tradeYield(trade)}</span>
+                          <span className="text-center text-ink-500 tabular-nums">{formatDate(trade.closeDate)}</span>
+                          <span className="text-center font-medium" style={{ color: statusColor(trade.status) }}>{trade.status || "—"}</span>
                         </div>
                       ))}
                       <div className="px-4 py-3 text-center border-t border-cream-100">
