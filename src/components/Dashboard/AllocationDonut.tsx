@@ -111,7 +111,8 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   let cumulAngle = 0;
   const sliceData = interleaved.map(seg => {
     const start = cumulAngle;
-    const sweep = (seg.weight / 100) * 360;
+    // Cap at 359.9° — a full 360° arc collapses in SVG (start = end point)
+    const sweep = Math.min((seg.weight / 100) * 360, 359.9);
     const end = start + sweep;
     const mid = start + sweep / 2;
 
@@ -165,7 +166,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
 
       let cumul = 0;
       sliceData.forEach((seg, i) => {
-        const sweep = (seg.weight / 100) * 360 * progress;
+        const sweep = Math.min((seg.weight / 100) * 360 * progress, 359.9);
         if (sweep <= 0) return;
         const end = cumul + sweep;
         const path = paths[i] as SVGPathElement;
@@ -215,8 +216,9 @@ export default function AllocationDonut({ portfolio, view }: Props) {
                   </text>
                 ) : null
               ))}
-              {/* Hide ticker label for single-slice views (cash) */}
+              {/* Hide ticker label for single-slice views and slices too small to label */}
               {sliceData.length > 1 && sliceData.map((seg) => (
+                seg.sweep >= 15 ? (
                 <text key={`ticker-${seg.ticker}`} className="donut-ticker"
                   x={seg.tp.x} y={seg.tp.y}
                   textAnchor={seg.tickerAnchor} dominantBaseline="middle"
@@ -226,6 +228,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
                   style={{ opacity: 0 }}>
                   {seg.ticker}
                 </text>
+                ) : null
               ))}
             </>
           ) : (

@@ -86,9 +86,9 @@ export default function MetricCards({ portfolio, allTrades, view, setView }: Met
   const annualizedYield = avgWeeklyCapital > 0 && avgWeekly > 0
     ? ((avgWeekly / avgWeeklyCapital) * 52 * 100).toFixed(1) + "%" : "—";
 
-  // First card: allocation — same pattern for all views
+  // First card: allocation — same pattern for all views (cash uses "Cash balance" label)
   const allocationCard = {
-    label: "Portfolio allocation",
+    label: view === "cash" ? "Cash balance" : "Portfolio allocation",
     value: fmt(Math.round(viewMktValue)),
     sub: viewAllocation > 0 ? `${viewAllocation.toFixed(1)}% of total portfolio` : "No positions held",
   };

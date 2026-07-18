@@ -65,10 +65,12 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
     const cashHolding = portfolio.holdings.find(h => h.ticker === "CASH");
     const cashVal = cashHolding ? Math.round((cashHolding.weight / 100) * portfolio.totalValue) : portfolio.cash ?? 0;
 
-    const CASH_COLS = ["Item", "Value"];
+    const CASH_COLS = ["Line Items", "Value"];
+    const netCash = cashVal - 2500;
     const cashRows = [
       { label: "USD Cash Balance", value: fmt(cashVal), color: "#0a0a0a" },
-      { label: "Monthly Withdrawal", value: "$2,500", color: "#888" },
+      { label: "Monthly Withdrawal", value: "-$2,500", color: "#E24B4A" },
+      { label: "Net Cash (Post-Withdrawal)", value: fmt(netCash), color: netCash >= 0 ? "#1D9E75" : "#E24B4A" },
       { label: "Next Withdrawal", value: "1st of next month", color: "#888" },
       { label: "Cash as % of Portfolio", value: portfolio.totalValue > 0 ? ((cashVal / portfolio.totalValue) * 100).toFixed(1) + "%" : "—", color: "#1D9E75" },
     ];
@@ -89,6 +91,16 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
               <span className="tabular-nums font-medium" style={{ color }}>{value}</span>
             </div>
           ))}
+        </div>
+        <div className="px-5 py-3 border-t border-cream-100">
+          <p className="text-[11px] text-ink-400 leading-relaxed">
+            The cash balance will be used strategically to build further positions in the
+            First Principles portfolio. Review the{" "}
+            <a href="/trades" className="text-teal-600 hover:text-teal-700 font-medium transition-colors">
+              latest weekly analysis report
+            </a>{" "}
+            for our gameplan on which tickers we are looking to acquire.
+          </p>
         </div>
       </section>
     );
