@@ -1,6 +1,6 @@
 // src/app/trades/page.tsx
 import { getAllTrades } from "@/lib/trades";
-import TradeLedgerClient from "@/components/TradeLedger/TradeLedgerClient";
+import TradesPageTabs from "@/components/TradeLedger/TradesPageTabs";
 import NewsletterSignup from "@/components/NewsletterSignup";
 
 export const dynamic = "force-dynamic";
@@ -12,10 +12,10 @@ export const metadata = {
 };
 
 export default async function TradesPage() {
-  const trades = await getAllTrades();
+  const rawTrades = await getAllTrades();
 
   // Merge GOOG into GOOGL so Alphabet shows as one ticker
-  const mergedTrades = trades.map(t => {
+  const trades = rawTrades.map(t => {
     if ((t.ticker ?? "").toUpperCase() === "GOOG") {
       return { ...t, ticker: "GOOGL" };
     }
@@ -27,7 +27,7 @@ export default async function TradesPage() {
       {/* Dark ledger */}
       <section className="bg-[#0A0A0A] pb-20 md:pb-24 pt-16 md:pt-20">
         <div className="max-w-6xl mx-auto px-6">
-          <TradeLedgerClient trades={mergedTrades} />
+          <TradesPageTabs trades={trades} />
 
           {/* Members tier teaser */}
           <div className="mt-16 pt-12 border-t border-white/15">
