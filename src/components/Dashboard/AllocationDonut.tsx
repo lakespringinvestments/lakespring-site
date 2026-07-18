@@ -74,20 +74,21 @@ export default function AllocationDonut({ portfolio, view }: Props) {
 
   const { tickers, colors } = getTickersAndColors(view);
 
-  // Only include tickers with actual holdings (weight > 0)
   const held = portfolio.holdings.filter(
     h => tickers.includes(h.ticker) && h.weight > 0
   );
   const totalWeight = held.reduce((s, h) => s + h.weight, 0);
   const hasPositions = held.length > 0 && totalWeight > 0;
 
+  // Build segments: real positions OR a single empty placeholder for animation
   const rawSegs = hasPositions
     ? held.map((h) => ({
         ticker: h.ticker,
         weight: (h.weight / totalWeight) * 100,
         color: colors[h.ticker] ?? "#A8B0B6",
+        isEmpty: false,
       }))
-    : [];
+    : [{ ticker: "EMPTY", weight: 100, color: "url(#crosshatch)", isEmpty: true }];
 
   const segTotal = rawSegs.reduce((s, seg) => s + seg.weight, 0);
   const segments = rawSegs.map((seg, i) => ({
@@ -111,7 +112,6 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   let cumulAngle = 0;
   const sliceData = interleaved.map(seg => {
     const start = cumulAngle;
-    // Cap at 359.9° — a full 360° arc collapses in SVG (start = end point)
     const sweep = Math.min((seg.weight / 100) * 360, 359.9);
     const end = start + sweep;
     const mid = start + sweep / 2;
@@ -127,27 +127,25 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   // Centre display
   let totalDisplay = "—";
   let centreLabel = "total";
-  if (view === "cash") {
+
+  if (!hasPositions) {
+    totalDisplay = "$0";
+  } else if (view === "cash") {
     const cashHolding = portfolio.holdings.find(h => h.ticker === "CASH");
     const cashVal = cashHolding ? Math.round((cashHolding.weight / 100) * portfolio.totalValue) : portfolio.cash ?? 0;
-    totalDisplay = cashVal > 0 ? "$" + (cashVal / 1000).toFixed(0) + "K" : "—";
+    totalDisplay = cashVal > 0 ? "$" + (cashVal / 1000).toFixed(0) + "K" : "$0";
     centreLabel = "cash";
   } else if (view === "crypto") {
     const cryptoVal = held.reduce((sum, h) => sum + (h.weight / 100) * portfolio.totalValue, 0);
-    totalDisplay = cryptoVal > 0 ? "$" + (cryptoVal / 1000).toFixed(0) + "K" : "—";
+    totalDisplay = cryptoVal > 0 ? "$" + (cryptoVal / 1000).toFixed(0) + "K" : "$0";
     centreLabel = "crypto";
   } else {
     const viewVal = held.reduce((sum, h) => sum + (h.weight / 100) * portfolio.totalValue, 0);
-    if (viewVal > 0) {
-      totalDisplay = "$" + (viewVal / 1000).toFixed(0) + "K";
-    } else {
-      totalDisplay = portfolio.totalValue > 0 ? "$" + (portfolio.totalValue / 1000).toFixed(0) + "K" : "—";
-    }
+    totalDisplay = viewVal > 0 ? "$" + (viewVal / 1000).toFixed(0) + "K" : "$0";
   }
 
   useEffect(() => {
     if (animRef.current) cancelAnimationFrame(animRef.current);
-    if (!hasPositions) return;
     const DURATION = 700;
     const startTime = performance.now();
     prevView.current = view;
@@ -195,48 +193,50 @@ export default function AllocationDonut({ portfolio, view }: Props) {
       </h2>
       <div className="flex justify-center">
         <svg ref={svgRef} viewBox={`0 0 ${VW} ${VH}`} className="w-full" style={{ maxHeight: "340px" }}>
+          {/* Cross-hatch pattern for empty states */}
+          <defs>
+            <pattern id="crosshatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="8" height="8" fill="#FAF8F3" />
+              <line x1="0" y1="0" x2="0" y2="8" stroke="#D4CFC4" strokeWidth="1.5" />
+              <line x1="4" y1="0" x2="4" y2="8" stroke="#E8E1CF" strokeWidth="0.75" />
+            </pattern>
+          </defs>
 
-          {hasPositions ? (
-            <>
-              {sliceData.map((seg) => (
-                <path key={seg.ticker} className="donut-slice"
-                  d={buildPath(cx, cy, outerR, innerR, seg.start, seg.start)}
-                  fill={seg.color} stroke="white" strokeWidth="2" />
-              ))}
-              {/* Hide percentage for single-slice views (cash) and small slices */}
-              {sliceData.map((seg) => (
-                seg.sweep >= 25 && sliceData.length > 1 ? (
-                  <text key={`pct-${seg.ticker}`} className="donut-pct"
-                    x={seg.pp.x} y={seg.pp.y}
-                    textAnchor="middle" dominantBaseline="middle"
-                    fontSize="10" fontWeight="600" fill="#fff"
-                    fontFamily="system-ui, sans-serif"
-                    style={{ opacity: 0, filter: "none" }}>
-                    {seg.weight.toFixed(0)}%
-                  </text>
-                ) : null
-              ))}
-              {/* Hide ticker label for single-slice views and slices too small to label */}
-              {sliceData.length > 1 && sliceData.map((seg) => (
-                seg.sweep >= 15 ? (
-                <text key={`ticker-${seg.ticker}`} className="donut-ticker"
-                  x={seg.tp.x} y={seg.tp.y}
-                  textAnchor={seg.tickerAnchor} dominantBaseline="middle"
-                  fontSize="9.5" fontWeight="700"
-                  fill={seg.color === "#101113" ? "#333" : seg.color === "#C8F000" ? "#7A9000" : seg.color}
-                  fontFamily="system-ui, sans-serif"
-                  style={{ opacity: 0 }}>
-                  {seg.ticker}
-                </text>
-                ) : null
-              ))}
-            </>
-          ) : (
-            <circle cx={cx} cy={cy} r={(outerR + innerR) / 2}
-              fill="none" stroke="#E8E1CF" strokeWidth={outerR - innerR}
-              opacity="0.5" />
-          )}
+          {/* Slices — always rendered (empty state uses crosshatch pattern) */}
+          {sliceData.map((seg) => (
+            <path key={seg.ticker} className="donut-slice"
+              d={buildPath(cx, cy, outerR, innerR, seg.start, seg.start)}
+              fill={seg.color} stroke={seg.isEmpty ? "none" : "white"} strokeWidth={seg.isEmpty ? 0 : 2} />
+          ))}
 
+          {/* Percentage labels — only for real multi-slice views with enough sweep */}
+          {hasPositions && sliceData.length > 1 && sliceData.map((seg) => (
+            seg.sweep >= 25 ? (
+              <text key={`pct-${seg.ticker}`} className="donut-pct"
+                x={seg.pp.x} y={seg.pp.y}
+                textAnchor="middle" dominantBaseline="middle"
+                fontSize="10" fontWeight="600" fill="#fff"
+                fontFamily="system-ui, sans-serif"
+                style={{ opacity: 0, filter: "none" }}>
+                {seg.weight.toFixed(0)}%
+              </text>
+            ) : null
+          ))}
+
+          {/* Ticker labels — all real slices, no minimum sweep */}
+          {hasPositions && sliceData.length > 1 && sliceData.map((seg) => (
+            <text key={`ticker-${seg.ticker}`} className="donut-ticker"
+              x={seg.tp.x} y={seg.tp.y}
+              textAnchor={seg.tickerAnchor} dominantBaseline="middle"
+              fontSize="9.5" fontWeight="700"
+              fill={seg.color === "#101113" ? "#333" : seg.color === "#C8F000" ? "#7A9000" : seg.color}
+              fontFamily="system-ui, sans-serif"
+              style={{ opacity: 0 }}>
+              {seg.ticker}
+            </text>
+          ))}
+
+          {/* Centre */}
           <text x={cx} y={cy - 12} textAnchor="middle" fontSize="11" fill="#ccc" fontFamily="system-ui">{centreLabel}</text>
           <text x={cx} y={cy + 10} textAnchor="middle" fontSize="22" fontWeight="700" fill="#034147" fontFamily="system-ui"
             style={{ filter: "none" }}>{totalDisplay}</text>
