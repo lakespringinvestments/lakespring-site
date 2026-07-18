@@ -10,11 +10,14 @@ const FP_BOOK_COSTS: Record<string, number> = {
 const TM_BOOK_COSTS: Record<string, number> = {
   MRVL: 763, NBIS: 0, ASML: 0, BE: 0, TSM: 0, CRWV: 0,
 };
+const CRYPTO_BOOK_COSTS: Record<string, number> = {
+  BTC: 220381, ETH: 2194,
+};
 
 const FP_TICKERS = ["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"];
 const TM_TICKERS = ["MRVL","NBIS","ASML","BE","TSM","CRWV"];
+const CRYPTO_TICKERS = ["BTC","ETH"];
 
-// Badge colors matching AllocationDonut — light bg, darker text
 const BADGE_COLORS: Record<string, { bg: string; text: string }> = {
   TSLA:  { bg: "rgba(204,0,0,0.10)",     text: "#CC0000" },
   NVDA:  { bg: "rgba(118,185,0,0.10)",   text: "#5A8E00" },
@@ -23,11 +26,14 @@ const BADGE_COLORS: Record<string, { bg: string; text: string }> = {
   GOOGL: { bg: "rgba(66,133,244,0.10)",  text: "#3B76DB" },
   LLY:   { bg: "rgba(212,83,126,0.10)",  text: "#B8436A" },
   SPCX:  { bg: "rgba(90,101,120,0.08)",  text: "#5A6578" },
+  CRWV:  { bg: "rgba(37,99,235,0.10)",   text: "#2563EB" },
+  BTC:   { bg: "rgba(247,147,26,0.10)",  text: "#D97B06" },
+  ETH:   { bg: "rgba(98,126,234,0.10)",  text: "#4B5EC9" },
 };
 
-const TM_NAMES: Record<string, string> = {
-  MRVL: "Marvell", NBIS: "Nebius Group",
-  ASML: "ASML", BE: "Bloom Energy", TSM: "TSMC", CRWV: "CoreWeave",
+const NAMES: Record<string, string> = {
+  MRVL: "Marvell", NBIS: "Nebius Group", ASML: "ASML", BE: "Bloom Energy",
+  TSM: "TSMC", CRWV: "CoreWeave", BTC: "Bitcoin", ETH: "Ethereum",
 };
 
 function fmt(n: number) {
@@ -35,12 +41,22 @@ function fmt(n: number) {
   return n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
 
+function getConfig(view: PortfolioView) {
+  switch (view) {
+    case "first":  return { tickers: FP_TICKERS, bookCosts: FP_BOOK_COSTS, title: "First Principles — Capital Gains" };
+    case "second": return { tickers: TM_TICKERS, bookCosts: TM_BOOK_COSTS, title: "Thematic Momentum — Capital Gains" };
+    case "crypto": return { tickers: CRYPTO_TICKERS, bookCosts: CRYPTO_BOOK_COSTS, title: "Crypto — Capital Gains" };
+    default:       return { tickers: [], bookCosts: {}, title: "" };
+  }
+}
+
 interface Props { portfolio: Portfolio; view: PortfolioView; }
 
 export default function CapitalGainsTable({ portfolio, view }: Props) {
-  const tickers = view === "first" ? FP_TICKERS : TM_TICKERS;
-  const bookCosts = view === "first" ? FP_BOOK_COSTS : TM_BOOK_COSTS;
-  const title = view === "first" ? "First Principles — Capital Gains" : "Thematic Momentum — Capital Gains";
+  // Cash view: no capital gains to show
+  if (view === "cash") return null;
+
+  const { tickers, bookCosts } = getConfig(view);
   const COLS = ["Ticker", "Book cost", "Mkt value", "Capital gain", "ROI"];
   const [member, setMember] = useState(false);
   useEffect(() => { setMember(localStorage.getItem("lakespring_member") === "true"); }, []);
@@ -53,7 +69,7 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
     const hasPosition = bookCost > 0 && mktValue > 0;
     const capitalGain = hasPosition ? mktValue - bookCost : null;
     const roi = hasPosition ? ((mktValue - bookCost) / bookCost) * 100 : null;
-    const name = TM_NAMES[ticker] ?? ticker;
+    const name = NAMES[ticker] ?? ticker;
     return { ticker, name, bookCost, mktValue, capitalGain, roi };
   });
 
@@ -76,17 +92,16 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
               }}>
               {ticker}
             </span>
-            <span className="text-ink-700 tabular-nums"
-              style={{  }}>{fmt(bookCost)}</span>
-            <span className="tabular-nums" style={{ color: mktValue > 0 ? "#0a0a0a" : "#888",  }}>
+            <span className="text-ink-700 tabular-nums">{fmt(bookCost)}</span>
+            <span className="tabular-nums" style={{ color: mktValue > 0 ? "#0a0a0a" : "#888" }}>
               {mktValue > 0 ? fmt(mktValue) : "—"}
             </span>
             <span className="tabular-nums font-medium"
-              style={{ color: capitalGain === null ? "#888" : capitalGain >= 0 ? "#1D9E75" : "#E24B4A",  }}>
+              style={{ color: capitalGain === null ? "#888" : capitalGain >= 0 ? "#1D9E75" : "#E24B4A" }}>
               {capitalGain !== null ? (capitalGain >= 0 ? "+" : "") + fmt(Math.abs(capitalGain)) : "No position"}
             </span>
             <span className="tabular-nums font-medium"
-              style={{ color: roi === null ? "#888" : roi >= 0 ? "#1D9E75" : "#E24B4A",  }}>
+              style={{ color: roi === null ? "#888" : roi >= 0 ? "#1D9E75" : "#E24B4A" }}>
               {roi !== null ? (roi >= 0 ? "+" : "") + roi.toFixed(1) + "%" : "—"}
             </span>
           </div>

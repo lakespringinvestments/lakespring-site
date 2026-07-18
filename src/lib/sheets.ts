@@ -39,6 +39,10 @@ const DASHBOARD_TICKERS = new Set([
   "TSLA", "NVDA", "PLTR", "AMZN", "GOOGL", "GOOG", "LLY", "SPCX",
   // Thematic Momentum
   "MRVL", "NBIS", "ASML", "BE", "SMCI", "CRWV",
+  // Crypto
+  "BTC", "ETH",
+  // Cash
+  "CASH",
 ]);
 
 export async function fetchHoldingsFromSheet(): Promise<Holding[]> {

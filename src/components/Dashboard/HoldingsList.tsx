@@ -11,15 +11,16 @@ const TICKER_COLORS: Record<string, string> = {
   PLTR:  "#101113",
   AMZN:  "#edbb81",
   GOOGL: "#E8EAED",
-  SPCX: "#E8EAED",   // light gray — SpaceX logo on light bg
-  // TM tickers — use transparent so each logo PNG's own background shows
+  SPCX: "#E8EAED",
   MRVL: "transparent",
   NBIS: "transparent",
-  LLY:  "#FAF8F3",   // cream — Lilly logo contained on light bg
-  SMCI: "#8A9BB0",   // gray
+  LLY:  "#FAF8F3",
+  SMCI: "#8A9BB0",
   ASML: "transparent",
   BE:   "transparent",
   CRWV: "#2563EB",
+  BTC:  "#F7931A",
+  ETH:  "#627EEA",
 };
 
 const TICKER_LOGOS: Record<string, string> = {
@@ -28,7 +29,6 @@ const TICKER_LOGOS: Record<string, string> = {
   PLTR:  "/logos/palantir.png",
   AMZN:  "/logos/amazon.png",
   GOOGL: "/logos/google.png",
-  // Thematic Momentum
   MRVL: "/logos/marvell.png",
   NBIS: "/logos/nebius.png",
   LLY:  "/logos/lilly.png",
@@ -39,12 +39,12 @@ const TICKER_LOGOS: Record<string, string> = {
   CRWV: "/logos/coreweave.png",
 };
 
-const EXCLUDED = new Set(["BTC", "SOL"]);
+const EXCLUDED = new Set(["SOL"]);
 const OPTIONS_TYPES = new Set(["CSP", "CC", "PUTS", "CALLS"]);
 const FP_TICKERS = new Set(["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"]);
 const TM_TICKERS  = new Set(["MRVL","NBIS","ASML","BE","SMCI","CRWV"]);
+const CRYPTO_TICKERS = new Set(["BTC","ETH"]);
 
-// Tickers that may not be in portfolio.holdings — show as placeholders
 const FP_NAMES: Record<string, string> = {
   TSLA: "Tesla", NVDA: "Nvidia", PLTR: "Palantir", AMZN: "Amazon", GOOGL: "Alphabet", LLY: "Eli Lilly", SPCX: "SpaceX",
 };
@@ -52,6 +52,9 @@ const TM_NAMES: Record<string, string> = {
   MRVL: "Marvell", NBIS: "Nebius Group",
   ASML: "ASML", BE: "Bloom Energy", SMCI: "Super Micro Computer",
   CRWV: "CoreWeave",
+};
+const CRYPTO_NAMES: Record<string, string> = {
+  BTC: "Bitcoin", ETH: "Ethereum",
 };
 
 function pickColor(ticker: string) {
@@ -67,7 +70,7 @@ function logoSize(ticker: string): number {
   if (ticker === "TSLA") return 38;
   if (ticker === "NVDA") return 36;
   if (ticker === "PLTR") return 36;
-  if (ticker === "AMZN") return 30;   // transparent bg PNG — slightly smaller
+  if (ticker === "AMZN") return 30;
   if (ticker === "GOOGL") return 28;
   return 36;
 }
@@ -100,33 +103,13 @@ function statusColor(status: string): string {
 function sumPremiums(trades: Trade[]): number {
   return trades
     .filter(t => OPTIONS_TYPES.has(t.optionType?.toUpperCase()))
-    .reduce((sum, t) => {
-      return sum + (t.gainLossUsd ?? 0);
-    }, 0);
-}
-
-function capitalRequired(trade: Trade): string {
-  if (trade.strike && trade.contracts) {
-    const cap = Math.abs(trade.strike * trade.contracts * 100);
-    return "$" + cap.toLocaleString(undefined, { maximumFractionDigits: 0 });
-  }
-  return "—";
+    .reduce((sum, t) => sum + (t.gainLossUsd ?? 0), 0);
 }
 
 function premiumTotal(trade: Trade): number | null {
   if (trade.gainLossUsd != null) return trade.gainLossUsd;
   if (trade.totalPremiumUsd != null) return trade.totalPremiumUsd;
   return null;
-}
-
-function optionPrice(trade: Trade): string {
-  // Option price per share = total premium / (contracts * 100)
-  const total = premiumTotal(trade);
-  if (total != null && trade.contracts && trade.contracts > 0) {
-    const perShare = total / (trade.contracts * 100);
-    return "$" + perShare.toFixed(2);
-  }
-  return "—";
 }
 
 function premiumDisplay(trade: Trade): string {
@@ -137,7 +120,6 @@ function premiumDisplay(trade: Trade): string {
 }
 
 function tradeYield(trade: Trade): string {
-  // Yield = premium / capital required (strike * contracts * 100)
   const total = premiumTotal(trade);
   if (total != null && trade.strike && trade.contracts) {
     const cap = Math.abs(trade.strike * trade.contracts * 100);
@@ -146,7 +128,6 @@ function tradeYield(trade: Trade): string {
   return "—";
 }
 
-// Simplified columns for holdings view — full detail on Trade Ledger
 const COLS = ["Date", "Type", "Premium", "Yield", "Expiry", "Status"];
 const GRID = "100px 100px 90px 70px 100px 80px";
 
@@ -163,28 +144,46 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
   const [member, setMember] = useState(false);
   useEffect(() => { setMember(localStorage.getItem("lakespring_member") === "true"); }, []);
 
-  // Filter holdings by portfolio view
-  const activeTickers = view === "first" ? FP_TICKERS : TM_TICKERS;
+  // Cash view shows a summary, not holdings
+  if (view === "cash") {
+    const cashHolding = portfolio.holdings.find(h => h.ticker === "CASH");
+    const cashVal = cashHolding ? Math.round((cashHolding.weight / 100) * portfolio.totalValue) : portfolio.cash ?? 0;
+    return (
+      <section className="bg-white rounded-2xl border border-cream-200 p-6">
+        <h2 className="text-[11px] uppercase tracking-[0.12em] text-ink-500 font-medium mb-4">Cash Summary</h2>
+        <div className="space-y-3">
+          <div className="flex justify-between items-center py-2">
+            <span className="text-sm text-ink-700">USD Cash Balance</span>
+            <span className="text-sm font-semibold text-ink-900 tabular-nums">
+              ${cashVal.toLocaleString()}
+            </span>
+          </div>
+          <div className="flex justify-between items-center py-2 border-t border-cream-100">
+            <span className="text-sm text-ink-700">Monthly Withdrawal</span>
+            <span className="text-sm font-medium text-ink-500 tabular-nums">$2,500</span>
+          </div>
+          <div className="flex justify-between items-center py-2 border-t border-cream-100">
+            <span className="text-sm text-ink-700">Next Withdrawal</span>
+            <span className="text-sm text-ink-500">1st of next month</span>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const activeTickers = view === "first" ? FP_TICKERS : view === "second" ? TM_TICKERS : CRYPTO_TICKERS;
+  const nameMap = view === "first" ? FP_NAMES : view === "second" ? TM_NAMES : CRYPTO_NAMES;
   const liveHoldings = portfolio.holdings.filter(h =>
     activeTickers.has(h.ticker) && !EXCLUDED.has(h.ticker)
   );
 
-  // For TM: include placeholder rows for tickers not yet in portfolio
-  const holdings = view === "first"
-    ? [...new Set([...FP_TICKERS])].map(ticker => {
-        const live = liveHoldings.find(h => h.ticker === ticker);
-        return live ?? {
-          ticker, name: FP_NAMES[ticker] ?? ticker,
-          price: 0, weight: 0, dayChangePct: 0,
-        };
-      })
-    : [...new Set([...TM_TICKERS])].map(ticker => {
-        const live = liveHoldings.find(h => h.ticker === ticker);
-        return live ?? {
-          ticker, name: TM_NAMES[ticker] ?? ticker,
-          price: 0, weight: 0, dayChangePct: 0,
-        };
-      });
+  const holdings = [...new Set([...activeTickers])].map(ticker => {
+    const live = liveHoldings.find(h => h.ticker === ticker);
+    return live ?? {
+      ticker, name: nameMap[ticker] ?? ticker,
+      price: 0, weight: 0, dayChangePct: 0,
+    };
+  });
 
   const toggle = (ticker: string) => setExpanded(prev => prev === ticker ? null : ticker);
 
@@ -205,26 +204,22 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
             <div key={h.ticker}>
               <button onClick={() => toggle(h.ticker)} className="w-full py-3 text-left" aria-expanded={isOpen}>
                 <div className="flex items-center gap-3">
-                  {/* Logo tile */}
                   <div
                     className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center"
                     style={{ background: bg }}
                   >
                     {logoSrc ? (
                       h.ticker === "LLY" ? (
-                        // Lilly: wide landscape logo — contain on cream bg so full text shows
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logoSrc} alt={h.ticker}
                           style={{ width: "90%", height: "90%", objectFit: "contain", display: "block" }}
                         />
                       ) : h.ticker === "SPCX" ? (
-                        // SpaceX: full logo visible, centered, reduced size
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logoSrc} alt={h.ticker}
                           style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", marginLeft: "10px" }}
                         />
                       ) : ["MRVL","NBIS","ASML","BE","SMCI","CRWV"].includes(h.ticker) ? (
-                        // Other TM logos fill tile with their own background
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logoSrc} alt={h.ticker}
                           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
@@ -254,8 +249,7 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                         <span className="text-ink-600 font-medium">{h.weight.toFixed(0)}%</span> of portfolio
                       </span>
                       {totalPremiums !== 0 && (
-                        <span className={`text-[11px] font-medium ${totalPremiums >= 0 ? "text-sage-600" : "text-red-500"}`}
-                          style={{}}>
+                        <span className={`text-[11px] font-medium ${totalPremiums >= 0 ? "text-sage-600" : "text-red-500"}`}>
                           {totalPremiums >= 0 ? "+" : "-"}${Math.abs(totalPremiums).toLocaleString(undefined, { maximumFractionDigits: 0 })} net income
                         </span>
                       )}
@@ -275,7 +269,6 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                     <p className="text-xs text-ink-400 py-2">No options trades found for {h.ticker}.</p>
                   ) : (
                     <div className="rounded-xl border border-cream-200 overflow-hidden text-xs min-w-[760px]">
-                      {/* Header */}
                       <div
                         className="grid px-4 py-2.5"
                         style={{ gridTemplateColumns: GRID, gap: "0", background: "#034147" }}
@@ -290,7 +283,6 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                           </span>
                         ))}
                       </div>
-                      {/* Rows — 5 most recent */}
                       {optionsTrades.slice(0, 5).map((trade, idx) => (
                         <div
                           key={idx}
@@ -324,7 +316,6 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                           </span>
                         </div>
                       ))}
-                      {/* Trade Ledger link */}
                       <div className="px-4 py-3 text-center border-t border-cream-100">
                         <a href="/trades" className="text-xs text-teal-600 hover:text-teal-700 font-medium transition-colors">
                           View full trade history on the Trade Ledger →

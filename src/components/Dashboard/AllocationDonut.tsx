@@ -18,8 +18,13 @@ const FP_COLORS: Record<string, string> = {
 const TM_COLORS: Record<string, string> = {
   MRVL: "#0057B8", NBIS: "#C8F000", ASML: "#1E3A8A", BE: "#00A86B", SMCI: "#8A9BB0", CRWV: "#2563EB",
 };
+const CRYPTO_COLORS: Record<string, string> = {
+  BTC: "#F7931A", ETH: "#627EEA",
+};
+
 const FP_TICKERS = ["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"];
 const TM_TICKERS = ["MRVL","NBIS","ASML","BE","SMCI","CRWV"];
+const CRYPTO_TICKERS = ["BTC","ETH"];
 
 function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
   const rad = ((angleDeg - 90) * Math.PI) / 180;
@@ -41,6 +46,15 @@ function buildPath(cx: number, cy: number, outerR: number, innerR: number, start
   ].join(" ");
 }
 
+function getTickersAndColors(view: PortfolioView) {
+  switch (view) {
+    case "first":  return { tickers: FP_TICKERS, colors: FP_COLORS };
+    case "second": return { tickers: TM_TICKERS, colors: TM_COLORS };
+    case "crypto": return { tickers: CRYPTO_TICKERS, colors: CRYPTO_COLORS };
+    default:       return { tickers: [] as string[], colors: {} as Record<string, string> };
+  }
+}
+
 interface Props { portfolio: Portfolio; view: PortfolioView; }
 
 export default function AllocationDonut({ portfolio, view }: Props) {
@@ -54,15 +68,17 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   const tickerR = outerR + 14;
   const pctR = (outerR + innerR) / 2;
 
-  const tickers = view === "first" ? FP_TICKERS : TM_TICKERS;
-  const colors  = view === "first" ? FP_COLORS  : TM_COLORS;
+  const { tickers, colors } = getTickersAndColors(view);
+
+  // Cash view shows neutral ring — no donut
+  const isCashView = view === "cash";
 
   // Only include tickers with actual holdings (weight > 0)
   const held = portfolio.holdings.filter(
     h => tickers.includes(h.ticker) && h.weight > 0
   );
   const totalWeight = held.reduce((s, h) => s + h.weight, 0);
-  const hasPositions = held.length > 0 && totalWeight > 0;
+  const hasPositions = held.length > 0 && totalWeight > 0 && !isCashView;
 
   // Build segments only for held positions
   const rawSegs = hasPositions
@@ -71,7 +87,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
         weight: (h.weight / totalWeight) * 100,
         color: colors[h.ticker] ?? "#A8B0B6",
       }))
-    : []; // empty → neutral ring fallback rendered below
+    : [];
 
   const segTotal = rawSegs.reduce((s, seg) => s + seg.weight, 0);
   const segments = rawSegs.map((seg, i) => ({
@@ -107,12 +123,24 @@ export default function AllocationDonut({ portfolio, view }: Props) {
     return { ...seg, start, end, mid, tp, tickerAnchor, pp, sweep };
   });
 
-  const totalDisplay = portfolio.totalValue > 0
-    ? "$" + (portfolio.totalValue / 1000).toFixed(0) + "K" : "—";
+  // Centre display
+  let totalDisplay = "—";
+  if (isCashView) {
+    const cashHolding = portfolio.holdings.find(h => h.ticker === "CASH");
+    const cashVal = cashHolding ? Math.round((cashHolding.weight / 100) * portfolio.totalValue) : portfolio.cash ?? 0;
+    totalDisplay = cashVal > 0 ? "$" + (cashVal / 1000).toFixed(0) + "K" : "—";
+  } else if (view === "crypto") {
+    const cryptoVal = held.reduce((sum, h) => sum + (h.weight / 100) * portfolio.totalValue, 0);
+    totalDisplay = cryptoVal > 0 ? "$" + (cryptoVal / 1000).toFixed(0) + "K" : "—";
+  } else {
+    totalDisplay = portfolio.totalValue > 0 ? "$" + (portfolio.totalValue / 1000).toFixed(0) + "K" : "—";
+  }
+
+  const centreLabel = isCashView ? "cash" : view === "crypto" ? "crypto" : "total";
 
   useEffect(() => {
     if (animRef.current) cancelAnimationFrame(animRef.current);
-    if (!hasPositions) return; // No animation needed for neutral ring
+    if (!hasPositions) return;
     const DURATION = 700;
     const startTime = performance.now();
     prevView.current = view;
@@ -155,20 +183,19 @@ export default function AllocationDonut({ portfolio, view }: Props) {
 
   return (
     <section className="bg-white rounded-2xl border border-cream-200 p-6">
-      <h2 className="text-[11px] uppercase tracking-[0.12em] text-ink-500 font-medium mb-2">Allocation</h2>
+      <h2 className="text-[11px] uppercase tracking-[0.12em] text-ink-500 font-medium mb-2">
+        {isCashView ? "Cash Position" : "Allocation"}
+      </h2>
       <div className="flex justify-center">
         <svg ref={svgRef} viewBox={`0 0 ${VW} ${VH}`} className="w-full" style={{ maxHeight: "340px" }}>
 
           {hasPositions ? (
             <>
-              {/* Slices */}
               {sliceData.map((seg) => (
                 <path key={seg.ticker} className="donut-slice"
                   d={buildPath(cx, cy, outerR, innerR, seg.start, seg.start)}
                   fill={seg.color} stroke="white" strokeWidth="2" />
               ))}
-
-              {/* Percentage inside the ring band */}
               {sliceData.map((seg) => (
                 seg.sweep >= 25 ? (
                   <text key={`pct-${seg.ticker}`} className="donut-pct"
@@ -182,8 +209,6 @@ export default function AllocationDonut({ portfolio, view }: Props) {
                   </text>
                 ) : null
               ))}
-
-              {/* Ticker label just outside the ring */}
               {sliceData.map((seg) => (
                 <text key={`ticker-${seg.ticker}`} className="donut-ticker"
                   x={seg.tp.x} y={seg.tp.y}
@@ -197,14 +222,12 @@ export default function AllocationDonut({ portfolio, view }: Props) {
               ))}
             </>
           ) : (
-            /* Neutral ring when no positions held in this portfolio */
             <circle cx={cx} cy={cy} r={(outerR + innerR) / 2}
-              fill="none" stroke="#E8E1CF" strokeWidth={outerR - innerR}
-              opacity="0.5" />
+              fill="none" stroke={isCashView ? "#1D9E75" : "#E8E1CF"} strokeWidth={outerR - innerR}
+              opacity={isCashView ? 0.25 : 0.5} />
           )}
 
-          {/* Centre */}
-          <text x={cx} y={cy - 12} textAnchor="middle" fontSize="11" fill="#ccc" fontFamily="system-ui">total</text>
+          <text x={cx} y={cy - 12} textAnchor="middle" fontSize="11" fill="#ccc" fontFamily="system-ui">{centreLabel}</text>
           <text x={cx} y={cy + 10} textAnchor="middle" fontSize="22" fontWeight="700" fill="#034147" fontFamily="system-ui"
             style={{ filter: "none" }}>{totalDisplay}</text>
         </svg>

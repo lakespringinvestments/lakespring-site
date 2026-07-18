@@ -1,1 +1,1 @@
-export type PortfolioView = "first" | "second";
+export type PortfolioView = "first" | "second" | "crypto" | "cash";

@@ -1,10 +1,6 @@
 import type { Portfolio } from "../../types/portfolio";
 import { fetchHoldingsFromSheet, fetchPerformanceFromSheet, fetchPremiumYTD, fetchTotalValue } from "./sheets";
 
-// Base holdings — always shown even when not currently held.
-// Live data from the sheet overwrites price/weight when available.
-// Weights reflect actual portfolio allocation.
-// Tickers with weight 0 appear as placeholder slices in the donut.
 const BASE_HOLDINGS = [
   // ── First Principles ──
   { ticker: "TSLA",  name: "Tesla",          price: 399.40, weight: 37, dayChangePct: 0 },
@@ -21,16 +17,21 @@ const BASE_HOLDINGS = [
   { ticker: "BE",    name: "Bloom Energy",   price: 0,      weight: 0,  dayChangePct: 0 },
   { ticker: "SMCI",  name: "Super Micro",    price: 34.06,  weight: 0,  dayChangePct: 0 },
   { ticker: "CRWV",  name: "CoreWeave",      price: 89.24,  weight: 0,  dayChangePct: 0 },
+  // ── Crypto ──
+  { ticker: "BTC",   name: "Bitcoin",        price: 74593,  weight: 45, dayChangePct: 0 },
+  { ticker: "ETH",   name: "Ethereum",       price: 1718,   weight: 0.1, dayChangePct: 0 },
+  // ── Cash ──
+  { ticker: "CASH",  name: "USD Cash",       price: 1,      weight: 8.5, dayChangePct: 0 },
 ];
 
 const MOCK_PORTFOLIO: Portfolio = {
-  totalValue: 875035,
+  totalValue: 889436,
   dayChange: 11420,
   dayChangePct: 2.4,
   premiumYTD: 57340,
   openPositions: 5,
   shortCalls: 3,
-  cash: 42108,
+  cash: 76029,
   cashPct: 8.6,
   lastUpdated: new Date().toISOString(),
   holdings: BASE_HOLDINGS,
@@ -49,7 +50,6 @@ export async function getPortfolio(): Promise<Portfolio> {
       fetchTotalValue(),
     ]);
 
-    // Merge: start with base holdings, overwrite with live sheet data where available
     const liveByTicker = Object.fromEntries(
       sheetHoldings.map((h) => [h.ticker, h])
     );
@@ -67,7 +67,6 @@ export async function getPortfolio(): Promise<Portfolio> {
       return base;
     });
 
-    // Use sheet total if available, otherwise fall back to performance or mock
     const totalValue = sheetTotal > 0
       ? sheetTotal
       : performance.length > 0
@@ -82,15 +81,21 @@ export async function getPortfolio(): Promise<Portfolio> {
     const dayChange = totalValue - previousValue;
     const dayChangePct = previousValue ? (dayChange / previousValue) * 100 : 0;
 
+    // Find cash from holdings
+    const cashHolding = holdings.find(h => h.ticker === "CASH");
+    const cashVal = cashHolding && cashHolding.weight > 0
+      ? Math.round((cashHolding.weight / 100) * totalValue)
+      : MOCK_PORTFOLIO.cash;
+
     return {
       totalValue,
       dayChange,
       dayChangePct,
       premiumYTD: premiumYTD || MOCK_PORTFOLIO.premiumYTD,
-      openPositions: holdings.filter((h) => h.weight > 0).length,
+      openPositions: holdings.filter((h) => h.weight > 0 && h.ticker !== "CASH").length,
       shortCalls: MOCK_PORTFOLIO.shortCalls,
-      cash: MOCK_PORTFOLIO.cash,
-      cashPct: MOCK_PORTFOLIO.cashPct,
+      cash: cashVal,
+      cashPct: totalValue > 0 ? (cashVal / totalValue) * 100 : 0,
       lastUpdated: new Date().toISOString(),
       holdings,
       performance:
