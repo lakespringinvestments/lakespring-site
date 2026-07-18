@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Portfolio } from "../../../types/portfolio";
 import type { Trade } from "@/lib/trades";
+import type { PortfolioView } from "./types";
 import MetricCards from "./MetricCards";
 import CapitalGainsTable from "./CapitalGainsTable";
 
@@ -10,8 +11,6 @@ interface Props {
   portfolio: Portfolio;
   allTrades: Trade[];
 }
-
-export type PortfolioView = "first" | "second";
 
 export default function PortfolioToggleClient({ portfolio, allTrades }: Props) {
   const [view, setView] = useState<PortfolioView>("first");
