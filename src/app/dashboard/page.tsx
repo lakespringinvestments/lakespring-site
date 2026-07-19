@@ -1,5 +1,6 @@
 import { getPortfolio } from "@/lib/data";
 import { getAllTrades } from "@/lib/trades";
+import PortfolioValueCard from "@/components/Dashboard/PortfolioValueCard";
 import PortfolioTreemap from "@/components/Dashboard/PortfolioTreemap";
 import PremiumChart from "@/components/Dashboard/PremiumChart";
 import DashboardClient from "@/components/Dashboard/DashboardClient";
@@ -75,7 +76,10 @@ export default async function DashboardPage() {
       <MemberGate />
       <div className="max-w-6xl mx-auto px-6 py-10">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-5 mb-5">
-          <PortfolioTreemap portfolio={portfolio} />
+          <div className="flex flex-col gap-5">
+            <PortfolioValueCard portfolio={portfolio} />
+            <PortfolioTreemap portfolio={portfolio} />
+          </div>
           <PremiumChart weeklyData={weeklyPremiums} premiumYTD={portfolio.premiumYTD} />
         </div>
         <DashboardClient

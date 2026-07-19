@@ -116,15 +116,10 @@ export default function PortfolioTreemap({ portfolio }: Props) {
   const rects = size.w > 0 && size.h > 0 ? squarify(held, 0, 0, size.w, size.h) : [];
 
   return (
-    <section className="bg-[#034147] rounded-2xl p-6 flex flex-col gap-3 h-full">
-      <div>
-        <p className="text-[10px] uppercase tracking-[0.15em] text-white/50 mb-1">
-          Portfolio value
-        </p>
-        <p className="text-2xl font-bold text-white leading-none">
-          {formatCurrency(portfolio.totalValue)}
-        </p>
-      </div>
+    <section className="bg-white rounded-2xl border border-cream-200 p-6 flex flex-col gap-3 flex-1">
+      <h2 className="text-[11px] uppercase tracking-[0.12em] text-ink-500 font-medium">
+        Holdings
+      </h2>
 
       <div ref={containerRef} className="relative w-full flex-1 min-h-[220px]">
         {rects.map((r) => {
