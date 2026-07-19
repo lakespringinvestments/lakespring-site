@@ -9,19 +9,28 @@ interface Props {
 
 type Rect = Holding & { x: number; y: number; w: number; h: number };
 
-// Red (down) → neutral gray (flat) → sage green (up), clamped at ±3% daily move
+// Red (down) → neutral gray (flat) → green (up), clamped at ±3% daily move
 function colorFor(pct: number): string {
   const clamped = Math.max(-3, Math.min(3, pct));
   const t = (clamped + 3) / 6;
   const stops: [number, [number, number, number]][] = [
-    [0, [140, 46, 46]],
+    [0, [239, 83, 80]],
     [0.5, [58, 58, 55]],
-    [1, [29, 158, 117]],
+    [1, [38, 166, 154]],
   ];
   const [a, b] = t <= 0.5 ? [stops[0], stops[1]] : [stops[1], stops[2]];
   const localT = (t - a[0]) / (b[0] - a[0]);
   const rgb = a[1].map((v, i) => Math.round(v + (b[1][i] - v) * localT));
   return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+}
+
+function formatCompact(n: number): string {
+  if (n >= 1000) return `$${Math.round(n / 1000)}K`;
+  return `$${Math.round(n)}`;
+}
+
+function formatCurrency(n: number): string {
+  return n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
 
 // Squarified treemap — lays out rects proportional to `weight` within a w×h box
@@ -112,12 +121,14 @@ export default function PortfolioTreemap({ portfolio }: Props) {
   return (
     <section className="bg-[#034147] rounded-2xl p-6 flex flex-col gap-3 h-full">
       <p className="text-[10px] uppercase tracking-[0.18em] text-white/50">
-        Portfolio — sized by value, shaded by today&apos;s move
+        Portfolio value: {formatCurrency(portfolio.totalValue)}
       </p>
 
-      <div ref={containerRef} className="relative w-full flex-1 min-h-[180px]">
+      <div ref={containerRef} className="relative w-full flex-1 min-h-[220px]">
         {rects.map((r) => {
-          const showLabel = r.w > 44 && r.h > 28;
+          const dollarValue = (r.weight / 100) * portfolio.totalValue;
+          const showFull = r.w > 60 && r.h > 48;
+          const showTickerOnly = !showFull && r.w > 36 && r.h > 24;
           return (
             <div
               key={r.ticker}
@@ -129,34 +140,26 @@ export default function PortfolioTreemap({ portfolio }: Props) {
                 height: Math.max(0, r.h - 2),
                 background: colorFor(r.dayChangePct),
               }}
-              title={`${r.ticker} · ${r.dayChangePct >= 0 ? "+" : ""}${r.dayChangePct.toFixed(2)}%`}
+              title={`${r.ticker} · ${formatCurrency(dollarValue)} · ${r.weight.toFixed(1)}% of total · ${r.dayChangePct >= 0 ? "+" : ""}${r.dayChangePct.toFixed(2)}% today`}
             >
-              {showLabel && (
+              {(showFull || showTickerOnly) && (
+                <span className="text-[11px] font-semibold text-white leading-none">
+                  {r.ticker}
+                </span>
+              )}
+              {showFull && (
                 <>
-                  <span className="text-[11px] font-semibold text-white leading-none">
-                    {r.ticker}
+                  <span className="text-[10px] text-white/85 mt-1">
+                    {formatCompact(dollarValue)}
                   </span>
-                  <span className="text-[9px] text-white/70 mt-0.5">
-                    {r.dayChangePct >= 0 ? "+" : ""}
-                    {r.dayChangePct.toFixed(1)}%
+                  <span className="text-[9px] text-white/70">
+                    {r.weight.toFixed(1)}% of total
                   </span>
                 </>
               )}
             </div>
           );
         })}
-      </div>
-
-      <div className="flex items-center justify-between text-[10px] text-white/40 pt-1 border-t border-white/10">
-        <span>-3%</span>
-        <div
-          className="flex-1 mx-2 h-1.5 rounded-full"
-          style={{
-            background:
-              "linear-gradient(90deg, rgb(140,46,46), rgb(58,58,55), rgb(29,158,117))",
-          }}
-        />
-        <span>+3%</span>
       </div>
     </section>
   );
