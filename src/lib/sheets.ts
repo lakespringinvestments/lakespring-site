@@ -46,11 +46,11 @@ const DASHBOARD_TICKERS = new Set([
 ]);
 
 export async function fetchHoldingsFromSheet(): Promise<Holding[]> {
-  const rows = await fetchRange("Current Portfolio Summary", "A1:J30");
+  const rows = await fetchRange("Current Portfolio Summary", "A1:K30");
   if (rows.length === 0) return [];
 
   // First pass: collect market values per ticker (merge GOOG → GOOGL, sum across accounts)
-  const tickerData: Record<string, { price: number; mktValue: number; qty: number }> = {};
+  const tickerData: Record<string, { price: number; mktValue: number; qty: number; dayChangePct: number }> = {};
 
   for (const row of rows) {
     let ticker = (row[1] ?? "").trim().toUpperCase();
@@ -61,20 +61,23 @@ export async function fetchHoldingsFromSheet(): Promise<Holding[]> {
 
     if (!DASHBOARD_TICKERS.has(ticker)) continue;
 
-    const qty      = parseNum(row[3]);  // Column D
-    const price    = parseNum(row[6]);  // Column G: Live Price
-    const mktValue = parseNum(row[7]);  // Column H: Market Value
+    const qty          = parseNum(row[3]);   // Column D
+    const price        = parseNum(row[6]);   // Column G: Live Price
+    const mktValue      = parseNum(row[7]);   // Column H: Market Value
+    const dayChangePct = parseNum(row[10]);  // Column K: Day Change (%)
 
     if (price <= 0 && mktValue <= 0) continue;
 
     if (!tickerData[ticker]) {
-      tickerData[ticker] = { price: 0, mktValue: 0, qty: 0 };
+      tickerData[ticker] = { price: 0, mktValue: 0, qty: 0, dayChangePct: 0 };
     }
     // Sum market values across accounts (e.g. TSLA in TFSA + Margin)
     tickerData[ticker].mktValue += mktValue;
     tickerData[ticker].qty += qty;
     // Keep the latest non-zero price
     if (price > 0) tickerData[ticker].price = price;
+    // Same live feed across accounts for a ticker — keep the latest non-zero read
+    if (dayChangePct !== 0) tickerData[ticker].dayChangePct = dayChangePct;
   }
 
   // Calculate total market value for weight calculation
@@ -88,7 +91,7 @@ export async function fetchHoldingsFromSheet(): Promise<Holding[]> {
       name: nameForTicker(ticker),
       price: data.price || (data.qty > 0 ? data.mktValue / data.qty : 0),
       weight: totalMktValue > 0 ? (data.mktValue / totalMktValue) * 100 : 0,
-      dayChangePct: 0,
+      dayChangePct: data.dayChangePct,
     });
   }
 

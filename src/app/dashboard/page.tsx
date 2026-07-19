@@ -1,6 +1,6 @@
 import { getPortfolio } from "@/lib/data";
 import { getAllTrades } from "@/lib/trades";
-import PortfolioHero from "@/components/Dashboard/PortfolioHero";
+import PortfolioTreemap from "@/components/Dashboard/PortfolioTreemap";
 import PremiumChart from "@/components/Dashboard/PremiumChart";
 import DashboardClient from "@/components/Dashboard/DashboardClient";
 import MemberGate from "@/components/Dashboard/MemberGate";
@@ -70,24 +70,12 @@ export default async function DashboardPage() {
     .sort(([a],[b]) => a.localeCompare(b))
     .map(([date, amount]) => ({ date, amount }));
 
-  // Total P&L (options + capital gains) for avg weekly in PortfolioHero
-  const totalPnl = allTrades
-    .filter((t) => {
-      if ((t.openDate ?? "") < "2026-01-01") return false;
-      const st = (t.strategyType ?? "").toLowerCase();
-      // Only exclude transfers/FPP/stock purchase — include capital gains
-      if (["transfer", "fpp accumulation", "stock purchase"].includes(st)) return false;
-      if ((t.description ?? "").toUpperCase().includes("TRANSFER IN")) return false;
-      return true;
-    })
-    .reduce((sum, t) => sum + (t.gainLossUsd ?? 0), 0);
-
   return (
     <>
       <MemberGate />
       <div className="max-w-6xl mx-auto px-6 py-10">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-5 mb-5">
-          <PortfolioHero portfolio={portfolio} totalPnl={totalPnl} />
+          <PortfolioTreemap portfolio={portfolio} />
           <PremiumChart weeklyData={weeklyPremiums} premiumYTD={portfolio.premiumYTD} />
         </div>
         <DashboardClient
