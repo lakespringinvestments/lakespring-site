@@ -9,19 +9,16 @@ interface Props {
 
 type Rect = Holding & { x: number; y: number; w: number; h: number };
 
-// Red (down) → neutral gray (flat) → green (up), clamped at ±3% daily move
-function colorFor(pct: number): string {
-  const clamped = Math.max(-3, Math.min(3, pct));
-  const t = (clamped + 3) / 6;
-  const stops: [number, [number, number, number]][] = [
-    [0, [239, 83, 80]],
-    [0.5, [58, 58, 55]],
-    [1, [38, 166, 154]],
-  ];
-  const [a, b] = t <= 0.5 ? [stops[0], stops[1]] : [stops[1], stops[2]];
-  const localT = (t - a[0]) / (b[0] - a[0]);
-  const rgb = a[1].map((v, i) => Math.round(v + (b[1][i] - v) * localT));
-  return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+// Same ticker colors as AllocationDonut, for a consistent brand identity across the dashboard
+const TICKER_COLORS: Record<string, string> = {
+  TSLA: "#CC0000", NVDA: "#76B900", PLTR: "#101113", AMZN: "#FF9900", GOOGL: "#4285F4", LLY: "#D4537E", SPCX: "#5A6578",
+  MRVL: "#0057B8", NBIS: "#C8F000", ASML: "#1E3A8A", BE: "#00A86B", SMCI: "#8A9BB0", CRWV: "#2563EB",
+  BTC: "#F7931A", ETH: "#627EEA", SOL: "#9945FF", BMNR: "#E8874A", MSTR: "#CC3300",
+  CASH: "#54B949",
+};
+
+function colorFor(ticker: string): string {
+  return TICKER_COLORS[ticker] ?? "#5A6578";
 }
 
 function formatCompact(n: number): string {
@@ -120,30 +117,38 @@ export default function PortfolioTreemap({ portfolio }: Props) {
 
   return (
     <section className="bg-[#034147] rounded-2xl p-6 flex flex-col gap-3 h-full">
-      <p className="text-[10px] uppercase tracking-[0.18em] text-white/50">
-        Portfolio value: {formatCurrency(portfolio.totalValue)}
-      </p>
+      <div>
+        <p className="text-[10px] uppercase tracking-[0.15em] text-white/50 mb-1">
+          Portfolio value
+        </p>
+        <p className="text-2xl font-bold text-white leading-none">
+          {formatCurrency(portfolio.totalValue)}
+        </p>
+      </div>
 
       <div ref={containerRef} className="relative w-full flex-1 min-h-[220px]">
         {rects.map((r) => {
           const dollarValue = (r.weight / 100) * portfolio.totalValue;
           const showFull = r.w > 60 && r.h > 48;
-          const showTickerOnly = !showFull && r.w > 36 && r.h > 24;
+          const showTickerOnly = !showFull && r.w > 18 && r.h > 14;
           return (
             <div
               key={r.ticker}
-              className="absolute flex flex-col items-center justify-center overflow-hidden rounded-[2px]"
+              className="absolute flex flex-col items-center justify-center overflow-hidden rounded-md"
               style={{
                 left: r.x,
                 top: r.y,
                 width: Math.max(0, r.w - 2),
                 height: Math.max(0, r.h - 2),
-                background: colorFor(r.dayChangePct),
+                background: colorFor(r.ticker),
               }}
               title={`${r.ticker} · ${formatCurrency(dollarValue)} · ${r.weight.toFixed(1)}% of total · ${r.dayChangePct >= 0 ? "+" : ""}${r.dayChangePct.toFixed(2)}% today`}
             >
               {(showFull || showTickerOnly) && (
-                <span className="text-[11px] font-semibold text-white leading-none">
+                <span
+                  className="font-semibold text-white leading-none"
+                  style={{ fontSize: showFull ? 11 : 9 }}
+                >
                   {r.ticker}
                 </span>
               )}
