@@ -71,6 +71,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   const outerR = 118, innerR = 72;
   const tickerR = outerR + 14;
   const pctR = (outerR + innerR) / 2;
+  const midR = (outerR + innerR) / 2;
 
   const { tickers, colors } = getTickersAndColors(view);
 
@@ -80,15 +81,13 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   const totalWeight = held.reduce((s, h) => s + h.weight, 0);
   const hasPositions = held.length > 0 && totalWeight > 0;
 
-  // Build segments: real positions OR a single empty placeholder for animation
   const rawSegs = hasPositions
     ? held.map((h) => ({
         ticker: h.ticker,
         weight: (h.weight / totalWeight) * 100,
         color: colors[h.ticker] ?? "#A8B0B6",
-        isEmpty: false,
       }))
-    : [{ ticker: "EMPTY", weight: 100, color: "url(#crosshatch)", isEmpty: true }];
+    : [];
 
   const segTotal = rawSegs.reduce((s, seg) => s + seg.weight, 0);
   const segments = rawSegs.map((seg, i) => ({
@@ -125,64 +124,89 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   });
 
   // Centre display
-  let totalDisplay = "—";
+  let totalDisplay = "$0";
   let centreLabel = "total";
 
-  if (!hasPositions) {
-    totalDisplay = "$0";
-  } else if (view === "cash") {
-    const cashHolding = portfolio.holdings.find(h => h.ticker === "CASH");
-    const cashVal = cashHolding ? Math.round((cashHolding.weight / 100) * portfolio.totalValue) : portfolio.cash ?? 0;
-    totalDisplay = cashVal > 0 ? "$" + (cashVal / 1000).toFixed(0) + "K" : "$0";
-    centreLabel = "cash";
-  } else if (view === "crypto") {
-    const cryptoVal = held.reduce((sum, h) => sum + (h.weight / 100) * portfolio.totalValue, 0);
-    totalDisplay = cryptoVal > 0 ? "$" + (cryptoVal / 1000).toFixed(0) + "K" : "$0";
-    centreLabel = "crypto";
-  } else {
-    const viewVal = held.reduce((sum, h) => sum + (h.weight / 100) * portfolio.totalValue, 0);
-    totalDisplay = viewVal > 0 ? "$" + (viewVal / 1000).toFixed(0) + "K" : "$0";
+  if (hasPositions) {
+    if (view === "cash") {
+      const cashHolding = portfolio.holdings.find(h => h.ticker === "CASH");
+      const cashVal = cashHolding ? Math.round((cashHolding.weight / 100) * portfolio.totalValue) : portfolio.cash ?? 0;
+      totalDisplay = cashVal > 0 ? "$" + (cashVal / 1000).toFixed(0) + "K" : "$0";
+      centreLabel = "cash";
+    } else if (view === "crypto") {
+      const cryptoVal = held.reduce((sum, h) => sum + (h.weight / 100) * portfolio.totalValue, 0);
+      totalDisplay = cryptoVal > 0 ? "$" + (cryptoVal / 1000).toFixed(0) + "K" : "$0";
+      centreLabel = "crypto";
+    } else {
+      const viewVal = held.reduce((sum, h) => sum + (h.weight / 100) * portfolio.totalValue, 0);
+      totalDisplay = viewVal > 0 ? "$" + (viewVal / 1000).toFixed(0) + "K" : "$0";
+    }
   }
+
+  // Dashed ring animation for empty state
+  const dashCircumference = 2 * Math.PI * midR;
 
   useEffect(() => {
     if (animRef.current) cancelAnimationFrame(animRef.current);
+
     const DURATION = 700;
     const startTime = performance.now();
     prevView.current = view;
 
     function easeOutCubic(t: number) { return 1 - Math.pow(1 - t, 3); }
 
-    function frame(now: number) {
-      const svg = svgRef.current;
-      if (!svg) return;
-      const raw = Math.min((now - startTime) / DURATION, 1);
-      const progress = easeOutCubic(raw);
+    if (hasPositions) {
+      // Animate real slices
+      function frame(now: number) {
+        const svg = svgRef.current;
+        if (!svg) return;
+        const raw = Math.min((now - startTime) / DURATION, 1);
+        const progress = easeOutCubic(raw);
 
-      const paths   = svg.querySelectorAll(".donut-slice");
-      const pctTexts = svg.querySelectorAll(".donut-pct");
-      const tickerTexts = svg.querySelectorAll(".donut-ticker");
+        const paths = svg.querySelectorAll(".donut-slice");
+        const pctTexts = svg.querySelectorAll(".donut-pct");
+        const tickerTexts = svg.querySelectorAll(".donut-ticker");
 
-      let cumul = 0;
-      sliceData.forEach((seg, i) => {
-        const sweep = Math.min((seg.weight / 100) * 360 * progress, 359.9);
-        if (sweep <= 0) return;
-        const end = cumul + sweep;
-        const path = paths[i] as SVGPathElement;
-        if (path) path.setAttribute("d", buildPath(cx, cy, outerR, innerR, cumul, end));
+        let cumul = 0;
+        sliceData.forEach((seg, i) => {
+          const sweep = Math.min((seg.weight / 100) * 360 * progress, 359.9);
+          if (sweep <= 0) return;
+          const end = cumul + sweep;
+          const path = paths[i] as SVGPathElement;
+          if (path) path.setAttribute("d", buildPath(cx, cy, outerR, innerR, cumul, end));
 
-        const opacity = progress > 0.8 ? ((progress - 0.8) / 0.2).toString() : "0";
-        const pct = pctTexts[i] as SVGTextElement;
-        const ticker = tickerTexts[i] as SVGTextElement;
-        if (pct) pct.style.opacity = opacity;
-        if (ticker) ticker.style.opacity = opacity;
+          const opacity = progress > 0.8 ? ((progress - 0.8) / 0.2).toString() : "0";
+          const pct = pctTexts[i] as SVGTextElement;
+          const ticker = tickerTexts[i] as SVGTextElement;
+          if (pct) pct.style.opacity = opacity;
+          if (ticker) ticker.style.opacity = opacity;
 
-        cumul = end;
-      });
+          cumul = end;
+        });
 
-      if (raw < 1) animRef.current = requestAnimationFrame(frame);
+        if (raw < 1) animRef.current = requestAnimationFrame(frame);
+      }
+      animRef.current = requestAnimationFrame(frame);
+    } else {
+      // Animate dashed ring sweep-in via stroke-dashoffset
+      function frameDash(now: number) {
+        const svg = svgRef.current;
+        if (!svg) return;
+        const raw = Math.min((now - startTime) / DURATION, 1);
+        const progress = easeOutCubic(raw);
+
+        const ring = svg.querySelector(".empty-ring") as SVGCircleElement;
+        if (ring) {
+          const offset = dashCircumference * (1 - progress);
+          ring.style.strokeDashoffset = offset.toString();
+          ring.style.opacity = (0.3 * progress).toString();
+        }
+
+        if (raw < 1) animRef.current = requestAnimationFrame(frameDash);
+      }
+      animRef.current = requestAnimationFrame(frameDash);
     }
 
-    animRef.current = requestAnimationFrame(frame);
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
   }, [view, segments.map(s => s.ticker + s.weight).join(",")]);
 
@@ -193,48 +217,53 @@ export default function AllocationDonut({ portfolio, view }: Props) {
       </h2>
       <div className="flex justify-center">
         <svg ref={svgRef} viewBox={`0 0 ${VW} ${VH}`} className="w-full" style={{ maxHeight: "340px" }}>
-          {/* Cross-hatch pattern for empty states */}
-          <defs>
-            <pattern id="crosshatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <rect width="8" height="8" fill="#FAF8F3" />
-              <line x1="0" y1="0" x2="0" y2="8" stroke="#D4CFC4" strokeWidth="1.5" />
-              <line x1="4" y1="0" x2="4" y2="8" stroke="#E8E1CF" strokeWidth="0.75" />
-            </pattern>
-          </defs>
 
-          {/* Slices — always rendered (empty state uses crosshatch pattern) */}
-          {sliceData.map((seg) => (
-            <path key={seg.ticker} className="donut-slice"
-              d={buildPath(cx, cy, outerR, innerR, seg.start, seg.start)}
-              fill={seg.color} stroke={seg.isEmpty ? "none" : "white"} strokeWidth={seg.isEmpty ? 0 : 2} />
-          ))}
+          {hasPositions ? (
+            <>
+              {/* Real slices */}
+              {sliceData.map((seg) => (
+                <path key={seg.ticker} className="donut-slice"
+                  d={buildPath(cx, cy, outerR, innerR, seg.start, seg.start)}
+                  fill={seg.color} stroke="white" strokeWidth="2" />
+              ))}
 
-          {/* Percentage labels — only for real multi-slice views with enough sweep */}
-          {hasPositions && sliceData.length > 1 && sliceData.map((seg) => (
-            seg.sweep >= 25 ? (
-              <text key={`pct-${seg.ticker}`} className="donut-pct"
-                x={seg.pp.x} y={seg.pp.y}
-                textAnchor="middle" dominantBaseline="middle"
-                fontSize="10" fontWeight="600" fill="#fff"
-                fontFamily="system-ui, sans-serif"
-                style={{ opacity: 0, filter: "none" }}>
-                {seg.weight.toFixed(0)}%
-              </text>
-            ) : null
-          ))}
+              {/* Percentage labels — multi-slice, large enough */}
+              {sliceData.length > 1 && sliceData.map((seg) => (
+                seg.sweep >= 25 ? (
+                  <text key={`pct-${seg.ticker}`} className="donut-pct"
+                    x={seg.pp.x} y={seg.pp.y}
+                    textAnchor="middle" dominantBaseline="middle"
+                    fontSize="10" fontWeight="600" fill="#fff"
+                    fontFamily="system-ui, sans-serif"
+                    style={{ opacity: 0, filter: "none" }}>
+                    {seg.weight.toFixed(0)}%
+                  </text>
+                ) : null
+              ))}
 
-          {/* Ticker labels — all real slices, no minimum sweep */}
-          {hasPositions && sliceData.length > 1 && sliceData.map((seg) => (
-            <text key={`ticker-${seg.ticker}`} className="donut-ticker"
-              x={seg.tp.x} y={seg.tp.y}
-              textAnchor={seg.tickerAnchor} dominantBaseline="middle"
-              fontSize="9.5" fontWeight="700"
-              fill={seg.color === "#101113" ? "#333" : seg.color === "#C8F000" ? "#7A9000" : seg.color}
-              fontFamily="system-ui, sans-serif"
-              style={{ opacity: 0 }}>
-              {seg.ticker}
-            </text>
-          ))}
+              {/* Ticker labels — all slices */}
+              {sliceData.length > 1 && sliceData.map((seg) => (
+                <text key={`ticker-${seg.ticker}`} className="donut-ticker"
+                  x={seg.tp.x} y={seg.tp.y}
+                  textAnchor={seg.tickerAnchor} dominantBaseline="middle"
+                  fontSize="9.5" fontWeight="700"
+                  fill={seg.color === "#101113" ? "#333" : seg.color === "#C8F000" ? "#7A9000" : seg.color}
+                  fontFamily="system-ui, sans-serif"
+                  style={{ opacity: 0 }}>
+                  {seg.ticker}
+                </text>
+              ))}
+            </>
+          ) : (
+            /* Dashed ring — animated sweep-in */
+            <circle className="empty-ring"
+              cx={cx} cy={cy} r={midR}
+              fill="none" stroke="#C4BFB3" strokeWidth={outerR - innerR}
+              strokeDasharray="8 6"
+              strokeDashoffset={dashCircumference}
+              style={{ opacity: 0, transform: "rotate(-90deg)", transformOrigin: `${cx}px ${cy}px` }}
+            />
+          )}
 
           {/* Centre */}
           <text x={cx} y={cy - 12} textAnchor="middle" fontSize="11" fill="#ccc" fontFamily="system-ui">{centreLabel}</text>

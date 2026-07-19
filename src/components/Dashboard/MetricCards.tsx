@@ -22,7 +22,7 @@ const THEME: Record<PortfolioView, { bg: string; label: string }> = {
   first:  { bg: "#034147", label: "First Principles" },
   second: { bg: "#00857A", label: "Thematic Momentum" },
   crypto: { bg: "#F7931A", label: "Crypto" },
-  cash:   { bg: "#0A0A0A", label: "Cash & Premiums" },
+  cash:   { bg: "#54B949", label: "Cash & Premiums" },
 };
 
 function fmt(n: number) {
