@@ -22,7 +22,7 @@ const CRYPTO_COLORS: Record<string, string> = {
   BTC: "#F7931A", ETH: "#627EEA", SOL: "#9945FF", BMNR: "#E8874A", MSTR: "#CC3300",
 };
 const CASH_COLORS: Record<string, string> = {
-  CASH: "#1D9E75",
+  CASH: "#54B949",
 };
 
 const FP_TICKERS = ["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"];
@@ -109,13 +109,20 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   }
 
   let cumulAngle = 0;
+  let smallSliceIndex = 0;
   const sliceData = interleaved.map(seg => {
     const start = cumulAngle;
     const sweep = Math.min((seg.weight / 100) * 360, 359.9);
     const end = start + sweep;
     const mid = start + sweep / 2;
 
-    const tp = polarToCartesian(cx, cy, tickerR, mid);
+    // Dynamic ticker label radius — small slices fan out at staggered distances
+    const isSmall = sweep < 30;
+    const extraOffset = isSmall ? 12 + (smallSliceIndex % 3) * 10 : 0;
+    if (isSmall) smallSliceIndex++;
+    const dynamicTickerR = tickerR + extraOffset;
+
+    const tp = polarToCartesian(cx, cy, dynamicTickerR, mid);
     const tickerAnchor = (tp.x < cx - 4 ? "end" : tp.x > cx + 4 ? "start" : "middle") as "end"|"start"|"middle";
     const pp = polarToCartesian(cx, cy, pctR, mid);
 

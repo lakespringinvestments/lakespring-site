@@ -5,10 +5,10 @@ import type { Portfolio } from "../../../types/portfolio";
 import type { PortfolioView } from "./types";
 
 const FP_BOOK_COSTS: Record<string, number> = {
-  TSLA: 252866, NVDA: 18028, PLTR: 69210, AMZN: 0, GOOGL: 0, LLY: 0, SPCX: 0,
+  TSLA: 252866, NVDA: 0, PLTR: 69210, AMZN: 0, GOOGL: 0, LLY: 0, SPCX: 0,
 };
 const TM_BOOK_COSTS: Record<string, number> = {
-  MRVL: 763, NBIS: 0, ASML: 0, BE: 0, TSM: 0, CRWV: 0,
+  MRVL: 0, NBIS: 0, ASML: 0, BE: 0, TSM: 0, CRWV: 0,
 };
 const CRYPTO_BOOK_COSTS: Record<string, number> = {
   BTC: 220381, ETH: 2194, SOL: 0, BMNR: 51098, MSTR: 0,
