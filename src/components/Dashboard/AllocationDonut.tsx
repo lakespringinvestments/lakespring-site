@@ -97,15 +97,18 @@ export default function AllocationDonut({ portfolio, view }: Props) {
       : Math.round((seg.weight/segTotal)*1000)/10,
   }));
 
-  // Interleave large and small slices to prevent label overlap
+  // Split-half riffle: sort descending, split into two halves, zip together.
+  // This keeps rank-adjacent slices (the most similarly-sized, and so most easily
+  // confused) apart from each other — unlike a simple big/small alternation, which
+  // can strand the two middle-ranked slices next to each other when one slice dominates.
   const sorted = [...segments].sort((a, b) => b.weight - a.weight);
+  const half = Math.ceil(sorted.length / 2);
+  const firstHalf = sorted.slice(0, half);
+  const secondHalf = sorted.slice(half);
   const interleaved: typeof segments = [];
-  let lo = 0, hi = sorted.length - 1;
-  let pickLarge = true;
-  while (lo <= hi) {
-    if (pickLarge) { interleaved.push(sorted[lo++]); }
-    else { interleaved.push(sorted[hi--]); }
-    pickLarge = !pickLarge;
+  for (let k = 0; k < half; k++) {
+    interleaved.push(firstHalf[k]);
+    if (secondHalf[k]) interleaved.push(secondHalf[k]);
   }
 
   let cumulAngle = 0;

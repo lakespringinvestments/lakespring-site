@@ -210,7 +210,7 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
   const totalShown = bars.reduce((s, d) => s + d.amount, 0);
 
   return (
-    <section className="bg-white rounded-2xl border border-cream-200 p-6 flex flex-col">
+    <section className="bg-white rounded-2xl border border-cream-200 p-4 flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-[10px] uppercase tracking-[0.15em] text-ink-500 mb-1">

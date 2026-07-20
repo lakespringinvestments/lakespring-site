@@ -58,22 +58,24 @@ function squarify(items: Holding[], x: number, y: number, w: number, h: number):
     const sum = rowItems.reduce((s, it) => s + it.weight, 0);
     const rowArea = (sum / total) * (w * h);
     if (remW < remH) {
+      // Horizontal strip spanning the full width — items sit side by side (x varies)
       const rowH = rowArea / remW;
-      let ry = cy;
+      let rx = cx;
       rowItems.forEach((it) => {
         const rw = (it.weight / sum) * remW;
-        rects.push({ ...it, x: cx, y: ry, w: rw, h: rowH });
-        ry += rowH;
+        rects.push({ ...it, x: rx, y: cy, w: rw, h: rowH });
+        rx += rw;
       });
       cy += rowH;
       remH -= rowH;
     } else {
+      // Vertical strip spanning the full height — items stack top to bottom (y varies)
       const rowW = rowArea / remH;
-      let rx = cx;
+      let ry = cy;
       rowItems.forEach((it) => {
         const rh = (it.weight / sum) * remH;
-        rects.push({ ...it, x: rx, y: cy, w: rowW, h: rh });
-        rx += rowW;
+        rects.push({ ...it, x: cx, y: ry, w: rowW, h: rh });
+        ry += rh;
       });
       cx += rowW;
       remW -= rowW;
