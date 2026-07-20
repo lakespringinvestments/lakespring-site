@@ -1,5 +1,6 @@
 // src/app/trades/page.tsx
 import { getAllTrades } from "@/lib/trades";
+import { getAllReports, groupReportsByMonth } from "@/lib/reports";
 import TradesPageTabs from "@/components/TradeLedger/TradesPageTabs";
 import NewsletterSignup from "@/components/NewsletterSignup";
 
@@ -13,6 +14,8 @@ export const metadata = {
 
 export default async function TradesPage() {
   const rawTrades = await getAllTrades();
+  const rawReports = await getAllReports();
+  const reportGroups = groupReportsByMonth(rawReports);
 
   // Merge GOOG into GOOGL so Alphabet shows as one ticker
   const trades = rawTrades.map(t => {
@@ -27,7 +30,7 @@ export default async function TradesPage() {
       {/* Dark ledger */}
       <section className="bg-[#0A0A0A] pb-20 md:pb-24 pt-16 md:pt-20">
         <div className="max-w-6xl mx-auto px-6">
-          <TradesPageTabs trades={trades} />
+          <TradesPageTabs trades={trades} reportGroups={reportGroups} />
 
           {/* Members tier teaser */}
           <div className="mt-16 pt-12 border-t border-white/15">
