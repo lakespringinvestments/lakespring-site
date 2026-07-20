@@ -222,4 +222,3 @@ export default function PortfolioTreemap({ portfolio }: Props) {
     </section>
   );
 }
-}
