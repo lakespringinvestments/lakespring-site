@@ -10,12 +10,12 @@ export const FREE_REPORTS = [
   {
     key: "analysis",
     label: "Pre-Trade Weekly Analysis",
-    fileId: "1p4bnsiyt3Cnr49LVx3o_9Y-neQZfCtDj",
+    fileId: "18maaX6DCZR-VpnkcHEv0vLj2ZrHqVm1t",
   },
   {
     key: "retrospective",
     label: "Weekly Trade Review & Retrospective",
-    fileId: "14Fsq-NRRUmCk3NtlQQkFkBxQneBtQbKR",
+    fileId: "1gC8zHpuBEKs4hUFrcYAJiG40_xfusflG",
   },
 ] as const;
 
