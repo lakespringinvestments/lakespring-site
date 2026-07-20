@@ -28,11 +28,11 @@ interface Props {
 }
 
 export default function PortfolioValueCard({ portfolio }: Props) {
-  const { line, fill } = buildSparklinePath(portfolio.performance, 400, 60);
+  const { line, fill } = buildSparklinePath(portfolio.performance, 160, 48);
 
   return (
-    <section className="bg-[#034147] rounded-2xl p-6 flex flex-col gap-3">
-      <div>
+    <section className="bg-[#034147] rounded-2xl p-4 flex items-center gap-4">
+      <div className="flex-1 min-w-0">
         <p className="text-[10px] uppercase tracking-[0.15em] text-white/50 mb-1">
           Portfolio value
         </p>
@@ -49,8 +49,8 @@ export default function PortfolioValueCard({ portfolio }: Props) {
         </p>
       </div>
 
-      <div className="w-full">
-        <svg viewBox="0 0 400 60" className="w-full h-14" preserveAspectRatio="none">
+      <div className="w-32 sm:w-40 flex-shrink-0">
+        <svg viewBox="0 0 160 48" className="w-full h-12" preserveAspectRatio="none">
           <defs>
             <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#5DCAA5" stopOpacity="0.25" />

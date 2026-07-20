@@ -116,16 +116,14 @@ export default function PortfolioTreemap({ portfolio }: Props) {
   const rects = size.w > 0 && size.h > 0 ? squarify(held, 0, 0, size.w, size.h) : [];
 
   return (
-    <section className="bg-white rounded-2xl border border-cream-200 p-6 flex flex-col gap-3 flex-1">
-      <h2 className="text-[11px] uppercase tracking-[0.12em] text-ink-500 font-medium">
-        Holdings
-      </h2>
-
-      <div ref={containerRef} className="relative w-full flex-1 min-h-[220px]">
+    <section className="relative w-full flex-1 min-h-[300px] rounded-2xl overflow-hidden">
+      <div ref={containerRef} className="relative w-full h-full">
         {rects.map((r) => {
           const dollarValue = (r.weight / 100) * portfolio.totalValue;
-          const showFull = r.w > 60 && r.h > 48;
-          const showTickerOnly = !showFull && r.w > 18 && r.h > 14;
+          const minDim = Math.min(r.w, r.h);
+          const tickerFontSize = Math.max(8, Math.min(18, minDim * 0.24));
+          const showTicker = r.w > 14 && r.h > 10;
+          const showSub = showTicker && r.h > tickerFontSize * 3.4 && r.w > 50;
           return (
             <div
               key={r.ticker}
@@ -139,20 +137,26 @@ export default function PortfolioTreemap({ portfolio }: Props) {
               }}
               title={`${r.ticker} · ${formatCurrency(dollarValue)} · ${r.weight.toFixed(1)}% of total · ${r.dayChangePct >= 0 ? "+" : ""}${r.dayChangePct.toFixed(2)}% today`}
             >
-              {(showFull || showTickerOnly) && (
+              {showTicker && (
                 <span
                   className="font-semibold text-white leading-none"
-                  style={{ fontSize: showFull ? 11 : 9 }}
+                  style={{ fontSize: tickerFontSize }}
                 >
                   {r.ticker}
                 </span>
               )}
-              {showFull && (
+              {showSub && (
                 <>
-                  <span className="text-[10px] text-white/85 mt-1">
+                  <span
+                    className="text-white/85 mt-1"
+                    style={{ fontSize: tickerFontSize * 0.75 }}
+                  >
                     {formatCompact(dollarValue)}
                   </span>
-                  <span className="text-[9px] text-white/70">
+                  <span
+                    className="text-white/70"
+                    style={{ fontSize: tickerFontSize * 0.68 }}
+                  >
                     {r.weight.toFixed(1)}% of total
                   </span>
                 </>
