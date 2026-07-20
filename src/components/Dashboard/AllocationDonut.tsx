@@ -156,7 +156,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   useEffect(() => {
     if (animRef.current) cancelAnimationFrame(animRef.current);
 
-    const DURATION = 700;
+    const DURATION = 1100; // 0–50%: clockwise color reveal · 50–100%: white re-cover retracts counterclockwise
     const startTime = performance.now();
     prevView.current = view;
 
@@ -168,28 +168,51 @@ export default function AllocationDonut({ portfolio, view }: Props) {
         const svg = svgRef.current;
         if (!svg) return;
         const raw = Math.min((now - startTime) / DURATION, 1);
-        const progress = easeOutCubic(raw);
+
+        // Phase 1 (raw 0 → 0.5): colors sweep in clockwise over the white base
+        const p1 = Math.min(1, raw / 0.5);
+        const easedP1 = easeOutCubic(p1);
 
         const paths = svg.querySelectorAll(".donut-slice");
-        const pctTexts = svg.querySelectorAll(".donut-pct");
         const tickerTexts = svg.querySelectorAll(".donut-ticker");
+        const overlay = svg.querySelector(".donut-white-overlay") as SVGPathElement | null;
 
         let cumul = 0;
         sliceData.forEach((seg, i) => {
-          const sweep = Math.min((seg.weight / 100) * 360 * progress, 359.9);
-          if (sweep <= 0) return;
+          const sweep = Math.min((seg.weight / 100) * 360 * easedP1, 359.9);
           const end = cumul + sweep;
           const path = paths[i] as SVGPathElement;
-          if (path) path.setAttribute("d", buildPath(cx, cy, outerR, innerR, cumul, end));
-
-          const opacity = progress > 0.8 ? ((progress - 0.8) / 0.2).toString() : "0";
-          const pct = pctTexts[i] as SVGTextElement;
-          const ticker = tickerTexts[i] as SVGTextElement;
-          if (pct) pct.style.opacity = opacity;
-          if (ticker) ticker.style.opacity = opacity;
-
+          if (path) {
+            path.setAttribute("d", sweep > 0
+              ? buildPath(cx, cy, outerR, innerR, cumul, end)
+              : buildPath(cx, cy, outerR, innerR, cumul, cumul));
+          }
           cumul = end;
         });
+
+        // Phase 2 (raw 0.5 → 1): a white overlay re-covers the ring, then retracts
+        // counterclockwise (shrinking from a full 360° sweep back to 0°) before settling
+        if (overlay) {
+          if (raw < 0.5) {
+            overlay.setAttribute("d", "");
+            overlay.style.opacity = "0";
+          } else {
+            const p2 = (raw - 0.5) / 0.5;
+            const easedP2 = easeOutCubic(p2);
+            const overlaySweep = Math.max(0, 360 * (1 - easedP2));
+            if (overlaySweep > 0.05) {
+              overlay.setAttribute("d", buildPath(cx, cy, outerR, innerR, 0, Math.min(overlaySweep, 359.99)));
+              overlay.style.opacity = "1";
+            } else {
+              overlay.setAttribute("d", "");
+              overlay.style.opacity = "0";
+            }
+          }
+        }
+
+        // Labels fade in only once the white overlay has fully retracted
+        const textOpacity = raw > 0.92 ? ((raw - 0.92) / 0.08).toString() : "0";
+        tickerTexts.forEach((t) => { (t as SVGTextElement).style.opacity = textOpacity; });
 
         if (raw < 1) animRef.current = requestAnimationFrame(frame);
       }
@@ -227,37 +250,31 @@ export default function AllocationDonut({ portfolio, view }: Props) {
 
           {hasPositions ? (
             <>
-              {/* Real slices */}
+              {/* White base — this is what "complete white" starts as, before any slice grows */}
+              <path className="donut-white-base"
+                d={buildPath(cx, cy, outerR, innerR, 0, 359.99)}
+                fill="#fff" />
+
+              {/* Real slices — reveal clockwise over the white base */}
               {sliceData.map((seg) => (
                 <path key={seg.ticker} className="donut-slice"
                   d={buildPath(cx, cy, outerR, innerR, seg.start, seg.start)}
                   fill={seg.color} stroke="white" strokeWidth="2" />
               ))}
 
-              {/* Percentage labels — multi-slice, large enough */}
-              {sliceData.length > 1 && sliceData.map((seg) => (
-                seg.sweep >= 25 ? (
-                  <text key={`pct-${seg.ticker}`} className="donut-pct"
-                    x={seg.pp.x} y={seg.pp.y}
-                    textAnchor="middle" dominantBaseline="middle"
-                    fontSize="10" fontWeight="600" fill="#fff"
-                    fontFamily="system-ui, sans-serif"
-                    style={{ opacity: 0, filter: "none" }}>
-                    {seg.weight.toFixed(0)}%
-                  </text>
-                ) : null
-              ))}
+              {/* White overlay — re-covers the ring, then retracts counterclockwise before settling */}
+              <path className="donut-white-overlay" d="" fill="#fff" style={{ opacity: 0 }} />
 
-              {/* Ticker labels — all slices */}
+              {/* Ticker + % labels — combined into one outer label per slice, always shown */}
               {sliceData.length > 1 && sliceData.map((seg) => (
-                <text key={`ticker-${seg.ticker}`} className="donut-ticker"
+                <text key={`label-${seg.ticker}`} className="donut-ticker"
                   x={seg.tp.x} y={seg.tp.y}
                   textAnchor={seg.tickerAnchor} dominantBaseline="middle"
                   fontSize="9.5" fontWeight="700"
                   fill={seg.color === "#101113" ? "#333" : seg.color === "#C8F000" ? "#7A9000" : seg.color}
                   fontFamily="system-ui, sans-serif"
                   style={{ opacity: 0 }}>
-                  {seg.ticker}
+                  {seg.ticker} {seg.weight.toFixed(0)}%
                 </text>
               ))}
             </>
