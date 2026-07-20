@@ -179,6 +179,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
 
           const paths = svg.querySelectorAll(".donut-slice");
           const tickerTexts = svg.querySelectorAll(".donut-ticker");
+          const pctTexts = svg.querySelectorAll(".donut-pct");
           const overlay = svg.querySelector(".donut-white-overlay") as SVGPathElement | null;
 
           let cumul = 0;
@@ -214,6 +215,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
 
           const textOpacity = raw > 0.92 ? ((raw - 0.92) / 0.08).toString() : "0";
           tickerTexts.forEach((t) => { (t as SVGTextElement).style.opacity = textOpacity; });
+          pctTexts.forEach((t) => { (t as SVGTextElement).style.opacity = textOpacity; });
 
           if (raw < 1) animRef.current = requestAnimationFrame(frameTwoPhase);
         }
@@ -228,6 +230,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
 
           const paths = svg.querySelectorAll(".donut-slice");
           const tickerTexts = svg.querySelectorAll(".donut-ticker");
+          const pctTexts = svg.querySelectorAll(".donut-pct");
           const overlay = svg.querySelector(".donut-white-overlay") as SVGPathElement | null;
           if (overlay) { overlay.setAttribute("d", ""); overlay.style.opacity = "0"; }
 
@@ -242,6 +245,8 @@ export default function AllocationDonut({ portfolio, view }: Props) {
             const opacity = progress > 0.8 ? ((progress - 0.8) / 0.2).toString() : "0";
             const ticker = tickerTexts[i] as SVGTextElement;
             if (ticker) ticker.style.opacity = opacity;
+            const pct = pctTexts[i] as SVGTextElement;
+            if (pct) pct.style.opacity = opacity;
 
             cumul = end;
           });
@@ -296,16 +301,28 @@ export default function AllocationDonut({ portfolio, view }: Props) {
               {/* White overlay — re-covers the ring, then retracts counterclockwise before settling */}
               <path className="donut-white-overlay" d="" fill="#fff" style={{ opacity: 0 }} />
 
-              {/* Ticker + % labels — combined into one outer label per slice, always shown */}
+              {/* Ticker labels — outside the ring, all slices */}
               {sliceData.length > 1 && sliceData.map((seg) => (
-                <text key={`label-${seg.ticker}`} className="donut-ticker"
+                <text key={`ticker-${seg.ticker}`} className="donut-ticker"
                   x={seg.tp.x} y={seg.tp.y}
                   textAnchor={seg.tickerAnchor} dominantBaseline="middle"
                   fontSize="9.5" fontWeight="700"
                   fill={seg.color === "#101113" ? "#333" : seg.color === "#C8F000" ? "#7A9000" : seg.color}
                   fontFamily="system-ui, sans-serif"
                   style={{ opacity: 0 }}>
-                  {seg.ticker} {seg.weight.toFixed(0)}%
+                  {seg.ticker}
+                </text>
+              ))}
+
+              {/* Percentage labels — inside the ring, all slices */}
+              {sliceData.length > 1 && sliceData.map((seg) => (
+                <text key={`pct-${seg.ticker}`} className="donut-pct"
+                  x={seg.pp.x} y={seg.pp.y}
+                  textAnchor="middle" dominantBaseline="middle"
+                  fontSize="10" fontWeight="600" fill="#fff"
+                  fontFamily="system-ui, sans-serif"
+                  style={{ opacity: 0 }}>
+                  {seg.weight.toFixed(0)}%
                 </text>
               ))}
             </>

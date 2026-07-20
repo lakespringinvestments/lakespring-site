@@ -101,14 +101,31 @@ export async function fetchHoldingsFromSheet(): Promise<Holding[]> {
 // ─── Total Portfolio Value ───────────────────────────────────────────────────
 // Reads the "ACTIVE HOLDINGS TOTAL" row from Current Portfolio Summary
 export async function fetchTotalValue(): Promise<number> {
-  const rows = await fetchRange("Current Portfolio Summary", "A1:J30");
+  const rows = await fetchRange("Current Portfolio Summary", "A1:K30");
   if (rows.length === 0) return 0;
+
+  // "ACTIVE HOLDINGS TOTAL" excludes cash by design (that's what the label says).
+  // Prefer an explicit "TOTAL PORTFOLIO VALUE" row (which should include cash);
+  // otherwise add the CASH row's market value on top of the active holdings total.
+  let activeHoldingsTotal = 0;
+  let cashValue = 0;
 
   for (const row of rows) {
     const label = (row[0] ?? "").trim().toUpperCase();
-    if (label.includes("ACTIVE HOLDINGS TOTAL")) {
+    if (label.includes("TOTAL PORTFOLIO VALUE")) {
       return parseNum(row[7]); // Column H: Market Value total
     }
+    if (label.includes("ACTIVE HOLDINGS TOTAL")) {
+      activeHoldingsTotal = parseNum(row[7]);
+    }
+    const ticker = (row[1] ?? "").trim().toUpperCase();
+    if (ticker === "CASH") {
+      cashValue += parseNum(row[7]);
+    }
+  }
+
+  if (activeHoldingsTotal > 0) {
+    return activeHoldingsTotal + cashValue;
   }
 
   // Fallback: sum all market values

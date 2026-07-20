@@ -26,10 +26,6 @@ function formatCompact(n: number): string {
   return `$${Math.round(n)}`;
 }
 
-function formatCurrency(n: number): string {
-  return n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
-}
-
 // Squarified treemap — lays out rects proportional to `weight` within a w×h box
 function squarify(items: Holding[], x: number, y: number, w: number, h: number): Rect[] {
   const total = items.reduce((s, i) => s + i.weight, 0);
@@ -117,6 +113,23 @@ export default function PortfolioTreemap({ portfolio }: Props) {
     .sort((a, b) => b.weight - a.weight);
 
   const rects = size.w > 0 && size.h > 0 ? squarify(held, 0, 0, size.w, size.h) : [];
+  const hoveredRect = rects.find((r) => r.ticker === hovered) ?? null;
+
+  // Dialog is a fixed size, positioned above (or below, if too close to the top)
+  // the hovered tile, clamped so it never runs outside the treemap's bounds.
+  const DIALOG_W = 148;
+  const DIALOG_H = 76;
+  let dialogX = 0, dialogY = 0, dialogBelow = false;
+  if (hoveredRect) {
+    dialogX = hoveredRect.x + hoveredRect.w / 2 - DIALOG_W / 2;
+    dialogX = Math.min(Math.max(4, dialogX), Math.max(4, size.w - DIALOG_W - 4));
+    dialogY = hoveredRect.y - DIALOG_H - 8;
+    if (dialogY < 4) {
+      dialogY = hoveredRect.y + hoveredRect.h + 8;
+      dialogBelow = true;
+    }
+    dialogY = Math.min(dialogY, Math.max(4, size.h - DIALOG_H - 4));
+  }
 
   return (
     <section className="relative w-full flex-1 min-h-[300px] rounded-2xl overflow-hidden">
@@ -127,23 +140,18 @@ export default function PortfolioTreemap({ portfolio }: Props) {
           const baseW = Math.max(0, r.w - 2);
           const baseH = Math.max(0, r.h - 2);
 
-          // Enlarge on hover so tiny tiles (e.g. BMNR, ETH) can show their full label
-          const scale = isHovered ? 1.6 : 1;
-          let tileW = baseW * scale;
-          let tileH = baseH * scale;
-          let tileX = r.x - (tileW - baseW) / 2;
-          let tileY = r.y - (tileH - baseH) / 2;
-          if (isHovered && size.w > 0 && size.h > 0) {
-            tileX = Math.min(Math.max(0, tileX), Math.max(0, size.w - tileW));
-            tileY = Math.min(Math.max(0, tileY), Math.max(0, size.h - tileH));
-          }
+          // Small pop on hover — just enough to signal interactivity, not a big expansion
+          const scale = isHovered ? 1.04 : 1;
+          const tileW = baseW * scale;
+          const tileH = baseH * scale;
+          const tileX = r.x - (tileW - baseW) / 2;
+          const tileY = r.y - (tileH - baseH) / 2;
 
           const minDim = Math.min(r.w, r.h);
-          const tickerFontSize = isHovered
-            ? Math.max(14, Math.min(44, minDim * 0.24))
-            : Math.max(8, Math.min(44, minDim * 0.24));
-          const showTicker = isHovered || (r.w > 14 && r.h > 10);
-          const showSub = isHovered || (showTicker && r.h > tickerFontSize * 3.4 && r.w > 50);
+          const tickerFontSize = Math.max(8, Math.min(26, minDim * 0.2));
+          const showTicker = r.w > 14 && r.h > 10;
+          // Small tiles show the ticker only — full detail lives in the hover dialog
+          const showSub = showTicker && r.h > tickerFontSize * 2.6 && r.w > 62;
 
           return (
             <div
@@ -158,9 +166,8 @@ export default function PortfolioTreemap({ portfolio }: Props) {
                 height: tileH,
                 background: colorFor(r.ticker),
                 zIndex: isHovered ? 20 : 1,
-                boxShadow: isHovered ? "0 6px 20px rgba(0,0,0,0.35)" : undefined,
+                boxShadow: isHovered ? "0 4px 12px rgba(0,0,0,0.3)" : undefined,
               }}
-              title={`${r.ticker} · ${formatCurrency(dollarValue)} · ${r.weight.toFixed(1)}% of total · ${r.dayChangePct >= 0 ? "+" : ""}${r.dayChangePct.toFixed(2)}% today`}
             >
               {showTicker && (
                 <span
@@ -171,25 +178,48 @@ export default function PortfolioTreemap({ portfolio }: Props) {
                 </span>
               )}
               {showSub && (
-                <>
-                  <span
-                    className="text-white/85 mt-1"
-                    style={{ fontSize: tickerFontSize * 0.75 }}
-                  >
-                    {formatCompact(dollarValue)}
-                  </span>
-                  <span
-                    className="text-white/70"
-                    style={{ fontSize: tickerFontSize * 0.68 }}
-                  >
-                    {r.weight.toFixed(1)}% of total
-                  </span>
-                </>
+                <span
+                  className="text-white/85 mt-1"
+                  style={{ fontSize: tickerFontSize * 0.65 }}
+                >
+                  {r.weight.toFixed(1)}% ({formatCompact(dollarValue)})
+                </span>
               )}
             </div>
           );
         })}
+
+        {hoveredRect && (
+          <div
+            className="absolute rounded-lg bg-white shadow-lg px-3 py-2 pointer-events-none"
+            style={{ left: dialogX, top: dialogY, width: DIALOG_W, zIndex: 30 }}
+          >
+            <p className="text-xs font-bold text-ink-900 leading-none mb-1">{hoveredRect.ticker}</p>
+            <p className="text-[11px] text-ink-700 leading-tight">
+              {hoveredRect.weight.toFixed(1)}% ({formatCompact((hoveredRect.weight / 100) * portfolio.totalValue)})
+            </p>
+            <p
+              className="text-[11px] font-medium leading-tight mt-0.5"
+              style={{ color: hoveredRect.dayChangePct >= 0 ? "#1D9E75" : "#E24B4A" }}
+            >
+              {hoveredRect.dayChangePct >= 0 ? "+" : ""}
+              {hoveredRect.dayChangePct.toFixed(2)}% today
+            </p>
+            {/* Little pointer triangle toward the tile */}
+            <div
+              className="absolute w-2.5 h-2.5 bg-white"
+              style={{
+                left: "50%",
+                marginLeft: -5,
+                ...(dialogBelow
+                  ? { top: -5, transform: "rotate(45deg)" }
+                  : { bottom: -5, transform: "rotate(45deg)" }),
+              }}
+            />
+          </div>
+        )}
       </div>
     </section>
   );
+}
 }
