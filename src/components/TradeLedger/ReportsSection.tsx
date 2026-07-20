@@ -41,10 +41,10 @@ export default function ReportsSection() {
       <div>
         <h2 className="text-lg text-white font-semibold tracking-tight">Reports</h2>
         <p className="text-white/40 text-xs mt-1">
-          Weekly analysis breaks down our game plan and strategy before the trading week begins.
-          Trade retrospectives review what happened and why once the week closes. Sample both for
-          free below, or subscribe (button at the bottom of this page) to get every week&apos;s
-          reports curated for members.
+          Every week we publish two reports: a pre-market analysis laying out our game plan
+          before the week starts, and a retrospective breaking down what actually happened once
+          it ends. Try a free sample of each below, or subscribe (button at the bottom of this
+          page) to get both, every week, as a member.
         </p>
       </div>
 
