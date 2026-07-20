@@ -84,7 +84,8 @@ export default function AllocationDonut({ portfolio, view }: Props) {
   const rawSegs = hasPositions
     ? held.map((h) => ({
         ticker: h.ticker,
-        weight: (h.weight / totalWeight) * 100,
+        weight: (h.weight / totalWeight) * 100, // renormalized within this view
+        originalWeight: h.weight, // % of whole portfolio — used for $ value
         color: colors[h.ticker] ?? "#A8B0B6",
       }))
     : [];
@@ -97,11 +98,27 @@ export default function AllocationDonut({ portfolio, view }: Props) {
       : Math.round((seg.weight/segTotal)*1000)/10,
   }));
 
+  // Group minor slices (<4% within this view) into one "Other" wedge. With only
+  // 3 total holdings, two small slices are geometrically forced to sit next to
+  // each other no matter how they're ordered — grouping them removes the problem
+  // instead of fighting it, and they're still listed individually below the ring.
+  const MINOR_THRESHOLD = 4;
+  const majorSegs = segments.filter((s) => s.weight >= MINOR_THRESHOLD);
+  const minorSegs = segments.filter((s) => s.weight < MINOR_THRESHOLD);
+  const pieSegments = minorSegs.length >= 2
+    ? [...majorSegs, {
+        ticker: "OTHER",
+        weight: minorSegs.reduce((s, m) => s + m.weight, 0),
+        color: "#B7AFA0",
+        originalWeight: minorSegs.reduce((s, m) => s + m.originalWeight, 0),
+      }]
+    : segments;
+
   // Split-half riffle: sort descending, split into two halves, zip together.
   // This keeps rank-adjacent slices (the most similarly-sized, and so most easily
   // confused) apart from each other — unlike a simple big/small alternation, which
   // can strand the two middle-ranked slices next to each other when one slice dominates.
-  const sorted = [...segments].sort((a, b) => b.weight - a.weight);
+  const sorted = [...pieSegments].sort((a, b) => b.weight - a.weight);
   const half = Math.ceil(sorted.length / 2);
   const firstHalf = sorted.slice(0, half);
   const secondHalf = sorted.slice(half);
@@ -274,7 +291,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
     }
 
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
-  }, [view, segments.map(s => s.ticker + s.weight).join(",")]);
+  }, [view, pieSegments.map(s => s.ticker + s.weight).join(",")]);
 
   return (
     <section className="bg-white rounded-2xl border border-cream-200 p-6">
@@ -310,7 +327,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
                   fill={seg.color === "#101113" ? "#333" : seg.color === "#C8F000" ? "#7A9000" : seg.color}
                   fontFamily="system-ui, sans-serif"
                   style={{ opacity: 0 }}>
-                  {seg.ticker}
+                  {seg.ticker === "OTHER" ? "Other" : seg.ticker}
                 </text>
               ))}
 
@@ -341,6 +358,22 @@ export default function AllocationDonut({ portfolio, view }: Props) {
             style={{ filter: "none" }}>{totalDisplay}</text>
         </svg>
       </div>
+      {minorSegs.length >= 2 && (
+        <div className="mt-3 pt-3 border-t border-cream-100 flex flex-wrap gap-x-4 gap-y-1">
+          {minorSegs.map((seg) => {
+            const dollarValue = (seg.originalWeight / 100) * portfolio.totalValue;
+            const compact = dollarValue >= 1000
+              ? `$${(dollarValue / 1000).toFixed(1)}K`
+              : `$${Math.round(dollarValue)}`;
+            return (
+              <span key={seg.ticker} className="text-[11px] text-ink-500">
+                <span className="font-semibold" style={{ color: seg.color }}>{seg.ticker}</span>
+                {" "}{seg.weight.toFixed(1)}% ({compact})
+              </span>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

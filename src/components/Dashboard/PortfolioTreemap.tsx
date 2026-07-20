@@ -21,76 +21,40 @@ function colorFor(ticker: string): string {
   return TICKER_COLORS[ticker] ?? "#5A6578";
 }
 
+function displayTicker(ticker: string): string {
+  return ticker === "CASH" ? "USD" : ticker;
+}
+
 function formatCompact(n: number): string {
   if (n >= 1000) return `$${Math.round(n / 1000)}K`;
   return `$${Math.round(n)}`;
 }
 
-// Squarified treemap — lays out rects proportional to `weight` within a w×h box
-function squarify(items: Holding[], x: number, y: number, w: number, h: number): Rect[] {
-  const total = items.reduce((s, i) => s + i.weight, 0);
-  if (total <= 0 || w <= 0 || h <= 0) return [];
+// Slice-and-dice treemap — alternates the cut direction (vertical/horizontal) for each
+// successive item. Still 100% size-accurate, but produces a staircase/pinwheel layout
+// instead of squarify's tidy near-square grid, which reads as more "hand-placed."
+function sliceDice(items: Holding[], x: number, y: number, w: number, h: number, depth = 0): Rect[] {
+  if (items.length === 0 || w <= 0 || h <= 0) return [];
+  const total = items.reduce((s, it) => s + it.weight, 0);
+  if (total <= 0) return [];
+  if (items.length === 1) return [{ ...items[0], x, y, w, h }];
 
-  const rects: Rect[] = [];
-  let cx = x, cy = y, remW = w, remH = h;
-  let row: Holding[] = [];
-  let i = 0;
+  const [first, ...rest] = items;
+  const frac = first.weight / total;
+  const vertical = depth % 2 === 0;
 
-  const worst = (r: Holding[], rowLen: number): number => {
-    if (!r.length) return Infinity;
-    const sum = r.reduce((s, it) => s + it.weight, 0);
-    const rowArea = (sum / total) * (w * h);
-    const side = rowArea / rowLen;
-    let max = 0;
-    r.forEach((it) => {
-      const area = (it.weight / total) * (w * h);
-      const ratio = Math.max(side / (area / side), area / side / side);
-      if (ratio > max) max = ratio;
-    });
-    return max;
-  };
-
-  const layoutRow = (rowItems: Holding[]) => {
-    const sum = rowItems.reduce((s, it) => s + it.weight, 0);
-    const rowArea = (sum / total) * (w * h);
-    if (remW < remH) {
-      // Horizontal strip spanning the full width — items sit side by side (x varies)
-      const rowH = rowArea / remW;
-      let rx = cx;
-      rowItems.forEach((it) => {
-        const rw = (it.weight / sum) * remW;
-        rects.push({ ...it, x: rx, y: cy, w: rw, h: rowH });
-        rx += rw;
-      });
-      cy += rowH;
-      remH -= rowH;
-    } else {
-      // Vertical strip spanning the full height — items stack top to bottom (y varies)
-      const rowW = rowArea / remH;
-      let ry = cy;
-      rowItems.forEach((it) => {
-        const rh = (it.weight / sum) * remH;
-        rects.push({ ...it, x: cx, y: ry, w: rowW, h: rh });
-        ry += rh;
-      });
-      cx += rowW;
-      remW -= rowW;
-    }
-  };
-
-  while (i < items.length) {
-    const rowLen = remW < remH ? remW : remH;
-    const testRow = [...row, items[i]];
-    if (worst(row, rowLen) === Infinity || worst(testRow, rowLen) <= worst(row, rowLen)) {
-      row = testRow;
-      i++;
-    } else {
-      layoutRow(row);
-      row = [];
-    }
+  if (vertical) {
+    const w1 = w * frac;
+    return [
+      { ...first, x, y, w: w1, h },
+      ...sliceDice(rest, x + w1, y, w - w1, h, depth + 1),
+    ];
   }
-  if (row.length) layoutRow(row);
-  return rects;
+  const h1 = h * frac;
+  return [
+    { ...first, x, y, w, h: h1 },
+    ...sliceDice(rest, x, y + h1, w, h - h1, depth + 1),
+  ];
 }
 
 export default function PortfolioTreemap({ portfolio }: Props) {
@@ -112,7 +76,7 @@ export default function PortfolioTreemap({ portfolio }: Props) {
     .filter((h) => h.weight > 0)
     .sort((a, b) => b.weight - a.weight);
 
-  const rects = size.w > 0 && size.h > 0 ? squarify(held, 0, 0, size.w, size.h) : [];
+  const rects = size.w > 0 && size.h > 0 ? sliceDice(held, 0, 0, size.w, size.h) : [];
   const hoveredRect = rects.find((r) => r.ticker === hovered) ?? null;
 
   // Dialog is a fixed size, positioned above (or below, if too close to the top)
@@ -174,7 +138,7 @@ export default function PortfolioTreemap({ portfolio }: Props) {
                   className="font-semibold text-white leading-none"
                   style={{ fontSize: tickerFontSize }}
                 >
-                  {r.ticker}
+                  {displayTicker(r.ticker)}
                 </span>
               )}
               {showSub && (
@@ -194,7 +158,7 @@ export default function PortfolioTreemap({ portfolio }: Props) {
             className="absolute rounded-lg bg-white shadow-lg px-3 py-2 pointer-events-none"
             style={{ left: dialogX, top: dialogY, width: DIALOG_W, zIndex: 30 }}
           >
-            <p className="text-xs font-bold text-ink-900 leading-none mb-1">{hoveredRect.ticker}</p>
+            <p className="text-xs font-bold text-ink-900 leading-none mb-1">{displayTicker(hoveredRect.ticker)}</p>
             <p className="text-[11px] text-ink-700 leading-tight">
               {hoveredRect.weight.toFixed(1)}% ({formatCompact((hoveredRect.weight / 100) * portfolio.totalValue)})
             </p>
