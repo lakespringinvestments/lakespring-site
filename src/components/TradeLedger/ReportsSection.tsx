@@ -40,7 +40,7 @@ export default function ReportsSection() {
     <div className="space-y-6">
       <div>
         <h2 className="text-lg text-white font-semibold tracking-tight">Reports</h2>
-        <p className="text-white/40 text-xs mt-1 max-w-xl">
+        <p className="text-white/40 text-xs mt-1">
           Weekly analysis breaks down our game plan and strategy before the trading week begins.
           Trade retrospectives review what happened and why once the week closes. Sample both for
           free below, or subscribe (button at the bottom of this page) to get every week&apos;s
