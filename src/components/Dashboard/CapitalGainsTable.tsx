@@ -8,14 +8,14 @@ const FP_BOOK_COSTS: Record<string, number> = {
   TSLA: 252866, NVDA: 0, PLTR: 69210, AMZN: 0, GOOGL: 0, LLY: 0, SPCX: 0,
 };
 const TM_BOOK_COSTS: Record<string, number> = {
-  MRVL: 0, NBIS: 0, ASML: 0, BE: 0, TSM: 0, CRWV: 0,
+  MRVL: 0, NBIS: 0, ASML: 0, BE: 0, SMCI: 0, CRWV: 0,
 };
 const CRYPTO_BOOK_COSTS: Record<string, number> = {
   BTC: 220381, ETH: 2194, SOL: 0, BMNR: 51098, MSTR: 0,
 };
 
 const FP_TICKERS = ["TSLA","NVDA","PLTR","AMZN","GOOGL","LLY","SPCX"];
-const TM_TICKERS = ["MRVL","NBIS","ASML","BE","TSM","CRWV"];
+const TM_TICKERS = ["MRVL","NBIS","ASML","BE","SMCI","CRWV"];
 const CRYPTO_TICKERS = ["BTC","ETH","SOL","BMNR","MSTR"];
 
 const BADGE_COLORS: Record<string, { bg: string; text: string }> = {
@@ -26,6 +26,11 @@ const BADGE_COLORS: Record<string, { bg: string; text: string }> = {
   GOOGL: { bg: "rgba(66,133,244,0.10)",  text: "#3B76DB" },
   LLY:   { bg: "rgba(212,83,126,0.10)",  text: "#B8436A" },
   SPCX:  { bg: "rgba(90,101,120,0.08)",  text: "#5A6578" },
+  MRVL:  { bg: "rgba(0,87,184,0.10)",    text: "#0057B8" },
+  NBIS:  { bg: "rgba(200,240,0,0.18)",   text: "#7A9000" },
+  ASML:  { bg: "rgba(30,58,138,0.10)",   text: "#1E3A8A" },
+  BE:    { bg: "rgba(0,168,107,0.10)",   text: "#00875A" },
+  SMCI:  { bg: "rgba(138,155,176,0.14)", text: "#5F7089" },
   CRWV:  { bg: "rgba(37,99,235,0.10)",   text: "#2563EB" },
   BTC:   { bg: "rgba(247,147,26,0.10)",  text: "#D97B06" },
   ETH:   { bg: "rgba(98,126,234,0.10)",  text: "#4B5EC9" },
@@ -36,7 +41,7 @@ const BADGE_COLORS: Record<string, { bg: string; text: string }> = {
 
 const NAMES: Record<string, string> = {
   MRVL: "Marvell", NBIS: "Nebius Group", ASML: "ASML", BE: "Bloom Energy",
-  TSM: "TSMC", CRWV: "CoreWeave", BTC: "Bitcoin", ETH: "Ethereum",
+  SMCI: "Super Micro", CRWV: "CoreWeave", BTC: "Bitcoin", ETH: "Ethereum",
   SOL: "Solana", BMNR: "Bitmine", MSTR: "Strategy",
 };
 
