@@ -213,13 +213,13 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
     <section className="bg-white rounded-2xl border border-cream-200 p-6 flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.18em] text-ink-500 mb-0.5">
+          <p className="text-[10px] uppercase tracking-[0.15em] text-ink-500 mb-1">
             Weekly net options income
           </p>
           {totalShown > 0 && (
-            <p className="text-sm font-medium text-teal-600"
-              style={{}}>
-              ${totalShown.toLocaleString(undefined, { maximumFractionDigits: 0 })} shown
+            <p className="text-2xl font-bold text-[#034147] leading-none">
+              {"$" + totalShown.toLocaleString(undefined, { maximumFractionDigits: 0 })}{" "}
+              <span className="text-xs font-medium text-ink-400 align-middle">shown</span>
             </p>
           )}
         </div>
@@ -244,7 +244,7 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
           </div>
         ) : (
           <canvas ref={canvasRef} className="w-full h-full"
-            style={{ display: "block", height: "160px" }}
+            style={{ display: "block" }}
             aria-label="Weekly premium income bar chart" />
         )}
       </div>

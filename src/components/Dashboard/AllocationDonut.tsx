@@ -150,76 +150,106 @@ export default function AllocationDonut({ portfolio, view }: Props) {
     }
   }
 
-  // Dashed ring animation for empty state
-  const dashCircumference = 2 * Math.PI * midR;
+  // Empty state — plain gray ring, no dash calculations needed
 
   useEffect(() => {
     if (animRef.current) cancelAnimationFrame(animRef.current);
 
-    const DURATION = 1100; // 0–50%: clockwise color reveal · 50–100%: white re-cover retracts counterclockwise
+    const isTwoPhase = view === "second"; // Thematic Momentum only — everyone else keeps the original simple reveal
+    const DURATION = isTwoPhase ? 1100 : 700;
     const startTime = performance.now();
     prevView.current = view;
 
     function easeOutCubic(t: number) { return 1 - Math.pow(1 - t, 3); }
 
     if (hasPositions) {
-      // Animate real slices
-      function frame(now: number) {
-        const svg = svgRef.current;
-        if (!svg) return;
-        const raw = Math.min((now - startTime) / DURATION, 1);
+      if (isTwoPhase) {
+        // Thematic Momentum: 0–50% colors sweep in clockwise over the white base ·
+        // 50–100% a white overlay re-covers the ring, then retracts counterclockwise before settling
+        function frameTwoPhase(now: number) {
+          const svg = svgRef.current;
+          if (!svg) return;
+          const raw = Math.min((now - startTime) / DURATION, 1);
 
-        // Phase 1 (raw 0 → 0.5): colors sweep in clockwise over the white base
-        const p1 = Math.min(1, raw / 0.5);
-        const easedP1 = easeOutCubic(p1);
+          const p1 = Math.min(1, raw / 0.5);
+          const easedP1 = easeOutCubic(p1);
 
-        const paths = svg.querySelectorAll(".donut-slice");
-        const tickerTexts = svg.querySelectorAll(".donut-ticker");
-        const overlay = svg.querySelector(".donut-white-overlay") as SVGPathElement | null;
+          const paths = svg.querySelectorAll(".donut-slice");
+          const tickerTexts = svg.querySelectorAll(".donut-ticker");
+          const overlay = svg.querySelector(".donut-white-overlay") as SVGPathElement | null;
 
-        let cumul = 0;
-        sliceData.forEach((seg, i) => {
-          const sweep = Math.min((seg.weight / 100) * 360 * easedP1, 359.9);
-          const end = cumul + sweep;
-          const path = paths[i] as SVGPathElement;
-          if (path) {
-            path.setAttribute("d", sweep > 0
-              ? buildPath(cx, cy, outerR, innerR, cumul, end)
-              : buildPath(cx, cy, outerR, innerR, cumul, cumul));
-          }
-          cumul = end;
-        });
+          let cumul = 0;
+          sliceData.forEach((seg, i) => {
+            const sweep = Math.min((seg.weight / 100) * 360 * easedP1, 359.9);
+            const end = cumul + sweep;
+            const path = paths[i] as SVGPathElement;
+            if (path) {
+              path.setAttribute("d", sweep > 0
+                ? buildPath(cx, cy, outerR, innerR, cumul, end)
+                : buildPath(cx, cy, outerR, innerR, cumul, cumul));
+            }
+            cumul = end;
+          });
 
-        // Phase 2 (raw 0.5 → 1): a white overlay re-covers the ring, then retracts
-        // counterclockwise (shrinking from a full 360° sweep back to 0°) before settling
-        if (overlay) {
-          if (raw < 0.5) {
-            overlay.setAttribute("d", "");
-            overlay.style.opacity = "0";
-          } else {
-            const p2 = (raw - 0.5) / 0.5;
-            const easedP2 = easeOutCubic(p2);
-            const overlaySweep = Math.max(0, 360 * (1 - easedP2));
-            if (overlaySweep > 0.05) {
-              overlay.setAttribute("d", buildPath(cx, cy, outerR, innerR, 0, Math.min(overlaySweep, 359.99)));
-              overlay.style.opacity = "1";
-            } else {
+          if (overlay) {
+            if (raw < 0.5) {
               overlay.setAttribute("d", "");
               overlay.style.opacity = "0";
+            } else {
+              const p2 = (raw - 0.5) / 0.5;
+              const easedP2 = easeOutCubic(p2);
+              const overlaySweep = Math.max(0, 360 * (1 - easedP2));
+              if (overlaySweep > 0.05) {
+                overlay.setAttribute("d", buildPath(cx, cy, outerR, innerR, 0, Math.min(overlaySweep, 359.99)));
+                overlay.style.opacity = "1";
+              } else {
+                overlay.setAttribute("d", "");
+                overlay.style.opacity = "0";
+              }
             }
           }
+
+          const textOpacity = raw > 0.92 ? ((raw - 0.92) / 0.08).toString() : "0";
+          tickerTexts.forEach((t) => { (t as SVGTextElement).style.opacity = textOpacity; });
+
+          if (raw < 1) animRef.current = requestAnimationFrame(frameTwoPhase);
         }
+        animRef.current = requestAnimationFrame(frameTwoPhase);
+      } else {
+        // Original simple reveal — slices sweep in clockwise once, no white base/overlay
+        function frame(now: number) {
+          const svg = svgRef.current;
+          if (!svg) return;
+          const raw = Math.min((now - startTime) / DURATION, 1);
+          const progress = easeOutCubic(raw);
 
-        // Labels fade in only once the white overlay has fully retracted
-        const textOpacity = raw > 0.92 ? ((raw - 0.92) / 0.08).toString() : "0";
-        tickerTexts.forEach((t) => { (t as SVGTextElement).style.opacity = textOpacity; });
+          const paths = svg.querySelectorAll(".donut-slice");
+          const tickerTexts = svg.querySelectorAll(".donut-ticker");
+          const overlay = svg.querySelector(".donut-white-overlay") as SVGPathElement | null;
+          if (overlay) { overlay.setAttribute("d", ""); overlay.style.opacity = "0"; }
 
-        if (raw < 1) animRef.current = requestAnimationFrame(frame);
+          let cumul = 0;
+          sliceData.forEach((seg, i) => {
+            const sweep = Math.min((seg.weight / 100) * 360 * progress, 359.9);
+            if (sweep <= 0) return;
+            const end = cumul + sweep;
+            const path = paths[i] as SVGPathElement;
+            if (path) path.setAttribute("d", buildPath(cx, cy, outerR, innerR, cumul, end));
+
+            const opacity = progress > 0.8 ? ((progress - 0.8) / 0.2).toString() : "0";
+            const ticker = tickerTexts[i] as SVGTextElement;
+            if (ticker) ticker.style.opacity = opacity;
+
+            cumul = end;
+          });
+
+          if (raw < 1) animRef.current = requestAnimationFrame(frame);
+        }
+        animRef.current = requestAnimationFrame(frame);
       }
-      animRef.current = requestAnimationFrame(frame);
     } else {
-      // Animate dashed ring sweep-in via stroke-dashoffset
-      function frameDash(now: number) {
+      // Empty state — plain gray ring fading in, no dashed/hatched pattern
+      function frameEmpty(now: number) {
         const svg = svgRef.current;
         if (!svg) return;
         const raw = Math.min((now - startTime) / DURATION, 1);
@@ -227,14 +257,12 @@ export default function AllocationDonut({ portfolio, view }: Props) {
 
         const ring = svg.querySelector(".empty-ring") as SVGCircleElement;
         if (ring) {
-          const offset = dashCircumference * (1 - progress);
-          ring.style.strokeDashoffset = offset.toString();
           ring.style.opacity = (0.3 * progress).toString();
         }
 
-        if (raw < 1) animRef.current = requestAnimationFrame(frameDash);
+        if (raw < 1) animRef.current = requestAnimationFrame(frameEmpty);
       }
-      animRef.current = requestAnimationFrame(frameDash);
+      animRef.current = requestAnimationFrame(frameEmpty);
     }
 
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
@@ -279,13 +307,11 @@ export default function AllocationDonut({ portfolio, view }: Props) {
               ))}
             </>
           ) : (
-            /* Dashed ring — animated sweep-in */
+            /* Plain gray ring — fades in, no dashed/hatched pattern */
             <circle className="empty-ring"
               cx={cx} cy={cy} r={midR}
               fill="none" stroke="#C4BFB3" strokeWidth={outerR - innerR}
-              strokeDasharray="8 6"
-              strokeDashoffset={dashCircumference}
-              style={{ opacity: 0, transform: "rotate(-90deg)", transformOrigin: `${cx}px ${cy}px` }}
+              style={{ opacity: 0 }}
             />
           )}
 

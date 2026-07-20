@@ -98,6 +98,7 @@ function squarify(items: Holding[], x: number, y: number, w: number, h: number):
 export default function PortfolioTreemap({ portfolio }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 0, h: 0 });
+  const [hovered, setHovered] = useState<string | null>(null);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -120,20 +121,42 @@ export default function PortfolioTreemap({ portfolio }: Props) {
       <div ref={containerRef} className="relative w-full h-full">
         {rects.map((r) => {
           const dollarValue = (r.weight / 100) * portfolio.totalValue;
+          const isHovered = hovered === r.ticker;
+          const baseW = Math.max(0, r.w - 2);
+          const baseH = Math.max(0, r.h - 2);
+
+          // Enlarge on hover so tiny tiles (e.g. BMNR, ETH) can show their full label
+          const scale = isHovered ? 1.6 : 1;
+          let tileW = baseW * scale;
+          let tileH = baseH * scale;
+          let tileX = r.x - (tileW - baseW) / 2;
+          let tileY = r.y - (tileH - baseH) / 2;
+          if (isHovered && size.w > 0 && size.h > 0) {
+            tileX = Math.min(Math.max(0, tileX), Math.max(0, size.w - tileW));
+            tileY = Math.min(Math.max(0, tileY), Math.max(0, size.h - tileH));
+          }
+
           const minDim = Math.min(r.w, r.h);
-          const tickerFontSize = Math.max(8, Math.min(18, minDim * 0.24));
-          const showTicker = r.w > 14 && r.h > 10;
-          const showSub = showTicker && r.h > tickerFontSize * 3.4 && r.w > 50;
+          const tickerFontSize = isHovered
+            ? Math.max(14, Math.min(44, minDim * 0.24))
+            : Math.max(8, Math.min(44, minDim * 0.24));
+          const showTicker = isHovered || (r.w > 14 && r.h > 10);
+          const showSub = isHovered || (showTicker && r.h > tickerFontSize * 3.4 && r.w > 50);
+
           return (
             <div
               key={r.ticker}
-              className="absolute flex flex-col items-center justify-center overflow-hidden rounded-md"
+              onMouseEnter={() => setHovered(r.ticker)}
+              onMouseLeave={() => setHovered((cur) => (cur === r.ticker ? null : cur))}
+              className="absolute flex flex-col items-center justify-center overflow-hidden rounded-md transition-all duration-150 ease-out"
               style={{
-                left: r.x,
-                top: r.y,
-                width: Math.max(0, r.w - 2),
-                height: Math.max(0, r.h - 2),
+                left: tileX,
+                top: tileY,
+                width: tileW,
+                height: tileH,
                 background: colorFor(r.ticker),
+                zIndex: isHovered ? 20 : 1,
+                boxShadow: isHovered ? "0 6px 20px rgba(0,0,0,0.35)" : undefined,
               }}
               title={`${r.ticker} · ${formatCurrency(dollarValue)} · ${r.weight.toFixed(1)}% of total · ${r.dayChangePct >= 0 ? "+" : ""}${r.dayChangePct.toFixed(2)}% today`}
             >
