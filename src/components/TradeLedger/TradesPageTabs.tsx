@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import type { Trade } from "@/lib/trades";
-import type { ReportMonthGroup } from "@/lib/reports";
 import TradeLedgerClient from "./TradeLedgerClient";
 import ReportsSection from "./ReportsSection";
 
@@ -10,10 +9,9 @@ type Tab = "trades" | "reports";
 
 interface Props {
   trades: Trade[];
-  reportGroups: ReportMonthGroup[];
 }
 
-export default function TradesPageTabs({ trades, reportGroups }: Props) {
+export default function TradesPageTabs({ trades }: Props) {
   const [tab, setTab] = useState<Tab>("trades");
 
   return (
@@ -42,7 +40,7 @@ export default function TradesPageTabs({ trades, reportGroups }: Props) {
       {tab === "trades" ? (
         <TradeLedgerClient trades={trades} />
       ) : (
-        <ReportsSection groups={reportGroups} />
+        <ReportsSection />
       )}
     </>
   );
