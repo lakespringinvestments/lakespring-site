@@ -99,7 +99,6 @@ export default function PortfolioTreemap({ portfolio }: Props) {
     <section className="relative w-full flex-1 min-h-[300px] rounded-2xl overflow-hidden">
       <div ref={containerRef} className="relative w-full h-full">
         {rects.map((r) => {
-          const dollarValue = (r.weight / 100) * portfolio.totalValue;
           const isHovered = hovered === r.ticker;
           const baseW = Math.max(0, r.w - 2);
           const baseH = Math.max(0, r.h - 2);
@@ -112,10 +111,10 @@ export default function PortfolioTreemap({ portfolio }: Props) {
           const tileY = r.y - (tileH - baseH) / 2;
 
           const minDim = Math.min(r.w, r.h);
-          const tickerFontSize = Math.max(8, Math.min(26, minDim * 0.2));
+          const tickerFontSize = Math.max(9, Math.min(32, minDim * 0.26));
           const showTicker = r.w > 14 && r.h > 10;
-          // Small tiles show the ticker only — full detail lives in the hover dialog
-          const showSub = showTicker && r.h > tickerFontSize * 2.6 && r.w > 62;
+          // Hard rule: under 5% allocation shows ticker only — everything else lives in the hover dialog
+          const showSub = showTicker && r.weight >= 5 && r.h > tickerFontSize * 2.2 && r.w > 50;
 
           return (
             <div
@@ -144,9 +143,9 @@ export default function PortfolioTreemap({ portfolio }: Props) {
               {showSub && (
                 <span
                   className="text-white/85 mt-1"
-                  style={{ fontSize: tickerFontSize * 0.65 }}
+                  style={{ fontSize: tickerFontSize * 0.55 }}
                 >
-                  {r.weight.toFixed(1)}% ({formatCompact(dollarValue)})
+                  {r.weight.toFixed(1)}%
                 </span>
               )}
             </div>
