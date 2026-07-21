@@ -51,8 +51,9 @@ export default function ReportsSection() {
         <p className="text-white/40 text-xs mt-1">
           Every week we publish two reports: a pre-market analysis laying out our game plan
           before the week starts, and a retrospective breaking down what actually happened once
-          it ends. Try a free sample of each below, or subscribe (button at the bottom of this
-          page) to get both, every week, as a member.
+          it ends. Subscribe below to view the free sample reports — this also adds you to our
+          newsletter (not to be confused with paid membership, which unlocks the full weekly
+          archive via the button at the bottom of this page).
         </p>
       </div>
 
@@ -111,7 +112,7 @@ export default function ReportsSection() {
                 />
               </BlurOverlay>
               <div className="absolute inset-0 z-10 flex items-center justify-center p-6 bg-black/50">
-                <div className="w-full max-w-sm bg-[#0A0A0A] border border-white/10 rounded-xl p-5">
+                <div className="w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-xl p-5">
                   <NewsletterSignup
                     variant="minimal"
                     dark
