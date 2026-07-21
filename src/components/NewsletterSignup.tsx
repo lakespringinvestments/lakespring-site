@@ -13,6 +13,8 @@ interface Props {
   variant?: "inline" | "card" | "hero" | "minimal";
   /** Dark background mode (e.g. inside the teal footer) */
   dark?: boolean;
+  /** Called once the subscribe request actually succeeds — for gating content on a real signup */
+  onSuccess?: () => void;
 }
 
 export default function NewsletterSignup({
@@ -21,6 +23,7 @@ export default function NewsletterSignup({
   buttonText = "Subscribe",
   variant = "card",
   dark = false,
+  onSuccess,
 }: Props) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -52,6 +55,7 @@ export default function NewsletterSignup({
             : "You're in. Check your inbox for a welcome note."
         );
         setEmail("");
+        onSuccess?.();
       } else {
         setStatus("error");
         setMessage(data.error || "Something went wrong. Try again.");
