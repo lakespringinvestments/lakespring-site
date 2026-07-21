@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import BlurOverlay from "./BlurOverlay";
 import { FREE_REPORTS, PAID_REPORTS_FOLDER_URL } from "@/lib/reports";
 
-const STRIPE_URL = "https://buy.stripe.com/test_9B66oH1nF9Zpe5Wewxfw400";
-
 function useMember() {
   const [member, setMember] = useState(false);
   useEffect(() => {
@@ -119,12 +117,7 @@ export default function ReportsSection() {
           </span>
         </a>
       ) : (
-        <a
-          href={STRIPE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-center gap-4 bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-white/10 rounded-xl p-6 transition-colors"
-        >
+        <div className="flex items-center gap-4 bg-white/[0.02] border border-white/5 rounded-xl p-6">
           <div className="w-11 h-11 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
             <LockIcon />
           </div>
@@ -139,10 +132,7 @@ export default function ReportsSection() {
               <BlurOverlay>Curated every single week: a Trading Game Plan &amp; Strategy report and an Active Market Pulse report — members get both, every week, without exception.</BlurOverlay>
             </p>
           </div>
-          <span className="text-[11px] font-semibold text-sage-300 group-hover:text-sage-200 flex-shrink-0 whitespace-nowrap">
-            Subscribe to unlock →
-          </span>
-        </a>
+        </div>
       )}
     </div>
   );
