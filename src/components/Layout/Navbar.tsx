@@ -8,7 +8,7 @@ const NAV_LINKS = [
   { href: "/dashboard", label: "Portfolio Dashboard" },
   { href: "/thesis", label: "About Us & Our Strategy" },
   { href: "/stories", label: "Stories & Perspectives" },
-  { href: "/trades", label: "Trade Ledger" },
+  { href: "/trades", label: "Trade Ledger & Analysis Reports" },
 ];
 
 export default function Navbar() {

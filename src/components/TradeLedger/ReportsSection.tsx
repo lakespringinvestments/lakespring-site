@@ -52,8 +52,8 @@ export default function ReportsSection() {
           Every week we publish two reports: a pre-market analysis laying out our game plan
           before the week starts, and a retrospective breaking down what actually happened once
           it ends. Subscribe below to view the free sample reports — this also adds you to our
-          newsletter (not to be confused with paid membership, which unlocks the full weekly
-          archive via the button at the bottom of this page).
+          newsletter (not to be confused with paid membership, which gets you live trade alerts
+          and the full repository of reports via the button at the bottom of this page).
         </p>
       </div>
 

@@ -1,7 +1,6 @@
 // src/app/trades/page.tsx
 import { getAllTrades } from "@/lib/trades";
 import TradesPageTabs from "@/components/TradeLedger/TradesPageTabs";
-import NewsletterSignup from "@/components/NewsletterSignup";
 
 export const dynamic = "force-dynamic";
 
@@ -44,11 +43,17 @@ export default async function TradesPage() {
                 the start of the trading week.
               </p>
               <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/10 max-w-lg">
-                <NewsletterSignup
-                  variant="minimal"
-                  dark
-                  buttonText="Join our Community"
-                />
+                <a
+                  href="https://buy.stripe.com/test_9B66oH1nF9Zpe5Wewxfw400"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center w-full bg-white text-[#034147] font-semibold text-sm px-6 py-3 rounded-lg hover:bg-cream-50 transition-colors"
+                >
+                  Subscribe →
+                </a>
+                <p className="text-[11px] text-white/40 mt-3 text-center">
+                  Secure checkout via Stripe. Cancel anytime.
+                </p>
               </div>
             </div>
           </div>
