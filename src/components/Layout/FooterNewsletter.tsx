@@ -1,7 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import NewsletterSignup from "@/components/NewsletterSignup";
+
+const SUBSTACK_URL = "https://substack.com/@lakespringinvestments";
 
 /** Pages where the footer newsletter section should be hidden */
 const HIDDEN_ON = new Set(["/trades"]);
@@ -15,15 +16,22 @@ export default function FooterNewsletter() {
       <div className="max-w-6xl mx-auto px-6 pt-20 pb-14 grid md:grid-cols-[1fr_1.2fr] gap-12 items-center">
         <div>
           <h3 className="text-2xl text-white mb-3 tracking-tight font-semibold">
-            Join Our Newsletter
+            Follow on Substack
           </h3>
           <p className="text-cream-100/70 text-sm leading-relaxed max-w-md">
-            Occasional notes on portfolio thinking, market analysis, and wealth
-            stories.
+            Get notified the moment a new article publishes — including pieces
+            we only post there, not here.
           </p>
         </div>
         <div>
-          <NewsletterSignup variant="minimal" dark />
+          <a
+            href={SUBSTACK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center bg-white text-teal-600 font-semibold text-sm px-6 py-3 rounded-lg hover:bg-cream-50 transition-colors"
+          >
+            Subscribe on Substack →
+          </a>
         </div>
       </div>
     </div>

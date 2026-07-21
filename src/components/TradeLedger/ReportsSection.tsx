@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import BlurOverlay from "./BlurOverlay";
-import NewsletterSignup from "@/components/NewsletterSignup";
 import { FREE_REPORTS, PAID_REPORTS_FOLDER_URL } from "@/lib/reports";
 
+const SUBSTACK_URL = "https://substack.com/@lakespringinvestments";
 const SUBSCRIBED_KEY = "lakespring_subscribed";
 
 function useMember() {
@@ -51,9 +51,10 @@ export default function ReportsSection() {
         <p className="text-white/40 text-xs mt-1">
           Every week we publish two reports: a pre-market analysis laying out our game plan
           before the week starts, and a retrospective breaking down what actually happened once
-          it ends. Subscribe below to view the free sample reports — this also adds you to our
-          newsletter (not to be confused with paid membership, which gets you live trade alerts
-          and the full repository of reports via the button at the bottom of this page).
+          it ends. Subscribe below to view the free sample reports — this also follows us on
+          Substack for new article alerts (not to be confused with paid membership, which gets
+          you live trade alerts and the full repository of reports via the button at the bottom
+          of this page).
         </p>
       </div>
 
@@ -112,13 +113,28 @@ export default function ReportsSection() {
                 />
               </BlurOverlay>
               <div className="absolute inset-0 z-10 flex items-center justify-center p-6 bg-black/50">
-                <div className="w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-xl p-5">
-                  <NewsletterSignup
-                    variant="minimal"
-                    dark
-                    buttonText="Unlock sample reports"
-                    onSuccess={handleSubscribed}
-                  />
+                <div className="w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-xl p-6 text-center">
+                  <p className="text-sm text-white font-medium mb-1">
+                    Follow on Substack to unlock
+                  </p>
+                  <p className="text-xs text-white/50 mb-4 leading-relaxed">
+                    Subscribe for free on Substack, then come back and confirm below to view
+                    the sample reports.
+                  </p>
+                  <a
+                    href={SUBSTACK_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center w-full bg-white text-[#034147] font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-cream-50 transition-colors mb-3"
+                  >
+                    Subscribe on Substack →
+                  </a>
+                  <button
+                    onClick={handleSubscribed}
+                    className="w-full text-xs text-white/50 hover:text-white/80 underline underline-offset-2 transition-colors"
+                  >
+                    I&apos;ve already subscribed — show me the reports
+                  </button>
                 </div>
               </div>
             </>
