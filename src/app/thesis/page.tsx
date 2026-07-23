@@ -1,6 +1,7 @@
 import Image from "next/image";
 import TypewriterQuote from "@/components/TypewriterQuote";
 import QuestionCards from "@/components/QuestionCards";
+import ZoomableImage from "@/components/Articles/ZoomableImage";
 
 export const metadata = {
   title: "About Us & Our Strategy — Lakespring Investments",
@@ -115,7 +116,7 @@ export default function ThesisPage() {
       {/* ── Hero ── */}
       <section className="bg-transparent">
         <div className="max-w-6xl mx-auto px-6 pt-16 md:pt-20 pb-12 md:pb-14">
-          <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-[#0a0a0a] leading-[1.05] tracking-tight font-medium mb-10 md:mb-14">
+          <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl text-[#0a0a0a] leading-[1.05] tracking-tight font-medium mb-10 md:mb-14">
             <span className="block">About Us</span>
             <span className="block mt-1">
               <span
@@ -135,7 +136,7 @@ export default function ThesisPage() {
 
         {/* ── Opening — what Lakespring is ── */}
         <div className="max-w-6xl mx-auto px-6">
-          <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed">
+          <div className="space-y-7 text-ink-700 text-base md:text-xl leading-relaxed">
             <p>
               Lakespring Investments is an independent investment research platform built on a
               first-principles approach to portfolio construction. We hold concentrated positions
@@ -150,8 +151,7 @@ export default function ThesisPage() {
 
           {/* Thesis wallpaper — 16/9 banner matching article cover style */}
           <div className="mt-10 mb-2 w-full rounded-2xl overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <ZoomableImage
               src="/article-images/thesis_wallpaper.png"
               alt="Lakespring investment themes — AI, autonomous vehicles, energy, compute, digital assets"
               className="w-full object-cover"
@@ -164,12 +164,12 @@ export default function ThesisPage() {
 
           {/* ── Why This Exists ── */}
           <div className="mt-14 mb-6">
-            <h2 className="font-sans text-2xl md:text-3xl font-semibold text-teal-600 leading-tight tracking-tight">
+            <h2 className="font-sans text-xl md:text-3xl font-semibold text-teal-600 leading-tight tracking-tight">
               Why this exists
             </h2>
           </div>
 
-          <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed">
+          <div className="space-y-7 text-ink-700 text-base md:text-xl leading-relaxed">
             <p>
               My family came to Canada with nothing. They worked hard for decades — the kind of
               hard that defines an entire generation of immigrant households — and yet they stayed
@@ -179,7 +179,7 @@ export default function ThesisPage() {
             </p>
           </div>
 
-          <div className="space-y-7 text-ink-700 text-lg md:text-xl leading-relaxed mt-7">
+          <div className="space-y-7 text-ink-700 text-base md:text-xl leading-relaxed mt-7">
             <p>
               That distinction sounds small until you live through what we&apos;re living through
               now. The economy has split into two tracks — what economists call the K-shaped
@@ -194,8 +194,7 @@ export default function ThesisPage() {
 
           {/* K-shaped economy visual — 16/9 banner */}
           <div className="my-8 w-full rounded-2xl overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <ZoomableImage
               src="/article-images/k_shaped_economy.png"
               alt="The K-Shaped Economy — post-2008 divergence showing asset owners vs wage workers"
               className="w-full object-cover"
@@ -215,7 +214,7 @@ export default function ThesisPage() {
 
         {/* Transition */}
         <div className="max-w-6xl mx-auto px-6 pt-6 pb-20 md:pb-24">
-          <p className="text-ink-700 text-lg md:text-xl leading-relaxed">
+          <p className="text-ink-700 text-base md:text-xl leading-relaxed">
             What follows is the framework that turns that conviction into a
             portfolio — and the income engine that runs on top of it.
           </p>
@@ -228,11 +227,11 @@ export default function ThesisPage() {
           <span className="inline-block bg-teal-600 text-white text-[11px] uppercase tracking-[0.18em] font-semibold px-3 py-1.5 rounded-md mb-5">
             01 — The first principles approach
           </span>
-          <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
+          <h2 className="text-2xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
             Start with the transformation. Then ask who owns the moat.
           </h2>
 
-          <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
+          <div className="space-y-6 text-ink-700 text-base md:text-lg leading-relaxed">
             <p>
               Most portfolio construction starts with the market and works inward — pick a
               benchmark, choose a tracking error budget, slot positions into sectors. The result
@@ -252,7 +251,7 @@ export default function ThesisPage() {
             />
           </div>
 
-          <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
+          <div className="space-y-6 text-ink-700 text-base md:text-lg leading-relaxed">
             <p>
               That reframing changes what gets held. The First Principles Portfolio is a
               concentrated basket built around businesses and assets that aren&apos;t competing
@@ -270,7 +269,7 @@ export default function ThesisPage() {
 
           <QuestionCards />
 
-          <div className="space-y-6 text-ink-700 text-lg leading-relaxed mt-8">
+          <div className="space-y-6 text-ink-700 text-base md:text-lg leading-relaxed mt-8">
             <p>
               The high-capex, high-volatility nature of this environment is a feature, not a bug.
               Choppy markets and crowded narratives are precisely the conditions in which
@@ -315,11 +314,11 @@ export default function ThesisPage() {
                   </p>
                 </header>
 
-                <h3 className="text-2xl md:text-3xl text-teal-600 tracking-tight mb-4 font-semibold">
+                <h3 className="text-xl md:text-3xl text-teal-600 tracking-tight mb-4 font-semibold">
                   {m.title}
                 </h3>
 
-                <p className="text-ink-700 leading-relaxed text-base flex-1">{m.body}</p>
+                <p className="text-ink-700 leading-relaxed text-sm md:text-base flex-1">{m.body}</p>
 
                 <div className="mt-7 pt-5 border-t border-cream-200 flex items-baseline gap-4">
                   <p className="text-[10px] uppercase tracking-[0.25em] text-ink-400">Moat</p>
@@ -330,7 +329,7 @@ export default function ThesisPage() {
           </div>
 
           <div className="mt-12">
-            <p className="text-ink-700 text-lg leading-relaxed">
+            <p className="text-ink-700 text-base md:text-lg leading-relaxed">
               <strong className="text-teal-600 font-semibold">
                 Concentration is the point, not the risk.
               </strong>{" "}
@@ -351,11 +350,11 @@ export default function ThesisPage() {
           <span className="inline-block bg-[#BA7517] text-white text-[11px] uppercase tracking-[0.18em] font-semibold px-3 py-1.5 rounded-md mb-5">
             02 — The wheel, and what it runs on
           </span>
-          <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
+          <h2 className="text-2xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
             Premium lands on every leg of the cycle.
           </h2>
 
-          <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
+          <div className="space-y-6 text-ink-700 text-base md:text-lg leading-relaxed">
             <p>
               A concentrated long-term portfolio has one operational weakness: the thesis takes
               time, and capital sits idle while it plays out. The premium wheel solves for that.
@@ -448,13 +447,13 @@ export default function ThesisPage() {
           <span className="inline-block bg-sage-500 text-white text-[11px] uppercase tracking-[0.18em] font-semibold px-3 py-1.5 rounded-md mb-5">
             03 — Income while you wait
           </span>
-          <h2 className="text-3xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
+          <h2 className="text-2xl md:text-4xl text-teal-600 tracking-tight leading-tight mb-8 font-semibold">
             The thesis compounds in the foreground.
             <br />
             The premium lands in the background.
           </h2>
 
-          <div className="space-y-6 text-ink-700 text-lg leading-relaxed">
+          <div className="space-y-6 text-ink-700 text-base md:text-lg leading-relaxed">
             <p>
               Premium collection is the supporting act, not the headline.{" "}
               <strong className="text-teal-600 font-bold">
@@ -481,7 +480,7 @@ export default function ThesisPage() {
             <p className="text-ink-600 text-base leading-relaxed pt-2">
               Holding <em>and</em> collecting builds wealth — but holding comes first.
             </p>
-            <p className="text-teal-600 text-lg font-semibold pt-2">
+            <p className="text-teal-600 text-base md:text-lg font-semibold pt-2">
               This is the Lakespring Investments playbook.
             </p>
           </div>

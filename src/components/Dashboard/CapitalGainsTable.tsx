@@ -50,6 +50,14 @@ function fmt(n: number) {
   return n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
 
+// Compact form for narrow mobile columns — $252,866 -> $253K
+function fmtCompact(n: number) {
+  if (n === 0) return "—";
+  const abs = Math.abs(n);
+  if (abs >= 1000) return (n < 0 ? "-" : "") + "$" + (abs / 1000).toFixed(abs >= 10000 ? 0 : 1) + "K";
+  return "$" + n.toFixed(0);
+}
+
 function getConfig(view: PortfolioView) {
   switch (view) {
     case "first":  return { tickers: FP_TICKERS, bookCosts: FP_BOOK_COSTS };
@@ -163,45 +171,42 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
         </div>
       </div>
 
-      {/* Mobile: stacked cards — no columns to squeeze, no horizontal scroll */}
-      <div className="md:hidden divide-y divide-cream-100">
-        {rows.map(({ ticker, mktValue, bookCost, capitalGain, roi }) => (
-          <div key={ticker} className="px-4 py-4">
-            <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded w-fit mb-3"
-              style={{
-                background: BADGE_COLORS[ticker]?.bg ?? "rgba(3,65,71,0.08)",
-                color: BADGE_COLORS[ticker]?.text ?? "#034147",
-              }}>
-              {ticker}
-            </span>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-xs">
-              <div>
-                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">Book cost</p>
-                <p className="text-ink-700 tabular-nums">{fmt(bookCost)}</p>
-              </div>
-              <div>
-                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">Mkt value</p>
-                <p className="tabular-nums" style={{ color: mktValue > 0 ? "#0a0a0a" : "#888" }}>
-                  {mktValue > 0 ? fmt(mktValue) : "—"}
-                </p>
-              </div>
-              <div>
-                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">Capital gain</p>
-                <p className="tabular-nums font-medium"
-                  style={{ color: capitalGain === null ? "#888" : capitalGain >= 0 ? "#1D9E75" : "#E24B4A" }}>
-                  {capitalGain !== null ? (capitalGain >= 0 ? "+" : "") + fmt(Math.abs(capitalGain)) : "No position"}
-                </p>
-              </div>
-              <div>
-                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">ROI</p>
-                <p className="tabular-nums font-medium"
-                  style={{ color: roi === null ? "#888" : roi >= 0 ? "#1D9E75" : "#E24B4A" }}>
-                  {roi !== null ? (roi >= 0 ? "+" : "") + roi.toFixed(1) + "%" : "—"}
-                </p>
-              </div>
+      {/* Mobile: compact single-row table — abbreviated header stays visible, values use compact $K notation to fit */}
+      <div className="md:hidden">
+        <div className="grid px-3 py-2.5 items-center"
+          style={{ gridTemplateColumns: "50px 1fr 1fr 1fr 42px", gap: "4px", background: "#034147" }}>
+          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80"></span>
+          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80 text-right">Book</span>
+          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80 text-right">Mkt</span>
+          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80 text-right">Gain</span>
+          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80 text-right">ROI</span>
+        </div>
+        <div className="divide-y divide-cream-100">
+          {rows.map(({ ticker, mktValue, bookCost, capitalGain, roi }) => (
+            <div key={ticker} className="grid px-3 py-2.5 items-center text-[10px]"
+              style={{ gridTemplateColumns: "50px 1fr 1fr 1fr 42px", gap: "4px" }}>
+              <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded w-fit"
+                style={{
+                  background: BADGE_COLORS[ticker]?.bg ?? "rgba(3,65,71,0.08)",
+                  color: BADGE_COLORS[ticker]?.text ?? "#034147",
+                }}>
+                {ticker}
+              </span>
+              <span className="text-ink-700 tabular-nums text-right">{fmtCompact(bookCost)}</span>
+              <span className="tabular-nums text-right" style={{ color: mktValue > 0 ? "#0a0a0a" : "#888" }}>
+                {mktValue > 0 ? fmtCompact(mktValue) : "—"}
+              </span>
+              <span className="tabular-nums font-medium text-right"
+                style={{ color: capitalGain === null ? "#888" : capitalGain >= 0 ? "#1D9E75" : "#E24B4A" }}>
+                {capitalGain !== null ? (capitalGain >= 0 ? "+" : "") + fmtCompact(Math.abs(capitalGain)) : "—"}
+              </span>
+              <span className="tabular-nums font-medium text-right"
+                style={{ color: roi === null ? "#888" : roi >= 0 ? "#1D9E75" : "#E24B4A" }}>
+                {roi !== null ? (roi >= 0 ? "+" : "") + roi.toFixed(0) + "%" : "—"}
+              </span>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );

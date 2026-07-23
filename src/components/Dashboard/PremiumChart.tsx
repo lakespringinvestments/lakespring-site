@@ -64,7 +64,8 @@ function formatWeekLabel(date: string): string {
 export default function PremiumChart({ weeklyData }: PremiumChartProps) {
   const [activeFilter, setActiveFilter] = useState<Filter>("3M");
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
+  const selectedRef = useRef<number | null>(null);
+  const geomRef = useRef<{ x: number; w: number }[]>([]);
 
   // Build bar data based on filter
   type BarPoint = { label: string; amount: number; isFuture?: boolean };
@@ -83,6 +84,7 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
 
   useEffect(() => {
     if (animRef.current) cancelAnimationFrame(animRef.current);
+    selectedRef.current = null; // reset selection when the filter/data changes
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -106,19 +108,18 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
     const barGap = Math.max(2, Math.min(6, chartW / barCount * 0.15));
     const barW = Math.max(8, (chartW - barGap * (barCount - 1)) / barCount);
 
-    const DURATION = 1900;
-    const startTime = performance.now();
+    // Store geometry for tap hit-testing
+    geomRef.current = bars.map((_, i) => ({ x: padL + i * (barW + barGap), w: barW }));
 
     function easeOutQuart(t: number) { return 1 - Math.pow(1 - t, 4); }
 
-    function drawFrame(now: number) {
+    // Shared draw routine — used both by the entrance animation and by a static
+    // redraw whenever the user taps a bar (progress=1, selectedIdx set).
+    function draw(progress: number, selectedIdx: number | null) {
       const c = canvasRef.current;
       if (!c) return;
       const ctx = c.getContext("2d");
       if (!ctx) return;
-
-      const raw = Math.min((now - startTime) / DURATION, 1);
-      const progress = raw;
 
       ctx.clearRect(0, 0, W, H);
 
@@ -139,6 +140,8 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
       const overlapFrac = 0.8;
       const windowPerBar = 1 / (barCount * (1 - overlapFrac) + overlapFrac);
 
+      let selectedLabelInfo: { x: number; y: number; text: string } | null = null;
+
       bars.forEach((d, i) => {
         const x = padL + i * (barW + barGap);
 
@@ -146,6 +149,7 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
         const barEnd = barStart + windowPerBar;
         const localT = Math.max(0, Math.min(1, (progress - barStart) / (barEnd - barStart)));
         const easedT = easeOutQuart(localT);
+        const isSelected = i === selectedIdx;
 
         if (d.isFuture || d.amount === 0) {
           if (localT > 0) {
@@ -161,7 +165,13 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
           const y = padT + chartH - barH;
 
           if (barH > 0) {
-            ctx.fillStyle = i === barCount - 1 ? "#1D9E75" : "#034147";
+            // Selected bar gets a highlight halo behind it
+            if (isSelected) {
+              ctx.fillStyle = "rgba(29,158,117,0.15)";
+              ctx.fillRect(x - 2, padT, barW + 4, chartH);
+            }
+
+            ctx.fillStyle = isSelected ? "#1D9E75" : (i === barCount - 1 ? "#1D9E75" : "#034147");
             const r = Math.min(4, barW / 2);
             ctx.beginPath();
             ctx.moveTo(x + r, y);
@@ -175,14 +185,18 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
             ctx.fill();
           }
 
-          // Count-up data label — skip if it would be wider than its own slot (avoids overlap on narrow screens)
+          // Count-up data label — skip if it would overlap its slot, UNLESS this bar is selected
           if (localT > 0.1) {
             const alpha = Math.min(1, (localT - 0.1) / 0.3);
             const countVal = Math.round(d.amount * easedT);
             const labelText = "$" + (countVal >= 1000 ? (countVal/1000).toFixed(1)+"K" : countVal.toLocaleString());
             ctx.font = "bold 9px system-ui";
             const labelWidth = ctx.measureText(labelText).width;
-            if (labelWidth < barW + barGap * 0.9) {
+
+            if (isSelected) {
+              // Defer drawing — rendered last, on top of everything, with a pill background
+              selectedLabelInfo = { x: x + barW / 2, y: y - 8, text: labelText };
+            } else if (labelWidth < barW + barGap * 0.9) {
               ctx.globalAlpha = alpha;
               ctx.fillStyle = i === barCount - 1 ? "#1D9E75" : "#034147";
               ctx.textAlign = "center";
@@ -196,21 +210,74 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
         if (localT > 0) {
           ctx.font = "9px system-ui";
           const dateLabelWidth = ctx.measureText(d.label).width;
-          if (dateLabelWidth < barW + barGap * 0.9) {
-            ctx.fillStyle = "rgba(100,100,100,0.7)";
+          if (isSelected || dateLabelWidth < barW + barGap * 0.9) {
+            ctx.fillStyle = isSelected ? "#034147" : "rgba(100,100,100,0.7)";
+            ctx.font = isSelected ? "bold 9px system-ui" : "9px system-ui";
             ctx.textAlign = "center";
             ctx.fillText(d.label, x + barW / 2, H - 6);
           }
         }
       });
 
+      // Draw the selected bar's label last, on top, with a readable pill background
+      if (selectedLabelInfo) {
+        const info: { x: number; y: number; text: string } = selectedLabelInfo;
+        ctx.font = "bold 10px system-ui";
+        const textW = ctx.measureText(info.text).width;
+        const padX = 6, padY = 4;
+        const boxW = textW + padX * 2, boxH = 16;
+        const boxX = info.x - boxW / 2, boxY = info.y - boxH + 2;
+
+        ctx.fillStyle = "#1D9E75";
+        const rr = 4;
+        ctx.beginPath();
+        ctx.moveTo(boxX + rr, boxY);
+        ctx.arcTo(boxX + boxW, boxY, boxX + boxW, boxY + boxH, rr);
+        ctx.arcTo(boxX + boxW, boxY + boxH, boxX, boxY + boxH, rr);
+        ctx.arcTo(boxX, boxY + boxH, boxX, boxY, rr);
+        ctx.arcTo(boxX, boxY, boxX + boxW, boxY, rr);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#fff";
+        ctx.textAlign = "center";
+        ctx.fillText(info.text, info.x, boxY + boxH - padY + 1);
+      }
+    }
+
+    const DURATION = 1900;
+    const startTime = performance.now();
+
+    function drawFrame(now: number) {
+      const raw = Math.min((now - startTime) / DURATION, 1);
+      draw(raw, selectedRef.current);
       if (raw < 1) {
         animRef.current = requestAnimationFrame(drawFrame);
       }
     }
 
     animRef.current = requestAnimationFrame(drawFrame);
-    return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
+
+    // Tap/click a bar to pin its label — useful on mobile where narrow bars
+    // hide their label by default to avoid overlap
+    function handleTap(clientX: number) {
+      const c = canvasRef.current;
+      if (!c) return;
+      const r = c.getBoundingClientRect();
+      const localX = clientX - r.left;
+      const idx = geomRef.current.findIndex(g => localX >= g.x && localX <= g.x + g.w);
+      if (idx === -1) return;
+      selectedRef.current = selectedRef.current === idx ? null : idx;
+      draw(1, selectedRef.current);
+    }
+
+    const clickHandler = (e: MouseEvent) => handleTap(e.clientX);
+    canvas.addEventListener("click", clickHandler);
+
+    return () => {
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+      canvas.removeEventListener("click", clickHandler);
+    };
   }, [bars]);
 
   const totalShown = bars.reduce((s, d) => s + d.amount, 0);
@@ -249,9 +316,9 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
             <p className="text-xs text-ink-400">No premium data for this period</p>
           </div>
         ) : (
-          <canvas ref={canvasRef} className="w-full h-full"
+          <canvas ref={canvasRef} className="w-full h-full cursor-pointer"
             style={{ display: "block" }}
-            aria-label="Weekly premium income bar chart" />
+            aria-label="Weekly premium income bar chart. Tap a bar to see its value." />
         )}
       </div>
     </section>

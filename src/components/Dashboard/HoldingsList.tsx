@@ -72,6 +72,13 @@ function formatDate(iso: string): string {
   } catch { return iso; }
 }
 
+function formatDateShort(iso: string): string {
+  if (!iso) return "—";
+  try {
+    return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  } catch { return iso; }
+}
+
 function statusColor(status: string): string {
   const s = status?.toLowerCase() ?? "";
   if (s.includes("expired") || s.includes("closed")) return "#1D9E75";
@@ -230,35 +237,36 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                         ))}
                       </div>
 
-                      {/* Mobile: stacked cards — no columns to squeeze, no horizontal scroll */}
-                      <div className="md:hidden rounded-xl border border-cream-200 overflow-hidden text-xs divide-y divide-cream-100">
-                        {optionsTrades.slice(0, 5).map((trade, idx) => (
-                          <div key={idx} className="p-3.5" style={{ background: idx % 2 === 1 ? "rgba(250,248,243,0.6)" : "white" }}>
-                            <div className="flex items-center justify-between mb-2.5">
-                              <span className="font-medium" style={{ color: "#034147" }}>{friendlyType(trade.optionType)}</span>
-                              <span className="font-medium" style={{ color: statusColor(trade.status) }}>{trade.status || "—"}</span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-y-2 gap-x-3">
-                              <div>
-                                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">Opened</p>
-                                <p className="text-ink-500 tabular-nums">{formatDate(trade.openDate)}</p>
-                              </div>
-                              <div>
-                                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">Expiry</p>
-                                <p className="text-ink-500 tabular-nums">{formatDate(trade.closeDate)}</p>
-                              </div>
-                              <div>
-                                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">Premium</p>
-                                <p className="text-ink-700 tabular-nums">{premiumDisplay(trade)}</p>
-                              </div>
-                              <div>
-                                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">Yield</p>
-                                <p className="tabular-nums font-medium" style={{ color: "#1D9E75" }}>{tradeYield(trade)}</p>
-                              </div>
-                            </div>
+                      {/* Mobile: compact single-row table — header stays visible, last 2 trades only */}
+                      <div className="md:hidden rounded-xl border border-cream-200 overflow-hidden text-[10px]">
+                        <div className="grid px-2.5 py-2" style={{ gridTemplateColumns: "52px 38px 46px 42px 52px 14px", gap: "3px", background: "#034147" }}>
+                          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80">Date</span>
+                          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80">Type</span>
+                          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80 text-right">Prem</span>
+                          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80 text-right">Yield</span>
+                          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80">Expiry</span>
+                          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80"></span>
+                        </div>
+                        {optionsTrades.slice(0, 2).map((trade, idx) => (
+                          <div key={idx} className="grid px-2.5 py-2 border-b border-cream-100 last:border-0 items-center"
+                            style={{ gridTemplateColumns: "52px 38px 46px 42px 52px 14px", gap: "3px", background: idx % 2 === 1 ? "rgba(250,248,243,0.6)" : "white" }}>
+                            <span className="text-ink-500 tabular-nums">{formatDateShort(trade.openDate)}</span>
+                            <span className="font-medium truncate" style={{ color: "#034147" }}>{friendlyType(trade.optionType)}</span>
+                            <span className="text-ink-700 tabular-nums text-right">{premiumDisplay(trade)}</span>
+                            <span className="tabular-nums font-medium text-right" style={{ color: "#1D9E75" }}>{tradeYield(trade)}</span>
+                            <span className="text-ink-500 tabular-nums">{formatDateShort(trade.closeDate)}</span>
+                            <span className="flex justify-center" title={trade.status || "—"}>
+                              <span className="w-1.5 h-1.5 rounded-full" style={{ background: statusColor(trade.status) }} />
+                            </span>
                           </div>
                         ))}
                       </div>
+
+                      {optionsTrades.length > 2 && (
+                        <p className="md:hidden text-center text-[10px] text-ink-400 mt-2">
+                          +{optionsTrades.length - 2} more on the Trade Ledger
+                        </p>
+                      )}
 
                       {/* Always visible — never trapped in a scrolling container */}
                       <div className="px-4 py-3 text-center border-t border-cream-100 rounded-b-xl md:border md:border-t-0 md:border-cream-200">
