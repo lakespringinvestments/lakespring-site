@@ -21,7 +21,7 @@ export default function MemberGate() {
         rel="noopener noreferrer"
         className="ml-4 flex-shrink-0 bg-white text-black font-semibold text-xs px-4 py-1.5 rounded-full hover:bg-gray-100 transition-colors"
       >
-        Subscribe →
+        Become a Member →
       </a>
     </div>
   );

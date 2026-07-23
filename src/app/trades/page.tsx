@@ -47,7 +47,7 @@ export default async function TradesPage() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center w-full bg-white text-[#034147] font-semibold text-sm px-6 py-3 rounded-lg hover:bg-cream-50 transition-colors"
                 >
-                  Subscribe →
+                  Become a Member →
                 </a>
                 <p className="text-[11px] text-white/40 mt-3 text-center">
                   Secure checkout via Stripe. Cancel anytime.

@@ -28,8 +28,11 @@ export default function FooterNewsletter() {
             href={SUBSTACK_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center bg-white text-teal-600 font-semibold text-sm px-6 py-3 rounded-lg hover:bg-cream-50 transition-colors"
+            className="inline-flex items-center gap-2 bg-white text-teal-600 font-semibold text-sm px-6 py-3 rounded-lg hover:bg-cream-50 transition-colors"
           >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M22 6.5H2V4h20v2.5ZM2 9.5h20V21L12 15.5 2 21V9.5Z" />
+            </svg>
             Subscribe on Substack →
           </a>
         </div>
