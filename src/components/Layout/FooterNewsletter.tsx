@@ -15,8 +15,12 @@ export default function FooterNewsletter() {
     <div className="bg-teal-600">
       <div className="max-w-6xl mx-auto px-6 pt-20 pb-14 grid md:grid-cols-[1fr_1.2fr] gap-12 items-center">
         <div>
-          <h3 className="text-2xl text-white mb-3 tracking-tight font-semibold">
+          <h3 className="text-2xl text-white mb-3 tracking-tight font-semibold inline-flex items-center gap-2">
             Follow on Substack
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="flex-shrink-0">
+              <path d="M21 5H3V7.2H21V5Z" />
+              <path d="M3 9.6H21V19L12 14.2L3 19V9.6Z" />
+            </svg>
           </h3>
           <p className="text-cream-100/70 text-sm leading-relaxed max-w-md">
             Get notified the moment a new article publishes — including pieces
@@ -28,11 +32,8 @@ export default function FooterNewsletter() {
             href={SUBSTACK_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-white text-teal-600 font-semibold text-sm px-6 py-3 rounded-lg hover:bg-cream-50 transition-colors"
+            className="inline-flex items-center justify-center bg-white text-teal-600 font-semibold text-sm px-6 py-3 rounded-lg hover:bg-cream-50 transition-colors"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M22 6.5H2V4h20v2.5ZM2 9.5h20V21L12 15.5 2 21V9.5Z" />
-            </svg>
             Subscribe on Substack →
           </a>
         </div>
