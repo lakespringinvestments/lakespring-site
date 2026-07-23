@@ -18,8 +18,9 @@ export default function FooterNewsletter() {
           <h3 className="text-2xl text-white mb-3 tracking-tight font-semibold inline-flex items-center gap-2">
             Follow on Substack
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="flex-shrink-0">
-              <path d="M21 5H3V7.2H21V5Z" />
-              <path d="M3 9.6H21V19L12 14.2L3 19V9.6Z" />
+              <rect x="0" y="0" width="24" height="3.2" />
+              <rect x="0" y="4.8" width="24" height="3.2" />
+              <path d="M0 9.6H24V24L12 17.5L0 24V9.6Z" />
             </svg>
           </h3>
           <p className="text-cream-100/70 text-sm leading-relaxed max-w-md">
