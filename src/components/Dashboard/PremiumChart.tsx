@@ -175,26 +175,32 @@ export default function PremiumChart({ weeklyData }: PremiumChartProps) {
             ctx.fill();
           }
 
-          // Count-up data label
+          // Count-up data label — skip if it would be wider than its own slot (avoids overlap on narrow screens)
           if (localT > 0.1) {
             const alpha = Math.min(1, (localT - 0.1) / 0.3);
             const countVal = Math.round(d.amount * easedT);
             const labelText = "$" + (countVal >= 1000 ? (countVal/1000).toFixed(1)+"K" : countVal.toLocaleString());
-            ctx.globalAlpha = alpha;
-            ctx.fillStyle = i === barCount - 1 ? "#1D9E75" : "#034147";
             ctx.font = "bold 9px system-ui";
-            ctx.textAlign = "center";
-            ctx.fillText(labelText, x + barW / 2, y - 5);
-            ctx.globalAlpha = 1;
+            const labelWidth = ctx.measureText(labelText).width;
+            if (labelWidth < barW + barGap * 0.9) {
+              ctx.globalAlpha = alpha;
+              ctx.fillStyle = i === barCount - 1 ? "#1D9E75" : "#034147";
+              ctx.textAlign = "center";
+              ctx.fillText(labelText, x + barW / 2, y - 5);
+              ctx.globalAlpha = 1;
+            }
           }
         }
 
-        // X label — appears with bar
-        if (barW > 16 && localT > 0) {
-          ctx.fillStyle = "rgba(100,100,100,0.7)";
+        // X label — appears with bar, skipped if it wouldn't fit its own slot
+        if (localT > 0) {
           ctx.font = "9px system-ui";
-          ctx.textAlign = "center";
-          ctx.fillText(d.label, x + barW / 2, H - 6);
+          const dateLabelWidth = ctx.measureText(d.label).width;
+          if (dateLabelWidth < barW + barGap * 0.9) {
+            ctx.fillStyle = "rgba(100,100,100,0.7)";
+            ctx.textAlign = "center";
+            ctx.fillText(d.label, x + barW / 2, H - 6);
+          }
         }
       });
 

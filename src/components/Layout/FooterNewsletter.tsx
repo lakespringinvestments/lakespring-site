@@ -15,7 +15,7 @@ export default function FooterNewsletter() {
     <div className="bg-teal-600">
       <div className="max-w-6xl mx-auto px-6 pt-20 pb-14 grid md:grid-cols-[1fr_1.2fr] gap-12 items-center">
         <div>
-          <h3 className="text-2xl text-white mb-3 tracking-tight font-semibold inline-flex items-center gap-2">
+          <h3 className="text-2xl text-white mb-3 tracking-tight font-semibold inline-flex items-center gap-3">
             Follow on Substack
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="flex-shrink-0">
               <rect x="0" y="0" width="24" height="3.2" />
