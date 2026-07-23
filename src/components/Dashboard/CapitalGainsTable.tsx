@@ -127,35 +127,79 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
 
   return (
     <section className="bg-white rounded-2xl border border-cream-200 overflow-hidden">
-      <div className="grid px-5 py-3 items-center"
-        style={{ gridTemplateColumns: "90px 1fr 1fr 1fr 70px", gap: "8px", background: "#034147" }}>
-        {COLS.map(col => (
-          <span key={col} className="text-[10px] uppercase tracking-wide font-medium text-white/80">{col}</span>
-        ))}
+      {/* Desktop/tablet: grid table */}
+      <div className="hidden md:block">
+        <div className="grid px-5 py-3 items-center"
+          style={{ gridTemplateColumns: "90px 1fr 1fr 1fr 70px", gap: "8px", background: "#034147" }}>
+          {COLS.map(col => (
+            <span key={col} className="text-[10px] uppercase tracking-wide font-medium text-white/80">{col}</span>
+          ))}
+        </div>
+        <div className="divide-y divide-cream-100">
+          {rows.map(({ ticker, mktValue, bookCost, capitalGain, roi }) => (
+            <div key={ticker} className="grid px-5 py-3 items-center text-xs"
+              style={{ gridTemplateColumns: "90px 1fr 1fr 1fr 70px", gap: "8px" }}>
+              <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded w-fit"
+                style={{
+                  background: BADGE_COLORS[ticker]?.bg ?? "rgba(3,65,71,0.08)",
+                  color: BADGE_COLORS[ticker]?.text ?? "#034147",
+                }}>
+                {ticker}
+              </span>
+              <span className="text-ink-700 tabular-nums">{fmt(bookCost)}</span>
+              <span className="tabular-nums" style={{ color: mktValue > 0 ? "#0a0a0a" : "#888" }}>
+                {mktValue > 0 ? fmt(mktValue) : "—"}
+              </span>
+              <span className="tabular-nums font-medium"
+                style={{ color: capitalGain === null ? "#888" : capitalGain >= 0 ? "#1D9E75" : "#E24B4A" }}>
+                {capitalGain !== null ? (capitalGain >= 0 ? "+" : "") + fmt(Math.abs(capitalGain)) : "No position"}
+              </span>
+              <span className="tabular-nums font-medium"
+                style={{ color: roi === null ? "#888" : roi >= 0 ? "#1D9E75" : "#E24B4A" }}>
+                {roi !== null ? (roi >= 0 ? "+" : "") + roi.toFixed(1) + "%" : "—"}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="divide-y divide-cream-100">
+
+      {/* Mobile: stacked cards — no columns to squeeze, no horizontal scroll */}
+      <div className="md:hidden divide-y divide-cream-100">
         {rows.map(({ ticker, mktValue, bookCost, capitalGain, roi }) => (
-          <div key={ticker} className="grid px-5 py-3 items-center text-xs"
-            style={{ gridTemplateColumns: "90px 1fr 1fr 1fr 70px", gap: "8px" }}>
-            <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded w-fit"
+          <div key={ticker} className="px-4 py-4">
+            <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded w-fit mb-3"
               style={{
                 background: BADGE_COLORS[ticker]?.bg ?? "rgba(3,65,71,0.08)",
                 color: BADGE_COLORS[ticker]?.text ?? "#034147",
               }}>
               {ticker}
             </span>
-            <span className="text-ink-700 tabular-nums">{fmt(bookCost)}</span>
-            <span className="tabular-nums" style={{ color: mktValue > 0 ? "#0a0a0a" : "#888" }}>
-              {mktValue > 0 ? fmt(mktValue) : "—"}
-            </span>
-            <span className="tabular-nums font-medium"
-              style={{ color: capitalGain === null ? "#888" : capitalGain >= 0 ? "#1D9E75" : "#E24B4A" }}>
-              {capitalGain !== null ? (capitalGain >= 0 ? "+" : "") + fmt(Math.abs(capitalGain)) : "No position"}
-            </span>
-            <span className="tabular-nums font-medium"
-              style={{ color: roi === null ? "#888" : roi >= 0 ? "#1D9E75" : "#E24B4A" }}>
-              {roi !== null ? (roi >= 0 ? "+" : "") + roi.toFixed(1) + "%" : "—"}
-            </span>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-xs">
+              <div>
+                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">Book cost</p>
+                <p className="text-ink-700 tabular-nums">{fmt(bookCost)}</p>
+              </div>
+              <div>
+                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">Mkt value</p>
+                <p className="tabular-nums" style={{ color: mktValue > 0 ? "#0a0a0a" : "#888" }}>
+                  {mktValue > 0 ? fmt(mktValue) : "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">Capital gain</p>
+                <p className="tabular-nums font-medium"
+                  style={{ color: capitalGain === null ? "#888" : capitalGain >= 0 ? "#1D9E75" : "#E24B4A" }}>
+                  {capitalGain !== null ? (capitalGain >= 0 ? "+" : "") + fmt(Math.abs(capitalGain)) : "No position"}
+                </p>
+              </div>
+              <div>
+                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">ROI</p>
+                <p className="tabular-nums font-medium"
+                  style={{ color: roi === null ? "#888" : roi >= 0 ? "#1D9E75" : "#E24B4A" }}>
+                  {roi !== null ? (roi >= 0 ? "+" : "") + roi.toFixed(1) + "%" : "—"}
+                </p>
+              </div>
+            </div>
           </div>
         ))}
       </div>

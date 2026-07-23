@@ -204,34 +204,69 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
               </button>
 
               {isOpen && (
-                <div className="pb-4 pt-1 overflow-x-auto">
+                <div className="pb-4 pt-1">
                   {optionsTrades.length === 0 ? (
                     <p className="text-xs text-ink-400 py-2">No options trades found for {h.ticker}.</p>
                   ) : (
-                    <div className="rounded-xl border border-cream-200 overflow-hidden text-xs min-w-[760px]">
-                      <div className="grid px-4 py-2.5" style={{ gridTemplateColumns: GRID, gap: "0", background: "#034147" }}>
-                        {COLS.map((col, ci) => (
-                          <span key={col} className="text-[10px] uppercase tracking-wide font-medium text-white/80"
-                            style={{ textAlign: ci === 0 ? "left" : "center" }}>{col}</span>
+                    <>
+                      {/* Desktop/tablet: grid table */}
+                      <div className="hidden md:block rounded-xl border border-cream-200 overflow-hidden text-xs">
+                        <div className="grid px-4 py-2.5" style={{ gridTemplateColumns: GRID, gap: "0", background: "#034147" }}>
+                          {COLS.map((col, ci) => (
+                            <span key={col} className="text-[10px] uppercase tracking-wide font-medium text-white/80"
+                              style={{ textAlign: ci === 0 ? "left" : "center" }}>{col}</span>
+                          ))}
+                        </div>
+                        {optionsTrades.slice(0, 5).map((trade, idx) => (
+                          <div key={idx} className="grid px-4 py-2.5 border-b border-cream-100 last:border-0 items-center"
+                            style={{ gridTemplateColumns: GRID, gap: "0", background: idx % 2 === 1 ? "rgba(250,248,243,0.6)" : "white" }}>
+                            <span className="text-ink-500 tabular-nums text-left">{formatDate(trade.openDate)}</span>
+                            <span className="text-center font-medium" style={{ color: "#034147" }}>{friendlyType(trade.optionType)}</span>
+                            <span className="text-center text-ink-700 tabular-nums">{premiumDisplay(trade)}</span>
+                            <span className="text-center tabular-nums font-medium" style={{ color: "#1D9E75" }}>{tradeYield(trade)}</span>
+                            <span className="text-center text-ink-500 tabular-nums">{formatDate(trade.closeDate)}</span>
+                            <span className="text-center font-medium" style={{ color: statusColor(trade.status) }}>{trade.status || "—"}</span>
+                          </div>
                         ))}
                       </div>
-                      {optionsTrades.slice(0, 5).map((trade, idx) => (
-                        <div key={idx} className="grid px-4 py-2.5 border-b border-cream-100 last:border-0 items-center"
-                          style={{ gridTemplateColumns: GRID, gap: "0", background: idx % 2 === 1 ? "rgba(250,248,243,0.6)" : "white" }}>
-                          <span className="text-ink-500 tabular-nums text-left">{formatDate(trade.openDate)}</span>
-                          <span className="text-center font-medium" style={{ color: "#034147" }}>{friendlyType(trade.optionType)}</span>
-                          <span className="text-center text-ink-700 tabular-nums">{premiumDisplay(trade)}</span>
-                          <span className="text-center tabular-nums font-medium" style={{ color: "#1D9E75" }}>{tradeYield(trade)}</span>
-                          <span className="text-center text-ink-500 tabular-nums">{formatDate(trade.closeDate)}</span>
-                          <span className="text-center font-medium" style={{ color: statusColor(trade.status) }}>{trade.status || "—"}</span>
-                        </div>
-                      ))}
-                      <div className="px-4 py-3 text-center border-t border-cream-100">
+
+                      {/* Mobile: stacked cards — no columns to squeeze, no horizontal scroll */}
+                      <div className="md:hidden rounded-xl border border-cream-200 overflow-hidden text-xs divide-y divide-cream-100">
+                        {optionsTrades.slice(0, 5).map((trade, idx) => (
+                          <div key={idx} className="p-3.5" style={{ background: idx % 2 === 1 ? "rgba(250,248,243,0.6)" : "white" }}>
+                            <div className="flex items-center justify-between mb-2.5">
+                              <span className="font-medium" style={{ color: "#034147" }}>{friendlyType(trade.optionType)}</span>
+                              <span className="font-medium" style={{ color: statusColor(trade.status) }}>{trade.status || "—"}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-y-2 gap-x-3">
+                              <div>
+                                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">Opened</p>
+                                <p className="text-ink-500 tabular-nums">{formatDate(trade.openDate)}</p>
+                              </div>
+                              <div>
+                                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">Expiry</p>
+                                <p className="text-ink-500 tabular-nums">{formatDate(trade.closeDate)}</p>
+                              </div>
+                              <div>
+                                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">Premium</p>
+                                <p className="text-ink-700 tabular-nums">{premiumDisplay(trade)}</p>
+                              </div>
+                              <div>
+                                <p className="text-[9px] uppercase tracking-wide text-ink-400 mb-0.5">Yield</p>
+                                <p className="tabular-nums font-medium" style={{ color: "#1D9E75" }}>{tradeYield(trade)}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Always visible — never trapped in a scrolling container */}
+                      <div className="px-4 py-3 text-center border-t border-cream-100 rounded-b-xl md:border md:border-t-0 md:border-cream-200">
                         <a href="/trades" className="text-xs text-teal-600 hover:text-teal-700 font-medium transition-colors">
                           View full trade history on the Trade Ledger →
                         </a>
                       </div>
-                    </div>
+                    </>
                   )}
                 </div>
               )}
