@@ -173,12 +173,12 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
 
       {/* Mobile: compact single-row table — abbreviated header stays visible, values use compact $K notation to fit */}
       <div className="md:hidden">
-        <div className="grid px-3 py-2.5 items-center"
+        <div className="grid px-3 py-2 items-start"
           style={{ gridTemplateColumns: "50px 1fr 1fr 1fr 42px", gap: "4px", background: "#034147" }}>
-          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80"></span>
-          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80 text-right">Book</span>
-          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80 text-right">Mkt</span>
-          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80 text-right">Gain</span>
+          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80">Ticker</span>
+          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80 text-right">Book Cost</span>
+          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80 text-right">Mkt Value</span>
+          <span className="text-[8px] uppercase tracking-wide font-medium text-white/80 text-right">Capital Gain</span>
           <span className="text-[8px] uppercase tracking-wide font-medium text-white/80 text-right">ROI</span>
         </div>
         <div className="divide-y divide-cream-100">
