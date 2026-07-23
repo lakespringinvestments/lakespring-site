@@ -3,6 +3,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getAllArticles, getArticleBySlug } from "@/lib/articles";
+import ZoomableImage from "@/components/Articles/ZoomableImage";
 
 export async function generateStaticParams() {
   return getAllArticles().map((a) => ({ slug: a.slug }));
@@ -64,8 +65,7 @@ const mdComponents: React.ComponentProps<typeof ReactMarkdown>["components"] = {
     return (
       <figure className="not-prose my-8">
         <div className="relative w-full rounded-xl overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src} alt={alt ?? ""} className="w-full h-auto block" />
+          <ZoomableImage src={src} alt={alt ?? ""} className="w-full h-auto block" />
         </div>
         {alt && (
           <figcaption className="text-xs text-ink-400 text-center mt-1.5 italic">
@@ -171,8 +171,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
       {/* ── Cover image ── */}
       {article.coverImage && (
         <div className="max-w-6xl mx-auto px-6 mb-12 overflow-hidden rounded-2xl">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <ZoomableImage
             src={article.coverImage}
             alt={article.title}
             className="w-full object-cover"
