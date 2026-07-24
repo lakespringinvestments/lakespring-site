@@ -139,12 +139,7 @@ export default function ReportsSection() {
           </span>
         </a>
       ) : (
-        <a
-          href={STRIPE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-center gap-4 bg-white/[0.03] hover:bg-white/[0.06] border border-white/8 hover:border-white/15 rounded-xl p-6 transition-colors"
-        >
+        <div className="flex items-center gap-4 bg-white/[0.03] border border-white/8 rounded-xl p-6">
           <div className="w-11 h-11 rounded-lg bg-teal-600/20 flex items-center justify-center flex-shrink-0">
             <FolderIcon />
           </div>
@@ -152,17 +147,14 @@ export default function ReportsSection() {
             <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-teal-400">
               Members
             </span>
-            <p className="text-base text-white font-medium group-hover:text-teal-300 transition-colors">
+            <p className="text-base text-white font-medium">
               Full Report Archive
             </p>
             <p className="text-[12px] text-white/40 leading-relaxed mt-1">
               Curated every single week: a Trading Game Plan &amp; Strategy report and an Active Market Pulse report — members get both, every week, without exception.
             </p>
           </div>
-          <span className="text-[11px] font-semibold text-sage-300 group-hover:text-sage-200 flex-shrink-0 whitespace-nowrap">
-            Start Free Trial →
-          </span>
-        </a>
+        </div>
       )}
     </div>
   );
