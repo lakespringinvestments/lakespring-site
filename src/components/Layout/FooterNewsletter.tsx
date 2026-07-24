@@ -2,9 +2,9 @@
 
 import { usePathname } from "next/navigation";
 
-const SUBSTACK_URL = "https://substack.com/@lakespringinvestments";
+const STRIPE_URL = "https://buy.stripe.com/test_9B66oH1nF9Zpe5Wewxfw400";
 
-/** Pages where the footer newsletter section should be hidden */
+/** Pages where the footer membership section should be hidden */
 const HIDDEN_ON = new Set(["/trades"]);
 
 export default function FooterNewsletter() {
@@ -15,27 +15,22 @@ export default function FooterNewsletter() {
     <div className="bg-teal-600">
       <div className="max-w-6xl mx-auto px-6 pt-20 pb-14 grid md:grid-cols-[1fr_1.2fr] gap-12 items-center">
         <div>
-          <h3 className="text-2xl text-white mb-3 tracking-tight font-semibold inline-flex items-center gap-3">
-            Follow on Substack
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="flex-shrink-0">
-              <rect x="0" y="0" width="24" height="3.2" />
-              <rect x="0" y="4.8" width="24" height="3.2" />
-              <path d="M0 9.6H24V24L12 17.5L0 24V9.6Z" />
-            </svg>
+          <h3 className="text-2xl text-white mb-3 tracking-tight font-semibold">
+            Become a Member
           </h3>
           <p className="text-cream-100/70 text-sm leading-relaxed max-w-md">
-            Get notified the moment a new article publishes — including pieces
-            we only post there, not here.
+            Live trade alerts, weekly analysis, and the full report archive —
+            start with a free 30-day trial.
           </p>
         </div>
         <div>
           <a
-            href={SUBSTACK_URL}
+            href={STRIPE_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center bg-white text-teal-600 font-semibold text-sm px-6 py-3 rounded-lg hover:bg-cream-50 transition-colors"
           >
-            Subscribe on Substack →
+            Start Free Trial →
           </a>
         </div>
       </div>

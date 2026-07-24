@@ -26,6 +26,18 @@ export default async function TradesPage() {
       {/* Dark ledger */}
       <section className="bg-[#0A0A0A] pb-20 md:pb-24 pt-16 md:pt-20">
         <div className="max-w-6xl mx-auto px-6">
+          {/* Mobile-only disclaimer — tables and charts here are data-dense */}
+          <div className="md:hidden mb-6 flex items-start gap-2.5 bg-white/[0.04] border border-white/10 rounded-lg px-3.5 py-3">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F5A623" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-0.5">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <p className="text-[11px] text-white/60 leading-relaxed">
+              For the full experience and complete data, this page is best viewed on a desktop browser.
+            </p>
+          </div>
+
           <TradesPageTabs trades={trades} />
 
           {/* Members tier teaser */}
@@ -38,7 +50,8 @@ export default async function TradesPage() {
                 Enjoyed the sample reports?
               </h2>
               <p className="text-cream-100 leading-relaxed mb-8">
-                Get them every week, along with live trade alerts, as a paid member.
+                Get them every week, along with live trade alerts, as a member — start with a
+                free 30-day trial.
               </p>
               <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/10 max-w-lg">
                 <a
@@ -47,10 +60,10 @@ export default async function TradesPage() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center w-full bg-white text-[#034147] font-semibold text-sm px-6 py-3 rounded-lg hover:bg-cream-50 transition-colors"
                 >
-                  Become a Member →
+                  Start Free Trial →
                 </a>
                 <p className="text-[11px] text-white/40 mt-3 text-center">
-                  Secure checkout via Stripe. Cancel anytime.
+                  30 days free, then billed via Stripe. Cancel anytime.
                 </p>
               </div>
             </div>
