@@ -2,8 +2,17 @@
 // update-160: Restore monthly grouping, thin ticker column, ROI + stacked bar
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import type { Trade } from "@/lib/trades";
+import BlurOverlay from "./BlurOverlay";
+
+function useMember() {
+  const [member, setMember] = useState(false);
+  useEffect(() => {
+    setMember(localStorage.getItem("lakespring_member") === "true");
+  }, []);
+  return member;
+}
 
 /* ── helpers ── */
 function formatDate(iso: string) {
@@ -152,8 +161,8 @@ const TICKER_COLORS: Record<string, string> = {
 };
 const FALLBACK_COLORS = ["#5DCAA5", "#3B82F6", "#D97706", "#8B5CF6", "#EC4899", "#06B6D4", "#84CC16", "#F97316"];
 
-function PnlBar({ optionsTrades, capitalGainsTrades, ticker }: {
-  optionsTrades: Trade[]; capitalGainsTrades: Trade[]; ticker: string;
+function PnlBar({ optionsTrades, capitalGainsTrades, ticker, member }: {
+  optionsTrades: Trade[]; capitalGainsTrades: Trade[]; ticker: string; member: boolean;
 }) {
   const data = useMemo(() => {
     if (ticker !== "ALL") {
@@ -193,7 +202,9 @@ function PnlBar({ optionsTrades, capitalGainsTrades, ticker }: {
           {ticker === "ALL" ? "P&L by Ticker" : `${ticker} — Income Breakdown`}
         </p>
         <p className={`text-sm font-semibold tabular-nums ${total >= 0 ? "text-sage-300" : "text-red-400"}`}>
-          {total >= 0 ? "+" : ""}{formatCurrency(total)}
+          {member
+            ? `${total >= 0 ? "+" : ""}${formatCurrency(total)}`
+            : <BlurOverlay>{`${total >= 0 ? "+" : ""}${formatCurrency(total)}`}</BlurOverlay>}
         </p>
       </div>
 
@@ -223,10 +234,16 @@ function PnlBar({ optionsTrades, capitalGainsTrades, ticker }: {
             <div className="w-2 h-2 rounded-sm flex-shrink-0" style={{ background: d.color }} />
             <span className="text-cream-100/60">{d.label}</span>
             <span className={`tabular-nums font-medium ${d.value >= 0 ? "text-sage-300/80" : "text-red-400/80"}`}>
-              {d.value >= 0 ? "+" : ""}{formatCurrency(d.value)}
+              {member
+                ? `${d.value >= 0 ? "+" : ""}${formatCurrency(d.value)}`
+                : <BlurOverlay>{`${d.value >= 0 ? "+" : ""}${formatCurrency(d.value)}`}</BlurOverlay>}
             </span>
             {positiveTotal > 0 && d.value > 0 && (
-              <span className="text-cream-100/30 tabular-nums">{((d.value / positiveTotal) * 100).toFixed(0)}%</span>
+              <span className="text-cream-100/30 tabular-nums">
+                {member
+                  ? `${((d.value / positiveTotal) * 100).toFixed(0)}%`
+                  : <BlurOverlay>{`${((d.value / positiveTotal) * 100).toFixed(0)}%`}</BlurOverlay>}
+              </span>
             )}
           </div>
         ))}
@@ -256,6 +273,7 @@ function ChevronIcon({ open }: { open: boolean }) {
 
 /* ── main ── */
 export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
+  const isMember = useMember();
   const [ticker, setTicker] = useState<string>("ALL");
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
   const [sortCol, setSortCol] = useState<SortCol>("date");
@@ -343,14 +361,18 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Net Options Income</p>
           <p className={`text-2xl font-semibold ${stats.netOptionsIncome >= 0 ? "text-sage-300" : "text-red-400"}`}>
-            {stats.netOptionsIncome >= 0 ? "+" : ""}{formatCurrency(stats.netOptionsIncome)}
+            {isMember
+              ? `${stats.netOptionsIncome >= 0 ? "+" : ""}${formatCurrency(stats.netOptionsIncome)}`
+              : <BlurOverlay>{`${stats.netOptionsIncome >= 0 ? "+" : ""}${formatCurrency(stats.netOptionsIncome)}`}</BlurOverlay>}
           </p>
           <p className="text-[10px] text-cream-100/40 mt-1">STO credits net of BTC debits</p>
         </div>
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Realized Capital Gains</p>
           <p className={`text-2xl font-semibold ${stats.capitalGainsPnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
-            {stats.capitalGainsPnl >= 0 ? "+" : ""}{formatCurrency(stats.capitalGainsPnl)}
+            {isMember
+              ? `${stats.capitalGainsPnl >= 0 ? "+" : ""}${formatCurrency(stats.capitalGainsPnl)}`
+              : <BlurOverlay>{`${stats.capitalGainsPnl >= 0 ? "+" : ""}${formatCurrency(stats.capitalGainsPnl)}`}</BlurOverlay>}
           </p>
           <p className="text-[10px] text-cream-100/40 mt-1">Share sales &amp; assignment equity</p>
         </div>
@@ -358,7 +380,9 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-sage-400/50"></div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Total P&L</p>
           <p className={`text-2xl font-semibold ${stats.totalPnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
-            {stats.totalPnl >= 0 ? "+" : ""}{formatCurrency(stats.totalPnl)}
+            {isMember
+              ? `${stats.totalPnl >= 0 ? "+" : ""}${formatCurrency(stats.totalPnl)}`
+              : <BlurOverlay>{`${stats.totalPnl >= 0 ? "+" : ""}${formatCurrency(stats.totalPnl)}`}</BlurOverlay>}
           </p>
           <p className="text-[10px] text-cream-100/40 mt-1">Options + capital gains</p>
         </div>
@@ -371,13 +395,15 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
         </div>
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Win rate</p>
-          <p className="text-2xl text-white font-semibold">{stats.winRate}%</p>
+          <p className="text-2xl text-white font-semibold">
+            {isMember ? `${stats.winRate}%` : <BlurOverlay>{`${stats.winRate}%`}</BlurOverlay>}
+          </p>
           <p className="text-[10px] text-cream-100/40 mt-1">Profitable positions ({stats.totalWins}/{stats.totalPositions})</p>
         </div>
       </div>
 
       {/* P&L Donut */}
-      <PnlBar optionsTrades={optionsTrades} capitalGainsTrades={capitalGainsTrades} ticker={ticker} />
+      <PnlBar optionsTrades={optionsTrades} capitalGainsTrades={capitalGainsTrades} ticker={ticker} member={isMember} />
 
       {/* Ledger table */}
       <div className="overflow-x-auto -mx-6 px-6">
@@ -420,7 +446,9 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                         <div className="bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 flex items-center justify-between">
                           <span className="text-[11px] uppercase tracking-[0.15em] text-sage-300 font-semibold">{row.label}</span>
                           <span className={`text-xs font-semibold tabular-nums ${row.total >= 0 ? "text-sage-300" : "text-red-400"}`}>
-                            {row.total >= 0 ? "+" : ""}{formatCurrency(row.total)}
+                            {isMember
+                              ? `${row.total >= 0 ? "+" : ""}${formatCurrency(row.total)}`
+                              : <BlurOverlay>{`${row.total >= 0 ? "+" : ""}${formatCurrency(row.total)}`}</BlurOverlay>}
                           </span>
                         </div>
                       </td>
@@ -443,16 +471,24 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                       <td className="py-4 text-center text-sage-300/50 align-middle">{hasRationale && <ChevronIcon open={isOpen} />}</td>
                       <td className="py-4 text-center text-white font-semibold tracking-wide align-middle">{t.ticker}</td>
                       <td className="py-4 text-center text-cream-100 align-middle">{t.optionType || "—"}</td>
-                      <td className="py-4 text-center text-cream-100 tabular-nums align-middle">{t.strike ? formatCurrency(t.strike) : "—"}</td>
+                      <td className="py-4 text-center text-cream-100 tabular-nums align-middle">
+                        {t.strike ? (isMember ? formatCurrency(t.strike) : <BlurOverlay>{formatCurrency(t.strike)}</BlurOverlay>) : "—"}
+                      </td>
                       <td className="py-4 text-center text-cream-100/60 tabular-nums align-middle text-xs">{t.contracts ?? "—"}</td>
-                      <td className="py-4 text-center text-cream-100/60 tabular-nums align-middle text-xs">{cap ? formatCurrency(cap) : "—"}</td>
+                      <td className="py-4 text-center text-cream-100/60 tabular-nums align-middle text-xs">
+                        {cap ? (isMember ? formatCurrency(cap) : <BlurOverlay>{formatCurrency(cap)}</BlurOverlay>) : "—"}
+                      </td>
                       <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(t.openDate)}</td>
                       <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(t.closeDate)}</td>
                       <td className={`py-4 text-center tabular-nums font-medium align-middle ${pnl !== null && pnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
-                        {pnl !== null ? `${pnl >= 0 ? "+" : ""}${formatCurrency(pnl)}` : "—"}
+                        {pnl !== null
+                          ? (isMember
+                              ? `${pnl >= 0 ? "+" : ""}${formatCurrency(pnl)}`
+                              : <BlurOverlay>{`${pnl >= 0 ? "+" : ""}${formatCurrency(pnl)}`}</BlurOverlay>)
+                          : "—"}
                       </td>
                       <td className={`py-4 text-center tabular-nums text-xs font-medium align-middle ${roiNum !== null && roiNum >= 0 ? "text-sage-300/70" : "text-red-400/70"}`}>
-                        {roi}
+                        {isMember ? roi : <BlurOverlay>{roi}</BlurOverlay>}
                       </td>
                       <td className="py-4 text-center align-middle">
                         <span className={`text-xs px-2 py-1 rounded-full ${
@@ -495,16 +531,22 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                     <td className="py-4 text-center text-sage-300/50 align-middle"><ChevronIcon open={isOpen} /></td>
                     <td className="py-4 text-center text-white font-semibold tracking-wide align-middle">{g.ticker}</td>
                     <td className="py-4 text-center text-cream-100 align-middle">{g.optionType || "—"}</td>
-                    <td className="py-4 text-center text-cream-100 tabular-nums align-middle text-xs">{strikeLabel}</td>
+                    <td className="py-4 text-center text-cream-100 tabular-nums align-middle text-xs">
+                      {isMember ? strikeLabel : <BlurOverlay>{strikeLabel}</BlurOverlay>}
+                    </td>
                     <td className="py-4 text-center text-cream-100/60 tabular-nums align-middle text-xs">{g.legs[0]?.contracts ?? "—"}</td>
-                    <td className="py-4 text-center text-cream-100/60 tabular-nums align-middle text-xs">{cap > 0 ? formatCurrency(cap) : "—"}</td>
+                    <td className="py-4 text-center text-cream-100/60 tabular-nums align-middle text-xs">
+                      {cap > 0 ? (isMember ? formatCurrency(cap) : <BlurOverlay>{formatCurrency(cap)}</BlurOverlay>) : "—"}
+                    </td>
                     <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(g.openDate)}</td>
                     <td className="py-4 text-center text-cream-100/80 tabular-nums whitespace-nowrap align-middle">{formatDate(g.closeDate)}</td>
                     <td className={`py-4 text-center tabular-nums font-medium align-middle ${net >= 0 ? "text-sage-300" : "text-red-400"}`}>
-                      {`${net >= 0 ? "+" : ""}${formatCurrency(net)}`}
+                      {isMember
+                        ? `${net >= 0 ? "+" : ""}${formatCurrency(net)}`
+                        : <BlurOverlay>{`${net >= 0 ? "+" : ""}${formatCurrency(net)}`}</BlurOverlay>}
                     </td>
                     <td className={`py-4 text-center tabular-nums text-xs font-medium align-middle ${groupRoiNum !== null && groupRoiNum >= 0 ? "text-sage-300/70" : "text-red-400/70"}`}>
-                      {groupRoi}
+                      {isMember ? groupRoi : <BlurOverlay>{groupRoi}</BlurOverlay>}
                     </td>
                     <td className="py-4 text-center align-middle">
                       <span className="text-xs px-2 py-1 rounded-full bg-blue-500/15 text-blue-300">Roll ({g.legs.length})</span>
@@ -520,9 +562,17 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                             return (
                               <div key={li} className="flex items-center gap-4 text-xs text-cream-100/60">
                                 <span className={`w-8 text-center font-medium ${isBtc ? "text-red-400/70" : "text-sage-300/70"}`}>{isBtc ? "BTC" : "STO"}</span>
-                                <span className="tabular-nums">{leg.strike ? `$${leg.strike.toLocaleString()}` : "—"}</span>
+                                <span className="tabular-nums">
+                                  {leg.strike
+                                    ? (isMember ? `$${leg.strike.toLocaleString()}` : <BlurOverlay>{`$${leg.strike.toLocaleString()}`}</BlurOverlay>)
+                                    : "—"}
+                                </span>
                                 <span className="tabular-nums">{formatDate(leg.openDate)} → {formatDate(leg.closeDate)}</span>
-                                <span className={`tabular-nums font-medium ${lPnl >= 0 ? "text-sage-300/80" : "text-red-400/80"}`}>{lPnl >= 0 ? "+" : ""}{formatCurrency(lPnl)}</span>
+                                <span className={`tabular-nums font-medium ${lPnl >= 0 ? "text-sage-300/80" : "text-red-400/80"}`}>
+                                  {isMember
+                                    ? `${lPnl >= 0 ? "+" : ""}${formatCurrency(lPnl)}`
+                                    : <BlurOverlay>{`${lPnl >= 0 ? "+" : ""}${formatCurrency(lPnl)}`}</BlurOverlay>}
+                                </span>
                                 <span className="text-cream-100/40">{leg.status}</span>
                               </div>
                             );
@@ -530,7 +580,11 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
                           <div className="flex items-center gap-4 text-xs pt-1.5 border-t border-white/10 mt-1.5">
                             <span className="w-8 text-center font-medium text-white">NET</span>
                             <span></span><span></span>
-                            <span className={`tabular-nums font-semibold ${net >= 0 ? "text-sage-300" : "text-red-400"}`}>{net >= 0 ? "+" : ""}{formatCurrency(net)}</span>
+                            <span className={`tabular-nums font-semibold ${net >= 0 ? "text-sage-300" : "text-red-400"}`}>
+                              {isMember
+                                ? `${net >= 0 ? "+" : ""}${formatCurrency(net)}`
+                                : <BlurOverlay>{`${net >= 0 ? "+" : ""}${formatCurrency(net)}`}</BlurOverlay>}
+                            </span>
                           </div>
                         </div>
                       </td>
