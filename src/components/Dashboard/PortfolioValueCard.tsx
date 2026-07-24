@@ -1,4 +1,16 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import type { Portfolio } from "../../../types/portfolio";
+import BlurOverlay from "@/components/TradeLedger/BlurOverlay";
+
+function useMember() {
+  const [member, setMember] = useState(false);
+  useEffect(() => {
+    setMember(localStorage.getItem("lakespring_member") === "true");
+  }, []);
+  return member;
+}
 
 function formatCurrency(n: number): string {
   return n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -28,7 +40,9 @@ interface Props {
 }
 
 export default function PortfolioValueCard({ portfolio }: Props) {
+  const isMember = useMember();
   const { line, fill } = buildSparklinePath(portfolio.performance, 160, 48);
+  const valueText = formatCurrency(portfolio.totalValue);
 
   return (
     <section className="bg-[#034147] rounded-2xl p-4 flex items-center gap-4">
@@ -37,7 +51,7 @@ export default function PortfolioValueCard({ portfolio }: Props) {
           Portfolio value
         </p>
         <p className="text-2xl font-bold text-white leading-none">
-          {formatCurrency(portfolio.totalValue)}
+          {isMember ? valueText : <BlurOverlay>{valueText}</BlurOverlay>}
         </p>
         <p className="text-xs text-white/40 mt-1">
           USD ·{" "}

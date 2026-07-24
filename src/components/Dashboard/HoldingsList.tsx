@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import type { Portfolio } from "../../../types/portfolio";
 import type { Trade } from "@/lib/trades";
+import BlurOverlay from "@/components/TradeLedger/BlurOverlay";
 
 const TICKER_COLORS: Record<string, string> = {
   TSLA:  "#CC0000", NVDA:  "#76B900", PLTR:  "#101113", AMZN:  "#edbb81",
@@ -188,16 +189,24 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                     <div className="flex items-baseline gap-2">
                       <p className="text-sm font-medium text-ink-900">{h.name}</p>
                       <span className="text-xs text-ink-400 tabular-nums">
-                        ${h.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {member
+                          ? `$${h.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                          : <BlurOverlay>{`$${h.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</BlurOverlay>}
                       </span>
                     </div>
                     <div className="flex items-center gap-3 mt-0.5">
                       <span className="text-[11px] text-ink-400">
-                        <span className="text-ink-600 font-medium">{h.weight.toFixed(0)}%</span> of portfolio
+                        <span className="text-ink-600 font-medium">
+                          {member ? `${h.weight.toFixed(0)}%` : <BlurOverlay>{`${h.weight.toFixed(0)}%`}</BlurOverlay>}
+                        </span> of portfolio
                       </span>
                       {totalPremiums !== 0 && (
                         <span className={`text-[11px] font-medium ${totalPremiums >= 0 ? "text-sage-600" : "text-red-500"}`}>
-                          {totalPremiums >= 0 ? "+" : "-"}${Math.abs(totalPremiums).toLocaleString(undefined, { maximumFractionDigits: 0 })} net income
+                          {member ? (
+                            <>{totalPremiums >= 0 ? "+" : "-"}${Math.abs(totalPremiums).toLocaleString(undefined, { maximumFractionDigits: 0 })} net income</>
+                          ) : (
+                            <BlurOverlay>{`${totalPremiums >= 0 ? "+" : "-"}$${Math.abs(totalPremiums).toLocaleString(undefined, { maximumFractionDigits: 0 })} net income`}</BlurOverlay>
+                          )}
                         </span>
                       )}
                     </div>
@@ -229,8 +238,12 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                             style={{ gridTemplateColumns: GRID, gap: "0", background: idx % 2 === 1 ? "rgba(250,248,243,0.6)" : "white" }}>
                             <span className="text-ink-500 tabular-nums text-left">{formatDate(trade.openDate)}</span>
                             <span className="text-center font-medium" style={{ color: "#034147" }}>{friendlyType(trade.optionType)}</span>
-                            <span className="text-center text-ink-700 tabular-nums">{premiumDisplay(trade)}</span>
-                            <span className="text-center tabular-nums font-medium" style={{ color: "#1D9E75" }}>{tradeYield(trade)}</span>
+                            <span className="text-center text-ink-700 tabular-nums">
+                              {member ? premiumDisplay(trade) : <BlurOverlay>{premiumDisplay(trade)}</BlurOverlay>}
+                            </span>
+                            <span className="text-center tabular-nums font-medium" style={{ color: "#1D9E75" }}>
+                              {member ? tradeYield(trade) : <BlurOverlay>{tradeYield(trade)}</BlurOverlay>}
+                            </span>
                             <span className="text-center text-ink-500 tabular-nums">{formatDate(trade.closeDate)}</span>
                             <span className="text-center font-medium" style={{ color: statusColor(trade.status) }}>{trade.status || "—"}</span>
                           </div>
@@ -252,8 +265,12 @@ export default function HoldingsList({ portfolio, tradesByTicker, view }: Holdin
                             style={{ gridTemplateColumns: "52px 38px 46px 42px 52px 14px", gap: "3px", background: idx % 2 === 1 ? "rgba(250,248,243,0.6)" : "white" }}>
                             <span className="text-ink-500 tabular-nums">{formatDateShort(trade.openDate)}</span>
                             <span className="font-medium truncate" style={{ color: "#034147" }}>{friendlyType(trade.optionType)}</span>
-                            <span className="text-ink-700 tabular-nums text-right">{premiumDisplay(trade)}</span>
-                            <span className="tabular-nums font-medium text-right" style={{ color: "#1D9E75" }}>{tradeYield(trade)}</span>
+                            <span className="text-ink-700 tabular-nums text-right">
+                              {member ? premiumDisplay(trade) : <BlurOverlay>{premiumDisplay(trade)}</BlurOverlay>}
+                            </span>
+                            <span className="tabular-nums font-medium text-right" style={{ color: "#1D9E75" }}>
+                              {member ? tradeYield(trade) : <BlurOverlay>{tradeYield(trade)}</BlurOverlay>}
+                            </span>
                             <span className="text-ink-500 tabular-nums">{formatDateShort(trade.closeDate)}</span>
                             <span className="flex justify-center" title={trade.status || "—"}>
                               <span className="w-1.5 h-1.5 rounded-full" style={{ background: statusColor(trade.status) }} />

@@ -2,12 +2,21 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Portfolio, Holding } from "../../../types/portfolio";
+import BlurOverlay from "@/components/TradeLedger/BlurOverlay";
 
 interface Props {
   portfolio: Portfolio;
 }
 
 type Rect = Holding & { x: number; y: number; w: number; h: number };
+
+function useMember() {
+  const [member, setMember] = useState(false);
+  useEffect(() => {
+    setMember(localStorage.getItem("lakespring_member") === "true");
+  }, []);
+  return member;
+}
 
 // Same ticker colors as AllocationDonut, for a consistent brand identity across the dashboard
 const TICKER_COLORS: Record<string, string> = {
@@ -58,6 +67,7 @@ function sliceDice(items: Holding[], x: number, y: number, w: number, h: number,
 }
 
 export default function PortfolioTreemap({ portfolio }: Props) {
+  const isMember = useMember();
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [hovered, setHovered] = useState<string | null>(null);
@@ -137,7 +147,7 @@ export default function PortfolioTreemap({ portfolio }: Props) {
                   className="font-semibold text-white leading-none"
                   style={{ fontSize: tickerFontSize }}
                 >
-                  {displayTicker(r.ticker)}
+                  {isMember ? displayTicker(r.ticker) : <BlurOverlay>{displayTicker(r.ticker)}</BlurOverlay>}
                 </span>
               )}
               {showSub && (
@@ -145,7 +155,7 @@ export default function PortfolioTreemap({ portfolio }: Props) {
                   className="text-white/85 mt-1"
                   style={{ fontSize: tickerFontSize * 0.55 }}
                 >
-                  {r.weight.toFixed(1)}%
+                  {isMember ? `${r.weight.toFixed(1)}%` : <BlurOverlay>{r.weight.toFixed(1)}%</BlurOverlay>}
                 </span>
               )}
             </div>
@@ -157,17 +167,35 @@ export default function PortfolioTreemap({ portfolio }: Props) {
             className="absolute rounded-lg bg-white shadow-lg px-3 py-2 pointer-events-none"
             style={{ left: dialogX, top: dialogY, width: DIALOG_W, zIndex: 30 }}
           >
-            <p className="text-xs font-bold text-ink-900 leading-none mb-1">{displayTicker(hoveredRect.ticker)}</p>
-            <p className="text-[11px] text-ink-700 leading-tight">
-              {hoveredRect.weight.toFixed(1)}% ({formatCompact((hoveredRect.weight / 100) * portfolio.totalValue)})
-            </p>
-            <p
-              className="text-[11px] font-medium leading-tight mt-0.5"
-              style={{ color: hoveredRect.dayChangePct >= 0 ? "#1D9E75" : "#E24B4A" }}
-            >
-              {hoveredRect.dayChangePct >= 0 ? "+" : ""}
-              {hoveredRect.dayChangePct.toFixed(2)}% today
-            </p>
+            {isMember ? (
+              <>
+                <p className="text-xs font-bold text-ink-900 leading-none mb-1">{displayTicker(hoveredRect.ticker)}</p>
+                <p className="text-[11px] text-ink-700 leading-tight">
+                  {hoveredRect.weight.toFixed(1)}% ({formatCompact((hoveredRect.weight / 100) * portfolio.totalValue)})
+                </p>
+                <p
+                  className="text-[11px] font-medium leading-tight mt-0.5"
+                  style={{ color: hoveredRect.dayChangePct >= 0 ? "#1D9E75" : "#E24B4A" }}
+                >
+                  {hoveredRect.dayChangePct >= 0 ? "+" : ""}
+                  {hoveredRect.dayChangePct.toFixed(2)}% today
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-xs font-bold text-ink-900 leading-none mb-1">
+                  <BlurOverlay>{displayTicker(hoveredRect.ticker)}</BlurOverlay>
+                </p>
+                <p className="text-[11px] text-ink-700 leading-tight">
+                  <BlurOverlay>
+                    {hoveredRect.weight.toFixed(1)}% ({formatCompact((hoveredRect.weight / 100) * portfolio.totalValue)})
+                  </BlurOverlay>
+                </p>
+                <p className="text-[11px] font-medium leading-tight mt-0.5">
+                  <BlurOverlay>{hoveredRect.dayChangePct.toFixed(2)}% today</BlurOverlay>
+                </p>
+              </>
+            )}
             {/* Little pointer triangle toward the tile */}
             <div
               className="absolute w-2.5 h-2.5 bg-white"

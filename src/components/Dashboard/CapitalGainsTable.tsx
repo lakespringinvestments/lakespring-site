@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import type { Portfolio } from "../../../types/portfolio";
 import type { PortfolioView } from "./types";
+import BlurOverlay from "@/components/TradeLedger/BlurOverlay";
 
 const FP_BOOK_COSTS: Record<string, number> = {
   TSLA: 252866, NVDA: 0, PLTR: 69210, AMZN: 0, GOOGL: 0, LLY: 0, SPCX: 0,
@@ -101,7 +102,9 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
             <div key={label} className="grid px-5 py-3 items-center text-xs"
               style={{ gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
               <span className="text-ink-700">{label}</span>
-              <span className="tabular-nums font-medium" style={{ color }}>{value}</span>
+              <span className="tabular-nums font-medium" style={{ color }}>
+                {member ? value : <BlurOverlay>{value}</BlurOverlay>}
+              </span>
             </div>
           ))}
         </div>
@@ -154,17 +157,25 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
                 }}>
                 {ticker}
               </span>
-              <span className="text-ink-700 tabular-nums">{fmt(bookCost)}</span>
+              <span className="text-ink-700 tabular-nums">
+                {member ? fmt(bookCost) : <BlurOverlay>{fmt(bookCost)}</BlurOverlay>}
+              </span>
               <span className="tabular-nums" style={{ color: mktValue > 0 ? "#0a0a0a" : "#888" }}>
-                {mktValue > 0 ? fmt(mktValue) : "—"}
+                {member
+                  ? (mktValue > 0 ? fmt(mktValue) : "—")
+                  : <BlurOverlay>{mktValue > 0 ? fmt(mktValue) : "—"}</BlurOverlay>}
               </span>
               <span className="tabular-nums font-medium"
                 style={{ color: capitalGain === null ? "#888" : capitalGain >= 0 ? "#1D9E75" : "#E24B4A" }}>
-                {capitalGain !== null ? (capitalGain >= 0 ? "+" : "") + fmt(Math.abs(capitalGain)) : "No position"}
+                {member
+                  ? (capitalGain !== null ? (capitalGain >= 0 ? "+" : "") + fmt(Math.abs(capitalGain)) : "No position")
+                  : <BlurOverlay>{capitalGain !== null ? (capitalGain >= 0 ? "+" : "") + fmt(Math.abs(capitalGain)) : "No position"}</BlurOverlay>}
               </span>
               <span className="tabular-nums font-medium"
                 style={{ color: roi === null ? "#888" : roi >= 0 ? "#1D9E75" : "#E24B4A" }}>
-                {roi !== null ? (roi >= 0 ? "+" : "") + roi.toFixed(1) + "%" : "—"}
+                {member
+                  ? (roi !== null ? (roi >= 0 ? "+" : "") + roi.toFixed(1) + "%" : "—")
+                  : <BlurOverlay>{roi !== null ? (roi >= 0 ? "+" : "") + roi.toFixed(1) + "%" : "—"}</BlurOverlay>}
               </span>
             </div>
           ))}
@@ -192,17 +203,25 @@ export default function CapitalGainsTable({ portfolio, view }: Props) {
                 }}>
                 {ticker}
               </span>
-              <span className="text-ink-700 tabular-nums text-right">{fmtCompact(bookCost)}</span>
+              <span className="text-ink-700 tabular-nums text-right">
+                {member ? fmtCompact(bookCost) : <BlurOverlay>{fmtCompact(bookCost)}</BlurOverlay>}
+              </span>
               <span className="tabular-nums text-right" style={{ color: mktValue > 0 ? "#0a0a0a" : "#888" }}>
-                {mktValue > 0 ? fmtCompact(mktValue) : "—"}
+                {member
+                  ? (mktValue > 0 ? fmtCompact(mktValue) : "—")
+                  : <BlurOverlay>{mktValue > 0 ? fmtCompact(mktValue) : "—"}</BlurOverlay>}
               </span>
               <span className="tabular-nums font-medium text-right"
                 style={{ color: capitalGain === null ? "#888" : capitalGain >= 0 ? "#1D9E75" : "#E24B4A" }}>
-                {capitalGain !== null ? (capitalGain >= 0 ? "+" : "") + fmtCompact(Math.abs(capitalGain)) : "—"}
+                {member
+                  ? (capitalGain !== null ? (capitalGain >= 0 ? "+" : "") + fmtCompact(Math.abs(capitalGain)) : "—")
+                  : <BlurOverlay>{capitalGain !== null ? (capitalGain >= 0 ? "+" : "") + fmtCompact(Math.abs(capitalGain)) : "—"}</BlurOverlay>}
               </span>
               <span className="tabular-nums font-medium text-right"
                 style={{ color: roi === null ? "#888" : roi >= 0 ? "#1D9E75" : "#E24B4A" }}>
-                {roi !== null ? (roi >= 0 ? "+" : "") + roi.toFixed(0) + "%" : "—"}
+                {member
+                  ? (roi !== null ? (roi >= 0 ? "+" : "") + roi.toFixed(0) + "%" : "—")
+                  : <BlurOverlay>{roi !== null ? (roi >= 0 ? "+" : "") + roi.toFixed(0) + "%" : "—"}</BlurOverlay>}
               </span>
             </div>
           ))}
