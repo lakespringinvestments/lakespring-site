@@ -406,7 +406,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
       <PnlBar optionsTrades={optionsTrades} capitalGainsTrades={capitalGainsTrades} ticker={ticker} member={isMember} />
 
       {/* Ledger table */}
-      <div className="overflow-x-auto -mx-6 px-6">
+      <div className="hidden md:block overflow-x-auto -mx-6 px-6">
         <table className="w-full min-w-[920px] table-fixed">
           <colgroup>
             <col className="w-[32px]" /><col className="w-[80px]" /><col className="w-[70px]" /><col className="w-[80px]" />
@@ -595,6 +595,133 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
             })
           )}
         </table>
+      </div>
+
+      {/* Mobile: compact cards — Ticker, Type, Strike, P&L only. Tap to expand rationale/legs. */}
+      <div className="md:hidden space-y-2">
+        {displayRows.map((row, i) => {
+          if (row.kind === "month") {
+            return (
+              <div key={`m-${row.monthKey}`} className="bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 flex items-center justify-between mt-4 first:mt-0">
+                <span className="text-[11px] uppercase tracking-[0.15em] text-sage-300 font-semibold">{row.label}</span>
+                <span className={`text-xs font-semibold tabular-nums ${row.total >= 0 ? "text-sage-300" : "text-red-400"}`}>
+                  {isMember
+                    ? `${row.total >= 0 ? "+" : ""}${formatCurrency(row.total)}`
+                    : <BlurOverlay>{`${row.total >= 0 ? "+" : ""}${formatCurrency(row.total)}`}</BlurOverlay>}
+                </span>
+              </div>
+            );
+          }
+
+          const isOpen = expandedIdx === i;
+
+          if (row.kind === "single") {
+            const t = row.trade;
+            const hasRationale = !!t.rationale.trim();
+            const pnl = t.gainLossUsd;
+            return (
+              <div key={i} className="bg-white/[0.03] border border-white/10 rounded-xl overflow-hidden">
+                <button
+                  className="w-full px-4 py-3 flex items-center justify-between text-left"
+                  onClick={() => { if (hasRationale) setExpandedIdx(isOpen ? null : i); }}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    {hasRationale && <ChevronIcon open={isOpen} />}
+                    <span className="text-sm font-semibold text-white tracking-wide">{t.ticker}</span>
+                    <span className="text-xs text-cream-100/60 truncate">{t.optionType || "—"}</span>
+                  </div>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <span className="text-xs text-cream-100/70 tabular-nums">
+                      {t.strike
+                        ? (isMember ? formatCurrency(t.strike) : <BlurOverlay>{formatCurrency(t.strike)}</BlurOverlay>)
+                        : "—"}
+                    </span>
+                    <span className={`text-sm font-medium tabular-nums ${pnl !== null && pnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
+                      {pnl !== null
+                        ? (isMember
+                            ? `${pnl >= 0 ? "+" : ""}${formatCurrency(pnl)}`
+                            : <BlurOverlay>{`${pnl >= 0 ? "+" : ""}${formatCurrency(pnl)}`}</BlurOverlay>)
+                        : "—"}
+                    </span>
+                  </div>
+                </button>
+                {isOpen && hasRationale && (
+                  <div className="px-4 pb-3 border-t border-white/10">
+                    <p className="text-[10px] uppercase tracking-[0.15em] text-sage-300/60 mb-1 mt-2">Rationale</p>
+                    <p className="text-xs text-cream-100/70 leading-relaxed">{t.rationale}</p>
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          // Group / rolled-position row
+          const g = row;
+          const net = g.netPnl;
+          const strikeLabel = g.oldStrike && g.newStrike && g.oldStrike !== g.newStrike
+            ? `${formatCurrency(g.oldStrike)} → ${formatCurrency(g.newStrike)}`
+            : formatCurrency(g.newStrike ?? g.oldStrike);
+
+          return (
+            <div key={i} className="bg-white/[0.03] border border-white/10 rounded-xl overflow-hidden">
+              <button
+                className="w-full px-4 py-3 flex items-center justify-between text-left"
+                onClick={() => setExpandedIdx(isOpen ? null : i)}
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <ChevronIcon open={isOpen} />
+                  <span className="text-sm font-semibold text-white tracking-wide">{g.ticker}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-300 flex-shrink-0">
+                    Roll ({g.legs.length})
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 flex-shrink-0">
+                  <span className="text-xs text-cream-100/70 tabular-nums">
+                    {isMember ? strikeLabel : <BlurOverlay>{strikeLabel}</BlurOverlay>}
+                  </span>
+                  <span className={`text-sm font-medium tabular-nums ${net >= 0 ? "text-sage-300" : "text-red-400"}`}>
+                    {isMember
+                      ? `${net >= 0 ? "+" : ""}${formatCurrency(net)}`
+                      : <BlurOverlay>{`${net >= 0 ? "+" : ""}${formatCurrency(net)}`}</BlurOverlay>}
+                  </span>
+                </div>
+              </button>
+              {isOpen && (
+                <div className="px-4 pb-3 border-t border-white/10 space-y-1.5">
+                  {g.legs.map((leg, li) => {
+                    const lPnl = leg.gainLossUsd ?? 0;
+                    const isBtc = lPnl < 0;
+                    return (
+                      <div key={li} className="flex items-center justify-between text-xs text-cream-100/60 pt-1.5">
+                        <span className="flex items-center gap-2">
+                          <span className={`font-medium ${isBtc ? "text-red-400/70" : "text-sage-300/70"}`}>{isBtc ? "BTC" : "STO"}</span>
+                          <span className="tabular-nums">
+                            {leg.strike
+                              ? (isMember ? `$${leg.strike.toLocaleString()}` : <BlurOverlay>{`$${leg.strike.toLocaleString()}`}</BlurOverlay>)
+                              : "—"}
+                          </span>
+                        </span>
+                        <span className={`tabular-nums font-medium ${lPnl >= 0 ? "text-sage-300/80" : "text-red-400/80"}`}>
+                          {isMember
+                            ? `${lPnl >= 0 ? "+" : ""}${formatCurrency(lPnl)}`
+                            : <BlurOverlay>{`${lPnl >= 0 ? "+" : ""}${formatCurrency(lPnl)}`}</BlurOverlay>}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  <div className="flex items-center justify-between text-xs pt-1.5 border-t border-white/10 mt-1.5">
+                    <span className="font-medium text-white">NET</span>
+                    <span className={`tabular-nums font-semibold ${net >= 0 ? "text-sage-300" : "text-red-400"}`}>
+                      {isMember
+                        ? `${net >= 0 ? "+" : ""}${formatCurrency(net)}`
+                        : <BlurOverlay>{`${net >= 0 ? "+" : ""}${formatCurrency(net)}`}</BlurOverlay>}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </>
   );
