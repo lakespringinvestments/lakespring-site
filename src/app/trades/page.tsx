@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Trade Ledger — Lakespring Investments",
   description:
-    "Every closed options trade, published with a 30-day delay. Full transparency on the Lakespring portfolio.",
+    "Every closed options trade, published with a 14-day delay. Full transparency on the Lakespring portfolio.",
 };
 
 export default async function TradesPage() {
@@ -51,11 +51,11 @@ export default async function TradesPage() {
               </h2>
               <p className="text-cream-100 leading-relaxed mb-8">
                 Get them every week, along with live trade alerts, as a member — start with a
-                free 30-day trial.
+                free 14-day trial.
               </p>
               <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/10 max-w-lg">
                 <a
-                  href="https://buy.stripe.com/test_9B66oH1nF9Zpe5Wewxfw400"
+                  href="https://buy.stripe.com/14AdR8eT3dFAgSAfwf6c000"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center w-full bg-white text-[#034147] font-semibold text-sm px-6 py-3 rounded-lg hover:bg-cream-50 transition-colors"
@@ -63,7 +63,7 @@ export default async function TradesPage() {
                   Start Free Trial →
                 </a>
                 <p className="text-[11px] text-white/40 mt-3 text-center">
-                  30 days free, then billed via Stripe. Cancel anytime.
+                  14 days free, then billed via Stripe. Cancel anytime.
                 </p>
               </div>
             </div>

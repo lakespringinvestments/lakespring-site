@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 
-const STRIPE_URL = "https://buy.stripe.com/test_9B66oH1nF9Zpe5Wewxfw400";
+const STRIPE_URL = "https://buy.stripe.com/14AdR8eT3dFAgSAfwf6c000";
 
 /** Pages where the footer membership section should be hidden */
 const HIDDEN_ON = new Set(["/trades"]);
@@ -20,7 +20,7 @@ export default function FooterNewsletter() {
           </h3>
           <p className="text-cream-100/70 text-sm leading-relaxed max-w-md">
             Live trade alerts, weekly analysis, and the full report archive —
-            start with a free 30-day trial.
+            start with a free 14-day trial.
           </p>
         </div>
         <div>

@@ -1,8 +1,18 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import type { Portfolio } from "../../../types/portfolio";
 import type { Trade } from "@/lib/trades";
 import type { PortfolioView } from "./types";
+import BlurOverlay from "@/components/TradeLedger/BlurOverlay";
+
+function useMember() {
+  const [member, setMember] = useState(false);
+  useEffect(() => {
+    setMember(localStorage.getItem("lakespring_member") === "true");
+  }, []);
+  return member;
+}
 
 interface MetricCardsProps {
   portfolio: Portfolio;
@@ -39,6 +49,7 @@ function getViewTickers(view: PortfolioView) {
 }
 
 export default function MetricCards({ portfolio, allTrades, view, setView }: MetricCardsProps) {
+  const isMember = useMember();
   const theme = THEME[view];
 
   // Calculate view's market value and allocation %
@@ -133,8 +144,12 @@ export default function MetricCards({ portfolio, allTrades, view, setView }: Met
             <p className="text-[10px] uppercase tracking-[0.15em] mb-2" style={{ color: "rgba(255,255,255,0.5)" }}>
               {c.label}
             </p>
-            <p className="text-xl font-semibold text-white leading-none">{c.value}</p>
-            <p className="text-[11px] mt-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>{c.sub}</p>
+            <p className="text-xl font-semibold text-white leading-none">
+              {isMember ? c.value : <BlurOverlay>{c.value}</BlurOverlay>}
+            </p>
+            <p className="text-[11px] mt-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+              {isMember ? c.sub : <BlurOverlay>{c.sub}</BlurOverlay>}
+            </p>
           </div>
         ))}
       </div>

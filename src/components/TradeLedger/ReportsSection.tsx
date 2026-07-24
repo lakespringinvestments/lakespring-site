@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { FREE_REPORTS, PAID_REPORTS_FOLDER_URL } from "@/lib/reports";
 
-const STRIPE_URL = "https://buy.stripe.com/test_9B66oH1nF9Zpe5Wewxfw400";
+const STRIPE_URL = "https://buy.stripe.com/14AdR8eT3dFAgSAfwf6c000";
 
 function useMember() {
   const [member, setMember] = useState(false);
@@ -36,7 +36,7 @@ export default function ReportsSection() {
           before the week starts, and a retrospective breaking down what actually happened once
           it ends. Browse a free sample of each below, or become a member (button at the bottom
           of this page) to get the full weekly archive plus live trade alerts — start with a
-          free 30-day trial.
+          free 14-day trial.
         </p>
       </div>
 
