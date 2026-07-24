@@ -39,35 +39,6 @@ export default async function TradesPage() {
           </div>
 
           <TradesPageTabs trades={trades} />
-
-          {/* Members tier teaser */}
-          <div className="mt-16 pt-12 border-t border-white/15">
-            <div className="max-w-2xl">
-              <p className="text-xs uppercase tracking-[0.25em] text-sage-300 mb-3">
-                Paid Membership Tier
-              </p>
-              <h2 className="text-2xl md:text-3xl text-white tracking-tight mb-4 font-semibold">
-                Enjoyed the sample reports?
-              </h2>
-              <p className="text-cream-100 leading-relaxed mb-8">
-                Get them every week, along with live trade alerts, as a member — start with a
-                free 14-day trial.
-              </p>
-              <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/10 max-w-lg">
-                <a
-                  href="https://buy.stripe.com/14AdR8eT3dFAgSAfwf6c000"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center w-full bg-white text-[#034147] font-semibold text-sm px-6 py-3 rounded-lg hover:bg-cream-50 transition-colors"
-                >
-                  Start Free Trial →
-                </a>
-                <p className="text-[11px] text-white/40 mt-3 text-center">
-                  14 days free, then billed via Stripe. Cancel anytime.
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
     </>
