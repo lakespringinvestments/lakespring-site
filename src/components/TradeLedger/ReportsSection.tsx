@@ -34,9 +34,9 @@ export default function ReportsSection() {
         <p className="text-white/40 text-xs mt-1">
           Every week we publish two reports: a pre-market analysis laying out our game plan
           before the week starts, and a retrospective breaking down what actually happened once
-          it ends. Browse a free sample of each below, or become a member (button at the bottom
-          of this page) to get the full weekly archive plus live trade alerts — start with a
-          free 14-day trial.
+          it ends. Preview a free sample of each below, or start a free 14-day trial (button at
+          the bottom of this page) to read the rest, get the full weekly archive, and live trade
+          alerts.
         </p>
       </div>
 
@@ -72,16 +72,44 @@ export default function ReportsSection() {
           </div>
         </div>
 
-        <div className="relative rounded-lg overflow-hidden bg-black/20">
-          <iframe
-            key={activeReport.fileId}
-            src={`https://drive.google.com/file/d/${activeReport.fileId}/preview`}
-            className="w-full"
-            style={{ height: 640, border: "none", display: "block" }}
-            allow="autoplay"
-            title={activeReport.label}
-          />
-        </div>
+        {isMember ? (
+          <div className="relative rounded-lg overflow-hidden bg-black/20">
+            <iframe
+              key={activeReport.fileId}
+              src={`https://drive.google.com/file/d/${activeReport.fileId}/preview`}
+              className="w-full"
+              style={{ height: 640, border: "none", display: "block" }}
+              allow="autoplay"
+              title={activeReport.label}
+            />
+          </div>
+        ) : (
+          <div className="relative rounded-lg overflow-hidden bg-black/20" style={{ height: 420 }}>
+            <iframe
+              key={activeReport.fileId}
+              src={`https://drive.google.com/file/d/${activeReport.fileId}/preview`}
+              className="w-full pointer-events-none"
+              style={{ height: 640, border: "none", display: "block" }}
+              tabIndex={-1}
+              title={activeReport.label}
+            />
+            {/* Fade to lock — this is an approximate preview length, not an exact page cutoff,
+                since Drive's embed doesn't expose page boundaries to us */}
+            <div
+              className="absolute inset-x-0 bottom-0 flex items-end justify-center pb-6 pt-24"
+              style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(10,10,10,0.85) 55%, #0a0a0a 100%)" }}
+            >
+              <a
+                href={STRIPE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center bg-white text-[#034147] font-semibold text-sm px-6 py-3 rounded-lg hover:bg-cream-50 transition-colors shadow-lg"
+              >
+                Start Free Trial to Keep Reading →
+              </a>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Full archive — members get the folder link directly; everyone else gets the trial CTA */}

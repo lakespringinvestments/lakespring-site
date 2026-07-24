@@ -78,7 +78,7 @@ const mdComponents: React.ComponentProps<typeof ReactMarkdown>["components"] = {
   blockquote({ children }) {
     return (
       <blockquote className="not-prose my-8 pl-6 border-l-[3px] border-teal-600">
-        <div className="font-serif text-xl md:text-2xl text-teal-600 leading-[1.45] italic font-medium">
+        <div className="font-serif text-lg md:text-2xl text-teal-600 leading-[1.45] italic font-medium">
           {children}
         </div>
       </blockquote>
@@ -86,14 +86,14 @@ const mdComponents: React.ComponentProps<typeof ReactMarkdown>["components"] = {
   },
   h2({ children }) {
     return (
-      <h2 className="font-sans text-2xl md:text-3xl font-semibold text-teal-600 leading-tight tracking-tight mt-14 mb-5">
+      <h2 className="font-sans text-xl md:text-3xl font-semibold text-teal-600 leading-tight tracking-tight mt-14 mb-5">
         {children}
       </h2>
     );
   },
   h3({ children }) {
     return (
-      <h3 className="font-sans text-lg md:text-xl font-semibold text-ink-900 leading-tight mt-8 mb-3">
+      <h3 className="font-sans text-base md:text-xl font-semibold text-ink-900 leading-tight mt-8 mb-3">
         {children}
       </h3>
     );
@@ -103,7 +103,7 @@ const mdComponents: React.ComponentProps<typeof ReactMarkdown>["components"] = {
   },
   p({ children }) {
     return (
-      <p className="text-ink-700 text-[17px] leading-[1.8] mb-5">{children}</p>
+      <p className="text-ink-700 text-[15px] md:text-[17px] leading-[1.8] mb-5">{children}</p>
     );
   },
   strong({ children }) {
@@ -137,12 +137,12 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
           </p>
         )}
 
-        <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.4rem] text-[#0a0a0a] leading-[1.08] tracking-tight font-medium max-w-4xl mb-6">
+        <h1 className="font-serif text-3xl md:text-5xl lg:text-[3.4rem] text-[#0a0a0a] leading-[1.08] tracking-tight font-medium max-w-4xl mb-6">
           {article.title}
         </h1>
 
         {article.excerpt && (
-          <p className="text-ink-500 text-lg md:text-xl leading-relaxed max-w-3xl mb-8">
+          <p className="text-ink-500 text-base md:text-xl leading-relaxed max-w-3xl mb-8">
             {article.excerpt}
           </p>
         )}
@@ -168,10 +168,11 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
         </div>
       </header>
 
-      {/* ── Cover image ── */}
+      {/* ── Cover image — not zoomable, this is a designed thumbnail visual, not a chart ── */}
       {article.coverImage && (
         <div className="max-w-6xl mx-auto px-6 mb-12 overflow-hidden rounded-2xl">
-          <ZoomableImage
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={article.coverImage}
             alt={article.title}
             className="w-full object-cover"

@@ -8,7 +8,7 @@ export default function BlurOverlay({ children, className = "" }: {
   return (
     <span
       className={`inline-block select-none pointer-events-none ${className}`}
-      style={{ filter: "blur(4px)", opacity: 0.55 }}
+      style={{ filter: "blur(8px)", opacity: 0.4 }}
       aria-hidden="true"
     >
       {children}

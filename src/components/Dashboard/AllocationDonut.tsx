@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Portfolio } from "../../../types/portfolio";
 import type { PortfolioView } from "./types";
+import BlurOverlay from "@/components/TradeLedger/BlurOverlay";
 
 function useMember() {
   const [member, setMember] = useState(false);
@@ -326,7 +327,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
                   fontSize="9.5" fontWeight="700"
                   fill={seg.color === "#101113" ? "#333" : seg.color === "#C8F000" ? "#7A9000" : seg.color}
                   fontFamily="system-ui, sans-serif"
-                  style={{ opacity: 0 }}>
+                  style={{ opacity: 0, filter: member ? undefined : "blur(6px)" }}>
                   {seg.ticker === "OTHER" ? "Other" : seg.ticker}
                 </text>
               ))}
@@ -338,7 +339,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
                   textAnchor="middle" dominantBaseline="middle"
                   fontSize="10" fontWeight="600" fill="#fff"
                   fontFamily="system-ui, sans-serif"
-                  style={{ opacity: 0 }}>
+                  style={{ opacity: 0, filter: member ? undefined : "blur(6px)" }}>
                   {seg.weight.toFixed(0)}%
                 </text>
               ))}
@@ -355,7 +356,7 @@ export default function AllocationDonut({ portfolio, view }: Props) {
           {/* Centre */}
           <text x={cx} y={cy - 12} textAnchor="middle" fontSize="11" fill="#ccc" fontFamily="system-ui">{centreLabel}</text>
           <text x={cx} y={cy + 10} textAnchor="middle" fontSize="22" fontWeight="700" fill="#034147" fontFamily="system-ui"
-            style={{ filter: "none" }}>{totalDisplay}</text>
+            style={{ filter: member ? "none" : "blur(6px)" }}>{totalDisplay}</text>
         </svg>
       </div>
       {minorSegs.length >= 2 && (
@@ -367,8 +368,17 @@ export default function AllocationDonut({ portfolio, view }: Props) {
               : `$${Math.round(dollarValue)}`;
             return (
               <span key={seg.ticker} className="text-[11px] text-ink-500">
-                <span className="font-semibold" style={{ color: seg.color }}>{seg.ticker}</span>
-                {" "}{seg.weight.toFixed(1)}% ({compact})
+                {member ? (
+                  <>
+                    <span className="font-semibold" style={{ color: seg.color }}>{seg.ticker}</span>
+                    {" "}{seg.weight.toFixed(1)}% ({compact})
+                  </>
+                ) : (
+                  <BlurOverlay>
+                    <span className="font-semibold" style={{ color: seg.color }}>{seg.ticker}</span>
+                    {" "}{seg.weight.toFixed(1)}% ({compact})
+                  </BlurOverlay>
+                )}
               </span>
             );
           })}

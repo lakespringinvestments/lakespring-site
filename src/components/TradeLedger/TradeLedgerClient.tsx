@@ -361,18 +361,14 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Net Options Income</p>
           <p className={`text-2xl font-semibold ${stats.netOptionsIncome >= 0 ? "text-sage-300" : "text-red-400"}`}>
-            {isMember
-              ? `${stats.netOptionsIncome >= 0 ? "+" : ""}${formatCurrency(stats.netOptionsIncome)}`
-              : <BlurOverlay>{`${stats.netOptionsIncome >= 0 ? "+" : ""}${formatCurrency(stats.netOptionsIncome)}`}</BlurOverlay>}
+            {stats.netOptionsIncome >= 0 ? "+" : ""}{formatCurrency(stats.netOptionsIncome)}
           </p>
           <p className="text-[10px] text-cream-100/40 mt-1">STO credits net of BTC debits</p>
         </div>
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Realized Capital Gains</p>
           <p className={`text-2xl font-semibold ${stats.capitalGainsPnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
-            {isMember
-              ? `${stats.capitalGainsPnl >= 0 ? "+" : ""}${formatCurrency(stats.capitalGainsPnl)}`
-              : <BlurOverlay>{`${stats.capitalGainsPnl >= 0 ? "+" : ""}${formatCurrency(stats.capitalGainsPnl)}`}</BlurOverlay>}
+            {stats.capitalGainsPnl >= 0 ? "+" : ""}{formatCurrency(stats.capitalGainsPnl)}
           </p>
           <p className="text-[10px] text-cream-100/40 mt-1">Share sales &amp; assignment equity</p>
         </div>
@@ -380,9 +376,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-sage-400/50"></div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Total P&L</p>
           <p className={`text-2xl font-semibold ${stats.totalPnl >= 0 ? "text-sage-300" : "text-red-400"}`}>
-            {isMember
-              ? `${stats.totalPnl >= 0 ? "+" : ""}${formatCurrency(stats.totalPnl)}`
-              : <BlurOverlay>{`${stats.totalPnl >= 0 ? "+" : ""}${formatCurrency(stats.totalPnl)}`}</BlurOverlay>}
+            {stats.totalPnl >= 0 ? "+" : ""}{formatCurrency(stats.totalPnl)}
           </p>
           <p className="text-[10px] text-cream-100/40 mt-1">Options + capital gains</p>
         </div>
@@ -395,9 +389,7 @@ export default function TradeLedgerClient({ trades }: { trades: Trade[] }) {
         </div>
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-sage-300 mb-2">Win rate</p>
-          <p className="text-2xl text-white font-semibold">
-            {isMember ? `${stats.winRate}%` : <BlurOverlay>{`${stats.winRate}%`}</BlurOverlay>}
-          </p>
+          <p className="text-2xl text-white font-semibold">{stats.winRate}%</p>
           <p className="text-[10px] text-cream-100/40 mt-1">Profitable positions ({stats.totalWins}/{stats.totalPositions})</p>
         </div>
       </div>
